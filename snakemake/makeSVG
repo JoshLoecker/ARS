@@ -1,0 +1,1 @@
+snakemake --dag -F all | dot -Tsvg > PipelineVisual.svg

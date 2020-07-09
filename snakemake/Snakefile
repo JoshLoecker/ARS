@@ -1,0 +1,34 @@
+"""
+I've made a new branch here so I can focus on testing snakemake without worrying about changes made to the master files
+"""
+configfile: "config.yaml"
+
+# This will get file names
+BASECALL_SAMPLE_NAMES, = glob_wildcards("/Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/{fast5_files}.fast5")
+
+rule all:
+    input:
+        # basecall
+        expand (config['results_folder'] + "Basecall/{sample}", sample=BASECALL_SAMPLE_NAMES )
+
+rule basecall:
+    input:
+        config['results_folder'] + "DataFiles/fast5/{sample}.fast5"
+    output:
+        directory (config['results_folder'] + "Basecall/{sample}" )
+    params:
+        temp_input_directory = temp (directory(config['results_folder'] + "Basecall/.temp/{sample}/") )
+    conda:
+        "envs/pythonEnv.yaml"
+    shell:
+        "python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/BasecallCreateTempFiles.py {input} {params.temp_input_directory} && "
+
+        "guppy_basecaller "
+        "--quiet "
+        "--input_path {params.temp_input_directory} "
+        "--save_path {output} "
+        "--config dna_r9.4.1_450bps_fast.cfg "
+        "--num_callers 1 "
+        "--cpu_threads_per_caller 2 && "
+
+        "echo 'Completed: {params.temp_input_directory}'"
