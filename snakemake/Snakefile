@@ -1,34 +1,147 @@
-"""
-I've made a new branch here so I can focus on testing snakemake without worrying about changes made to the master files
-"""
+# Cluster execution: https://snakemake.readthedocs.io/en/v4.3.0/executable.html#cluster-execution
+# I have defined the `all` rule at the end of the file so input/output variables are accessible by the rule
+# TODO: Determine a better method for getting the log path to each script
+#   Might be able to place this in the Global class; try to access via snakemake. If it doesn't work, fall back to a default value?
+
 configfile: "config.yaml"
-
-# This will get file names
-BASECALL_SAMPLE_NAMES, = glob_wildcards("/Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/{fast5_files}.fast5")
-
-rule all:
-    input:
-        # basecall
-        expand (config['results_folder'] + "Basecall/{sample}", sample=BASECALL_SAMPLE_NAMES )
 
 rule basecall:
     input:
-        config['results_folder'] + "DataFiles/fast5/{sample}.fast5"
+        input_directory = config['basecalling_input']
     output:
-        directory (config['results_folder'] + "Basecall/{sample}" )
-    params:
-        temp_input_directory = temp (directory(config['results_folder'] + "Basecall/.temp/{sample}/") )
+        save_directory = config['basecalling_output']
     conda:
         "envs/pythonEnv.yaml"
-    shell:
-        "python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/BasecallCreateTempFiles.py {input} {params.temp_input_directory} && "
+    script:
+        config['scripts_folder'] + "Basecall.py"
 
-        "guppy_basecaller "
-        "--quiet "
-        "--input_path {params.temp_input_directory} "
-        "--save_path {output} "
-        "--config dna_r9.4.1_450bps_fast.cfg "
-        "--num_callers 1 "
-        "--cpu_threads_per_caller 2 && "
 
-        "echo 'Completed: {params.temp_input_directory}'"
+rule barcode:
+    input:
+        input_directory = config['basecalling_output']
+    output:
+        save_directory = directory(config['barcoding_output']),
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config['scripts_folder'] + "Barcode.py"
+
+
+rule merge_files:
+    input:
+        input_directory = config['barcoding_output']
+    output:
+        output_directory = directory(config['merge_output_folder'])
+    params:
+        move_merged_files = config['move_merged_files'],
+        log_path = config['log_path']
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config['scripts_folder'] + "MergeFiles.py"
+
+
+rule trim:
+    input:
+        input_directory = config['merge_output_folder']
+    output:
+        save_directory = directory(config['trim_output']),
+    params:
+        error_rate = config['trim_error_rate'],
+        log_path = config['log_path']
+    conda:
+        'envs/pythonEnv.yaml'
+    script:
+        config['scripts_folder'] + "TrimReads.py"
+
+
+rule count_reads:
+    input:
+        count_barcode = config['barcoding_output'],
+        count_trim = config['trim_output'],
+        count_quality_filter = config['quality_output']
+    params:
+        # set the resulting file name of the .csv file after counting reads. The `.csv` extension will be added automatically
+        barcode_file_name = config['barcode_file_name'],
+        trim_file_name = config['trim_file_name'],
+        quality_filter_file_name = config['quality_filter_file_name'],
+        log_path = config['log_path']
+    output:
+        save_barcode = directory(config['barcoding_countreads']),
+        save_trim = directory(config['trim_countreads']),
+        save_quality_filter = directory(config['quality_filter_countreads'])
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config["scripts_folder"] + "CountReads.py"
+
+
+rule quality_filter:
+    # This rule will use NanoQC to perform quality control/filtering
+    input:
+        input_directory = config['trim_output']
+    output:
+        save_directory = directory(config['quality_output'])
+    params:
+        log_path = config['log_path']
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config['scripts_folder'] + "NanoQC.py"
+
+
+rule guppy_alignment:
+    input:
+        input_directory = config['trim_output']
+    output:
+        save_directory = directory(config['guppy_aligner_output'])
+    params:
+        log_path = config['log_path'],
+        alignment_file = config['alignment_reference_file']
+    conda:
+        "envs/guppyEnv.yaml"
+    script:
+        config['scripts_folder'] + "AlignerGuppy.py"
+
+
+rule minimap_alignment:
+    input:
+        input_directory = config['trim_output']
+    output:
+        save_directory = directory(config['minimap_aligner_output'])
+    params:
+        log_path = config['log_path'],
+        alignment_file = config['alignment_reference_file']
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config['scripts_folder'] + "AlignerMiniMap.py"
+
+
+rule vsearch_alignment:
+    input:
+        input_directory = config['trim_output']
+    output:
+        save_directory = directory(config['vsearch_aligner_output'])
+    params:
+        log_path = config['log_path'],
+        match_rate = config['vsearch_match_rate']
+    conda:
+        "envs/pythonEnv.yaml"
+    script:
+        config['scripts_folder'] + "AlignerVSearch.py"
+
+
+rule all:
+    input:
+        rules.basecall.output.save_directory,
+        rules.count_reads.output.save_barcode,
+
+        rules.barcode.output.save_directory,
+        rules.merge_files.output.output_directory,
+        rules.trim.output.save_directory,
+        rules.quality_filter.output.save_directory,
+
+        rules.guppy_alignment.output.save_directory,
+        rules.minimap_alignment.output.save_directory,
+        rules.vsearch_alignment.output.save_directory
