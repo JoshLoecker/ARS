@@ -1,0 +1,5 @@
+Total reads: 0
+Classified reads: 0
+Unclassified reads: 0
+Percent classified: Total IDS not counted correctly. Divide by zero error
+Percent unclassified: Total IDS not counted correctly. Divide by zero error
