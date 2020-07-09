@@ -1,0 +1,2 @@
+vsearch --id 0.9 --db /Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta --usearch_global /Users/joshl/PycharmProjects/ARS/Results/NanoFilt/NanoFilt_barcode27.fastq --alnout /Users/joshl/PycharmProjects/ARS/Results/Alignments/vsearch/vsearch_barcode27.txt
+vsearch v2.15.0_macos_x86_64, 16.0GB RAM, 12 cores
