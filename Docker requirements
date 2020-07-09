@@ -1,0 +1,13 @@
+This is a running list of items that must be included in a docker image (once we reach this step)
+
+1. Guppy Packages
+2. cutadapt
+3. Python 3.7
+    - numpy + dependencies
+    - pandas + dependencies
+    - plotly + dependencies
+4. MiniMap
+5. VSearch
+6. NanoQC
+7. Conda
+    - Include a conda environment

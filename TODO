@@ -1,0 +1,24 @@
+This is a simple to do list for the pipeline
+TODO: Create a wildcard in config.yaml and use relative paths for the rest of the file
+
+TODO: Direct bash call with snakemake wildcards. Try this with basecalling first
+
+TODO: Run VSearch with the zymogen database (and send Patrick an output file)
+
+TODO: Do not require a trailing slash on folder paths
+
+TODO: Remove pickle files from CountReads
+
+TODO: Allow NanoQC to run before and after trimming
+
+TODO: Guppy SAM files show "NanoFilt_barcode##.sam". This is a problem with the NanoFilt.py file
+
+TODO: NanoFilt is showing `barcode##` along with `NanoFilt_barcode##.fastq`. Not sure why this is; most likely a problem with creating files before writing to them to ensure the file is present
+
+TODO: NanoPlot Visuals do not seem to be picking up NanoFilt_barcode##.fastq files. Not sure why this is.
+
+TODO: Try to get snakemake to show the total number of files per rule. Stackoverflow question here: https://stackoverflow.com/questions/62517092/snakemake-show-number-of-files-per-job
+
+TODO: guppy_aligner is not able to align files from NanoFilt
+
+TODO: It seems like vsearch needs fasta files, not fastq. I will need to find a way to convert these files
