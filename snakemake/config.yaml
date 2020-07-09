@@ -11,6 +11,7 @@
 # Set this location where you would like all files to be placed
 results_folder: "/Users/joshl/PycharmProjects/ARS/Results/"
 parent_folder: "/Users/joshl/PycharmProjects/ARS/"
+
 scripts_folder: "/Users/joshl/PycharmProjects/ARS/Scripts/"
 log_path: "/Users/joshl/PycharmProjects/ARS/Results/logs.csv"
 alignment_reference_file: "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"

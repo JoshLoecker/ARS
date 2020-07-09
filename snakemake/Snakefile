@@ -17,19 +17,10 @@ rule basecall:
     output:
         directory (config['results_folder'] + "Basecall/{sample}" )
     params:
-        temp_input_directory = temp (directory(config['results_folder'] + "Basecall/.temp/{sample}/") )
+        temp_input_directory = temp (directory(config['results_folder'] + "Basecall/.temp/{sample}/") ),
+        run_file = config['parent_folder'] + "snakemake/scripts/test.py"
     conda:
         "envs/pythonEnv.yaml"
     shell:
-        "python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/BasecallCreateTempFiles.py {input} {params.temp_input_directory} && "
-
-        "guppy_basecaller "
-        "--quiet "
-        "--input_path {params.temp_input_directory} "
-        "--save_path {output} "
-        "--config dna_r9.4.1_450bps_fast.cfg "
-        "--num_callers 1 "
-        "--cpu_threads_per_caller 2 && "
-
-        "echo 'Completed: {params.temp_input_directory}'"
+        "python {params.run_file}"
 
