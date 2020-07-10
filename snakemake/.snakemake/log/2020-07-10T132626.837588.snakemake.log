@@ -1,0 +1,3 @@
+AttributeError in line 48 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+'str' object has no attribute 'spit'
+  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 48, in <module>

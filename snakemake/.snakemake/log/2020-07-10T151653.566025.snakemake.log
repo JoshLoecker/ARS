@@ -1,0 +1,3 @@
+WildcardError in line 28 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+No values given for wildcard 'folder'.
+  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 28, in <module>

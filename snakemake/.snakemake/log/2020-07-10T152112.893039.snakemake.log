@@ -1,0 +1,12 @@
+Building DAG of jobs...
+AmbiguousRuleException:
+Rules barcode and merge_files are ambiguous for the file /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.
+Consider starting rule output with a unique prefix, constrain your wildcards, or use the ruleorder directive.
+Wildcards:
+	barcode: fastq_files=FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+	merge_files: fastq_files=FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+Expected input files:
+	barcode: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+	merge_files: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275Expected output files:
+	barcode: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+	merge_files: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0

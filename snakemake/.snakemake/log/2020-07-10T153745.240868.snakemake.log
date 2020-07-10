@@ -1,0 +1,4 @@
+The flag 'directory' used in rule all is only valid for outputs, not inputs.
+NameError in line 87 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+name 'ReturnBarcodeFolderNames' is not defined
+  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 87, in <module>

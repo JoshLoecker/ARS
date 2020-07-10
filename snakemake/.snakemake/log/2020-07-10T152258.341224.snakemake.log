@@ -1,0 +1,3 @@
+Building DAG of jobs...
+CyclicGraphException in line 83 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Cyclic dependency on rule merge_files.

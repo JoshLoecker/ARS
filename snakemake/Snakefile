@@ -1,17 +1,22 @@
 configfile: "config.yaml"
 
-# wildcards. This is how file names will be retrieved
+# functions to return file/folder paths
+def ReturnBarcodeFolderNames():
+    import os
+    folder_names = list()
+    for root, directory, files in os.walk(config['results_folder'] + "Basecall/"):
+        for direc in directory:
+            if "fastq_runid_" not in direc:
+                if "barcode" not in direc:
+                    folder_paths.append(direc)
+    return folder_names
+
+
+# Wildcard section; this is how file names will be retrieved
 # commas are added after the file name to "unpack" the tuple that is generated
 BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "/DataFiles/fast5/{fast5_files}.fast5")
 BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fast5_files}.fastq")
 
-# we must remove the file name/extension from barcode samples before guppy_barcoder will accept them
-# BARCODE_SAMPLE_IDENTIFIER = list()
-# for file in BARCODE_SAMPLES:
-#     BARCODE_SAMPLE_IDENTIFIER.append(file.split("/")[0])
-
-# TODO: Create a "Cleanup" class that will delete temp folders as snakemake does not appear to be doing it.
-#   This may be solved by moving temp folders from parameters to output and marking them as temp
 
 rule all:
     input:
@@ -19,57 +24,70 @@ rule all:
         expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=BASECALL_SAMPLES),
 
         # barcode
-        # expand(config['results_folder'] + "Barcode/{fastq_files}.fastq", fastq_files=BARCODE_SAMPLES)
+        expand(config['results_folder'] + "Barcode/{fastq_files}", fastq_files=BARCODE_SAMPLES),
+
+        # merge barcode files
+        expand(config['results_folder'] + ".tempMergeFolder/{folder}", folder=ReturnBarcodeFolderNames)
 
 
 rule basecall:
     input:
-        config['results_folder'] + "DataFiles/fast5/{sample}.fast5"
+        config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5"
     output:
-        output_folder = directory(config['results_folder'] + "Basecall/{sample}"),
+        directory(config['results_folder'] + "Basecall/{fast5_files}"),
     conda:
         "envs/pythonEnv.yaml"
     shell:
         "ls {input}"
 
-        " | "
+        " | "  # pipe results from `ls {input}` into guppy_basecaller
 
+        # we are not giving guppy an input path. It will assume the input from the `ls` command
         "guppy_basecaller "
         "--quiet "
-        "--input_path {output.temp_folder} "
-        "--save_path {output.output_folder} "
+        "--save_path {output} "
         "--config dna_r9.4.1_450bps_fast.cfg "
         "--num_callers 1 "
-        "--cpu_threads_per_caller 2"
+        "--cpu_threads_per_caller 2 "
+
+        " && "
+
+         "echo BASECALL FILE OUTPUT: {output}"
 
 
-# rule barcode:
-#     input:
-#         config['results_folder'] + "Basecall/{sample}.fastq"
-#     output:
-#         output_folder = directory( config['results_folder'] + "Barcode/{sample}.fastq" ),
-#         temp_folder = temp(directory(config['results_folder'] + "Barcode/.temp/{sample}"))
-#     params:
-#         create_temp_files = config['parent_folder'] + "snakemake/scripts/CreateTempFiles.py",
-#         clean_temp_files = config['parent_folder'] + "snakemake/scripts/CleanTempFiles.py",
-#         sample = "{sample}"
-#     conda:
-#         "envs/pythonEnv.yaml"
-#     shell:
-#         "INPUT_FOLDER=`python3 {params.create_temp_files} {input} {output.output_folder} {params.sample}`"
-#
-#         " && "
-#
-#         "guppy_barcoder "
-#         "--quiet "
-#         "--input_path {output.temp_folder} "
-#         "--save_path {output.output_folder} "
-#         "--recursive "
-#         "--config configuration.cfg "
-#         "--worker_threads 12 "
-#         "--barcode_kits EXP-PBC096 "
-#         "--require_barcodes_both_ends"
-#
-#         " && "
-#
-#         "python3 {params.clean_temp_files} {output.output_folder}"
+rule barcode:
+    input:
+        config['results_folder'] + "Basecall/{fastq_files}.fastq"
+    output:
+        directory(config['results_folder'] + "Barcode/{fastq_files}")
+    params:
+        return_input_directories = config['parent_folder'] + "snakemake/scripts/ReturnInputDirectory.py"
+    conda:
+        "envs/pythonEnv.yaml"
+    shell:
+        "INPUT_DIREC=`python3 {params.return_input_directories} {input}`"
+
+        " && "
+
+        "guppy_barcoder "
+        "--quiet "
+        "--input_path $INPUT_DIREC "
+        "--save_path {output} "
+        "--config configuration.cfg "
+        "--worker_threads 2 "
+        "--barcode_kits EXP-PBC096 "
+        "--require_barcodes_both_ends "
+
+        " && "
+
+        "echo BARCODE FILE OUTPUT: {output}"
+
+rule merge_files:
+    input:
+        expand(config['results_folder'] + "Barcode/{folder}", folder=ReturnBarcodeFolderNames)
+    output:
+        temp(directory(config['results_folder'] + ".tempMergeFolder"))
+    params:
+        config['results_folder'] + "Barcode/{folders}"
+    shell:
+        "echo {params}"

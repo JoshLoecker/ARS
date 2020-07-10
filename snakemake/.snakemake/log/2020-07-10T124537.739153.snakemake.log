@@ -1,0 +1,109 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job counts:
+	count	jobs
+	1	all
+	6	barcode
+	7
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 11
+    wildcards: sample=FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 8
+    wildcards: sample=FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 9
+    wildcards: sample=FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 7
+    wildcards: sample=FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 10
+    wildcards: sample=FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 12:45:37 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 12
+    wildcards: sample=FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+[Fri Jul 10 12:45:37 2020]
+Error in rule barcode:
+[Fri Jul 10 12:45:37 2020]
+    jobid: 9
+[Fri Jul 10 12:45:37 2020]
+Error in rule barcode:
+[Fri Jul 10 12:45:37 2020]
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+Error in rule barcode:
+    jobid: 11
+Error in rule barcode:
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    jobid: 12
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    jobid: 8
+
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+
+[Fri Jul 10 12:45:37 2020]
+Error in rule barcode:
+    jobid: 7
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Fri Jul 10 12:45:37 2020]
+Error in rule barcode:
+    jobid: 10
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    shell:
+        echo /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq | guppy_barcoder --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq --save_path /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq--config configuration.cfg --worker_threads 2 --barcode_kits EXP-PBC096 --require_barcodes_both_ends  && echo BARCODE FILE OUTPUT: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/joshl/PycharmProjects/ARS/snakemake/.snakemake/log/2020-07-10T124537.739153.snakemake.log
