@@ -70,22 +70,25 @@ class VSearch:
             None
         """
         for file in self.file_paths:
-            new_save_path = self.__return_new_save_path(file)
-            # TODO: --db flag for a database reference file (use zymo database)
-            message = "vsearch --id {id_rate} --db {reference_file} --usearch_global {input_file} --alnout {output_file}".format(input_file=file,
-                                                                                                                                  reference_file=self.reference_file,
-                                                                                                                                  id_rate=self.match_rate,
-                                                                                                                                  output_file=new_save_path)
-            message = message.split(" ")
-            self.__update_task()
-            print(file)
-            # we are going to clear out the output file so vsearch does not create duplicate results
-            open(file, 'w').close()
+            sam_save_path = self.__return_new_save_path(file, "sam")
+            uc_save_path = self.__return_new_save_path(file, "uc")
 
+            message = "vsearch --usearch_global {input_file} --db {reference_file} --acceptall --samout {sam_file_output} --ucout {uc_file_output}".format(
+                input_file=file,
+                reference_file=self.reference_file,
+                sam_file_output=sam_save_path,
+                uc_file_output=uc_save_path)
+
+            message = message.split(" ")
+            # we are going to clear out the output file so vsearch does not create duplicate results
+            open(sam_save_path, 'w').close()
+            open(uc_save_path, 'w').close()
+
+            self.__update_task()
             command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
             self.__log_to_file(message)
 
-    def __return_new_save_path(self, file_path: str):
+    def __return_new_save_path(self, file_path: str, sam_or_uc_file: str):
         """
         This function will take one a file input path and extract its barcode from the name (i.e. barcode45). It will then concatenate this number to
             self.save_directory, and return the new string. This provides the new save path.
@@ -93,22 +96,32 @@ class VSearch:
         The new file will be created by this function to ensure it can be written to.
         Args:
             file_path: The file path that is going to be analyzed
+            sam_or_uc_file (str): This should be "sam" or "uc" to generate a .sam file, or a .uc file. Files will be placed in appropriate folders under Results/Alignments/vsearch
 
         Returns:
             new_path: This is a file path that points to a valid file. The file will be created.
         """
 
-        # we want to get the last item in the path, the file name
-        # re.split() will split by `_` and `.`, both of which are in the file name. The second to last item is the barcode number (the last item is the file extension)
-        file_name = file_path.split("/")[-1]
-        barcode_number = re.split('[_.]', file_name)[-2]
-        new_file_name = self.save_directory + "vsearch_{0}.txt".format(barcode_number)
+        # use regex to search for `barcode##`. If we cannot find it, try to search for `unclassified`
+        barcode_number = re.search("(barcode[0-9]{2})", file_path)
+        if barcode_number is None:
+            barcode_number = re.search("(unclassified)", file_path)
+        barcode_number = file_path[barcode_number.start():barcode_number.end()]
+
+        if sam_or_uc_file == "sam":
+            folder_path = self.save_directory + "SAM_Files"
+            new_file_name = folder_path + "/vsearch_{0}.sam".format(barcode_number)
+        else:  # sam_ur_uc_file == uc
+            folder_path = self.save_directory + "UC_Files"
+            new_file_name = folder_path + "/vsearch_{0}.uc".format(barcode_number)
+
+        # make the folders
+        os.makedirs(folder_path, exist_ok=True)
 
         # open the file path to ensure it exists
         try:
             open(new_file_name, 'r').close()
         except FileNotFoundError:
-            os.makedirs(self.save_directory, exist_ok=True)
             open(new_file_name, 'w').close()
 
         return new_file_name
@@ -143,7 +156,7 @@ if __name__ == '__main__':
     except NameError:
         input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
         save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/vsearch/"
-        reference_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/silva_alignment_reference.fasta"
+        reference_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
         match_rate = 0.90
 
     print("Starting VSearch Aligner")

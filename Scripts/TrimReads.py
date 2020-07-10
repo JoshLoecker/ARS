@@ -144,7 +144,7 @@ if __name__ == '__main__':
         error_rate = float(snakemake.params.error_rate)
     except NameError:
         input_directory = "/Users/joshl/PycharmProjects/ARS/Results/Barcode/"
-        save_directory = "/Users/joshl/Desktop/TrimOutput/"
+        save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Trim/"
         error_rate = 0.15
 
 

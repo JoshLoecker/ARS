@@ -14,9 +14,6 @@ And using the `os` library within the Files class, like this: Files.os.FUNCTION
 import time
 import os
 import csv
-from pathlib import Path
-import re
-import getpass
 import shutil
 
 
