@@ -1,0 +1,121 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job counts:
+	count	jobs
+	1	all
+	6	basecall
+	7
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_11.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_11/
+    jobid: 2
+    wildcards: sample=FAL03879_67a0761e_11
+
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_539.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_539/
+    jobid: 1
+    wildcards: sample=FAL03879_67a0761e_539
+
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1055.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1055/
+    jobid: 4
+    wildcards: sample=FAL03879_67a0761e_1055
+
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_163.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_163/
+    jobid: 5
+    wildcards: sample=FAL03879_67a0761e_163
+
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_806.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_806/
+    jobid: 6
+    wildcards: sample=FAL03879_67a0761e_806
+
+
+[Fri Jul 10 11:58:29 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1275.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1275/
+    jobid: 3
+    wildcards: sample=FAL03879_67a0761e_1275
+
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 2
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_11/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_11.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_11/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11 FAL03879_67a0761e_11
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_11/
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 1
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_539/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_539.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_539/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539 FAL03879_67a0761e_539
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_539/
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 4
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1055/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1055.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1055/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055 FAL03879_67a0761e_1055
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1055/
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_163/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_163.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_163/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163 FAL03879_67a0761e_163
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_163/
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 6
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_806/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_806.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_806/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806 FAL03879_67a0761e_806
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_806/
+[Fri Jul 10 11:58:29 2020]
+Error in rule basecall:
+    jobid: 3
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1275/
+    shell:
+        python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CreateTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1275.fast5 /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275 && guppy_basecaller --quiet --input_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1275/ --save_path /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275 --config dna_r9.4.1_450bps_fast.cfg --num_callers 1 --cpu_threads_per_caller 2 && python3 /Users/joshl/PycharmProjects/ARS/snakemake/scripts/CleanupTempFiles.py /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275 FAL03879_67a0761e_1275
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job basecall since they might be corrupted:
+/Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1275/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/joshl/PycharmProjects/ARS/snakemake/.snakemake/log/2020-07-10T115829.483809.snakemake.log

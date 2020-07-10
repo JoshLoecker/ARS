@@ -1,0 +1,85 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job counts:
+	count	jobs
+	1	all
+	6	barcode
+	7
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 8
+    wildcards: sample=FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 10
+    wildcards: sample=FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 7
+    wildcards: sample=FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 9
+    wildcards: sample=FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 11
+    wildcards: sample=FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+
+[Fri Jul 10 11:45:08 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0, /Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 12
+    wildcards: sample=FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 54 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Job completed successfully, but some output files are missing. Missing files after 5 seconds:
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 54 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Job completed successfully, but some output files are missing. Missing files after 5 seconds:
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 54 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Job completed successfully, but some output files are missing. Missing files after 5 seconds:
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Waiting at most 5 seconds for missing files.
+MissingOutputException in line 54 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Job completed successfully, but some output files are missing. Missing files after 5 seconds:
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+/Users/joshl/PycharmProjects/ARS/Results/Barcode/.temp/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Waiting at most 5 seconds for missing files.
+Terminating processes on user request, this might take some time.
+Cancelling snakemake on user request.

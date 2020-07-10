@@ -1,0 +1,5 @@
+The flag 'temp' used in rule barcode is only valid for outputs, not inputs.
+Building DAG of jobs...
+MissingInputException in line 54 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Missing input files for rule barcode:
+

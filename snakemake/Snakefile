@@ -19,7 +19,7 @@ rule all:
         expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=BASECALL_SAMPLES),
 
         # barcode
-        expand(config['results_folder'] + "Barcode/{fastq_files}", fastq_files=BARCODE_SAMPLES)
+        # expand(config['results_folder'] + "Barcode/{fastq_files}.fastq", fastq_files=BARCODE_SAMPLES)
 
 
 rule basecall:
@@ -27,54 +27,49 @@ rule basecall:
         config['results_folder'] + "DataFiles/fast5/{sample}.fast5"
     output:
         output_folder = directory(config['results_folder'] + "Basecall/{sample}"),
-        temp_directory = temp( directory(config['results_folder'] + "Basecall/.temp/{sample}/") )
-    params:
-        create_temp_files = config['parent_folder'] + "snakemake/scripts/BasecallCreateTempFiles.py"
     conda:
         "envs/pythonEnv.yaml"
     shell:
-        "python3 {params.create_temp_files} {input} {output.temp_directory}"
+        "ls {input}"
 
-        " && "
+        " | "
 
         "guppy_basecaller "
         "--quiet "
-        "--input_path {output.temp_directory} "
+        "--input_path {output.temp_folder} "
         "--save_path {output.output_folder} "
         "--config dna_r9.4.1_450bps_fast.cfg "
         "--num_callers 1 "
         "--cpu_threads_per_caller 2"
 
-        " && "
 
-        "echo 'Basecall completed on: {input}'"
-
-
-rule barcode:
-    input:
-        config['results_folder'] + "Basecall/{sample}.fastq"
-    output:
-        output_folder = directory( config['results_folder'] + "Barcode/{sample}" ),
-        temp_directory = temp( directory(config['results_folder'] + "Barcode/.temp/{sample}") )
-    params:
-        create_temp_files = config['parent_folder'] + "snakemake/scripts/BarcodeCreateTempFiles.py"
-    conda:
-        "envs/pythonEnv.yaml"
-    shell:
-        "python {params.create_temp_files} {input} {output.output_folder}"
-
-        " && "
-
-        "guppy_barcoder "
-        "--quiet "
-        "--input_path {output.temp_directory} "
-        "--save_path {output.output_folder} "
-        "--recursive "
-        "--config configuration.cfg "
-        "--worker_threads 12 "
-        "--barcode_kits EXP-PBC096 "
-        "--require_barcodes_both_ends"
-
-        " && "
-
-        "echo 'Barcode completed on: {output.temp_directory}'"
+# rule barcode:
+#     input:
+#         config['results_folder'] + "Basecall/{sample}.fastq"
+#     output:
+#         output_folder = directory( config['results_folder'] + "Barcode/{sample}.fastq" ),
+#         temp_folder = temp(directory(config['results_folder'] + "Barcode/.temp/{sample}"))
+#     params:
+#         create_temp_files = config['parent_folder'] + "snakemake/scripts/CreateTempFiles.py",
+#         clean_temp_files = config['parent_folder'] + "snakemake/scripts/CleanTempFiles.py",
+#         sample = "{sample}"
+#     conda:
+#         "envs/pythonEnv.yaml"
+#     shell:
+#         "INPUT_FOLDER=`python3 {params.create_temp_files} {input} {output.output_folder} {params.sample}`"
+#
+#         " && "
+#
+#         "guppy_barcoder "
+#         "--quiet "
+#         "--input_path {output.temp_folder} "
+#         "--save_path {output.output_folder} "
+#         "--recursive "
+#         "--config configuration.cfg "
+#         "--worker_threads 12 "
+#         "--barcode_kits EXP-PBC096 "
+#         "--require_barcodes_both_ends"
+#
+#         " && "
+#
+#         "python3 {params.clean_temp_files} {output.output_folder}"

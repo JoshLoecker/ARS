@@ -1,0 +1,61 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job counts:
+	count	jobs
+	1	all
+	6	basecall
+	7
+
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1275.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1275/
+    jobid: 3
+    wildcards: sample=FAL03879_67a0761e_1275
+
+
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_806.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_806/
+    jobid: 6
+    wildcards: sample=FAL03879_67a0761e_806
+
+
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1055.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_1055/
+    jobid: 4
+    wildcards: sample=FAL03879_67a0761e_1055
+
+
+Waiting at most 5 seconds for missing files.
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_539.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_539/
+    jobid: 1
+    wildcards: sample=FAL03879_67a0761e_539
+
+
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_163.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_163/
+    jobid: 5
+    wildcards: sample=FAL03879_67a0761e_163
+
+
+[Fri Jul 10 12:04:00 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_11.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11, /Users/joshl/PycharmProjects/ARS/Results/Basecall/.temp/FAL03879_67a0761e_11/
+    jobid: 2
+    wildcards: sample=FAL03879_67a0761e_11
+
+Terminating processes on user request, this might take some time.
+Cancelling snakemake on user request.

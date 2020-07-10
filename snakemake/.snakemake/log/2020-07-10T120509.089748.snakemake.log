@@ -1,0 +1,20 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job counts:
+	count	jobs
+	1	all
+	6	basecall
+	7
+
+[Fri Jul 10 12:05:09 2020]
+rule basecall:
+    input: /Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/FAL03879_67a0761e_1275.fast5
+    output: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275
+    jobid: 3
+    wildcards: sample=FAL03879_67a0761e_1275
+
+RuleException in line 25 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+'OutputFiles' object has no attribute 'temp_folder'
