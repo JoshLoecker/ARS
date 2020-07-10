@@ -1,26 +1,80 @@
-"""
-I've made a new branch here so I can focus on testing snakemake without worrying about changes made to the master files
-"""
 configfile: "config.yaml"
 
-# This will get file names
-BASECALL_SAMPLE_NAMES, = glob_wildcards("/Users/joshl/PycharmProjects/ARS/Results/DataFiles/fast5/{fast5_files}.fast5")
+# wildcards. This is how file names will be retrieved
+# commas are added after the file name to "unpack" the tuple that is generated
+BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "/DataFiles/fast5/{fast5_files}.fast5")
+BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fast5_files}.fastq")
+
+# we must remove the file name/extension from barcode samples before guppy_barcoder will accept them
+# BARCODE_SAMPLE_IDENTIFIER = list()
+# for file in BARCODE_SAMPLES:
+#     BARCODE_SAMPLE_IDENTIFIER.append(file.split("/")[0])
+
+# TODO: Create a "Cleanup" class that will delete temp folders as snakemake does not appear to be doing it.
+#   This may be solved by moving temp folders from parameters to output and marking them as temp
 
 rule all:
     input:
         # basecall
-        expand (config['results_folder'] + "Basecall/{sample}", sample=BASECALL_SAMPLE_NAMES )
+        expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=BASECALL_SAMPLES),
+
+        # barcode
+        expand(config['results_folder'] + "Barcode/{fastq_files}", fastq_files=BARCODE_SAMPLES)
+
 
 rule basecall:
     input:
         config['results_folder'] + "DataFiles/fast5/{sample}.fast5"
     output:
-        directory (config['results_folder'] + "Basecall/{sample}" )
+        output_folder = directory(config['results_folder'] + "Basecall/{sample}"),
+        temp_directory = temp( directory(config['results_folder'] + "Basecall/.temp/{sample}/") )
     params:
-        temp_input_directory = temp (directory(config['results_folder'] + "Basecall/.temp/{sample}/") ),
-        run_file = config['parent_folder'] + "snakemake/scripts/test.py"
+        create_temp_files = config['parent_folder'] + "snakemake/scripts/BasecallCreateTempFiles.py"
     conda:
         "envs/pythonEnv.yaml"
     shell:
-        "python {params.run_file}"
+        "python3 {params.create_temp_files} {input} {output.temp_directory}"
 
+        " && "
+
+        "guppy_basecaller "
+        "--quiet "
+        "--input_path {output.temp_directory} "
+        "--save_path {output.output_folder} "
+        "--config dna_r9.4.1_450bps_fast.cfg "
+        "--num_callers 1 "
+        "--cpu_threads_per_caller 2"
+
+        " && "
+
+        "echo 'Basecall completed on: {input}'"
+
+
+rule barcode:
+    input:
+        config['results_folder'] + "Basecall/{sample}.fastq"
+    output:
+        output_folder = directory( config['results_folder'] + "Barcode/{sample}" ),
+        temp_directory = temp( directory(config['results_folder'] + "Barcode/.temp/{sample}") )
+    params:
+        create_temp_files = config['parent_folder'] + "snakemake/scripts/BarcodeCreateTempFiles.py"
+    conda:
+        "envs/pythonEnv.yaml"
+    shell:
+        "python {params.create_temp_files} {input} {output.output_folder}"
+
+        " && "
+
+        "guppy_barcoder "
+        "--quiet "
+        "--input_path {output.temp_directory} "
+        "--save_path {output.output_folder} "
+        "--recursive "
+        "--config configuration.cfg "
+        "--worker_threads 12 "
+        "--barcode_kits EXP-PBC096 "
+        "--require_barcodes_both_ends"
+
+        " && "
+
+        "echo 'Barcode completed on: {output.temp_directory}'"
