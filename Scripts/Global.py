@@ -15,6 +15,7 @@ import time
 import os
 import csv
 import shutil
+import re
 
 
 class Log:
@@ -215,3 +216,22 @@ class FilePathConvertSlash:
     @property
     def new_path(self):
         return self._new_path
+
+
+class BarcodeNumber:
+    def __init__(self, input_file_path):
+        """
+        This function will get the barcode number from the incoming file path
+        Args:
+            input_file_path (str): This is the file path that should be searched for a barcode number
+        """
+
+
+        self._barcode_number = re.search("(barcode)[0-9]{2}", input_file_path)
+        # could not find `barcode##`, search for `unclassified` instead
+        if self._barcode_number is None:
+            self._barcode_number = re.search("(unclassified)", input_file_path)
+
+    @property
+    def return_barcode_number(self):
+        return self._barcode_number
