@@ -1,5 +1,5 @@
-Total reads: 0
-Classified reads: 0
-Unclassified reads: 0
-Percent classified: Total IDS not counted correctly. Divide by zero error
-Percent unclassified: Total IDS not counted correctly. Divide by zero error
+Total reads: 23997
+Classified reads: 15542
+Unclassified reads: 8455
+Percent classified: 64.766%
+Percent unclassified: 35.234%

@@ -157,6 +157,7 @@ class Files:
         Use the dot operator after creating a Files instance to return file paths inside self.input_directory
         Returns: A list of file paths
         """
+        self.__file_paths = sorted(self.__file_paths)
         return self.__file_paths
 
     @property
@@ -212,6 +213,9 @@ class FilePathConvertSlash:
                 self._new_path += "/"
             else:
                 self._new_path += character
+
+        if self.last_character != "/":
+            self._new_path += "/"
 
     @property
     def new_path(self):
