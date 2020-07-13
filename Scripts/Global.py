@@ -15,6 +15,7 @@ import time
 import os
 import csv
 import shutil
+import re
 
 
 class Log:
@@ -156,6 +157,7 @@ class Files:
         Use the dot operator after creating a Files instance to return file paths inside self.input_directory
         Returns: A list of file paths
         """
+        self.__file_paths = sorted(self.__file_paths)
         return self.__file_paths
 
     @property
@@ -212,6 +214,28 @@ class FilePathConvertSlash:
             else:
                 self._new_path += character
 
+        if self.last_character != "/":
+            self._new_path += "/"
+
     @property
     def new_path(self):
         return self._new_path
+
+
+class BarcodeNumber:
+    def __init__(self, input_file_path):
+        """
+        This function will get the barcode number from the incoming file path
+        Args:
+            input_file_path (str): This is the file path that should be searched for a barcode number
+        """
+
+
+        self._barcode_number = re.search("(barcode)[0-9]{2}", input_file_path)
+        # could not find `barcode##`, search for `unclassified` instead
+        if self._barcode_number is None:
+            self._barcode_number = re.search("(unclassified)", input_file_path)
+
+    @property
+    def return_barcode_number(self):
+        return self._barcode_number

@@ -86,14 +86,14 @@ class GuppyAlignment:
             shutil.copy(src=file, dst=self.temp_folder + "/" + new_file_name)
 
             # create the command for guppy_aligner
-            message = "guppy_aligner --input_path {input} --save_path {save} --align_ref {alignment} --verbose_logs".format(
+            message = "guppy_aligner --input_path {input} --save_path {save} --align_ref {alignment}".format(
                 input=self.temp_folder, save=self.sam_files, alignment=self.alignment_reference )
 
             # write to logs the file we are running
             self.__write_log_to_file(file_path=self.input_directory + "/" + file)
 
             """
-            We must split the messgae into a list before subprocess.run() will accept it
+            We must split the message into a list before subprocess.run() will accept it
             Usually we would test if this is being run inside snakemake. However, since we use a workaround to get an alignment summary for each barcode,
                 we are running guppy_aligner on a temporary folder that contains one barcode file. Because of this, we do not want guppy_aligner to show
                 its own output each time it runs on the temp folder. As a result, we will print our own  update statement simply showing what iteration

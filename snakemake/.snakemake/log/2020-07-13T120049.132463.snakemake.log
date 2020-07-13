@@ -1,0 +1,4 @@
+Building DAG of jobs...
+WildcardError in line 89 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Wildcards in input files cannot be determined from output files:
+'folder'

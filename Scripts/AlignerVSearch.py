@@ -1,8 +1,9 @@
+import shutil
 import subprocess
 from subprocess import PIPE
 import re
 import os
-from Global import Log, Update, Files
+from Global import Log, Update, Files, BarcodeNumber
 
 
 class VSearch:
@@ -31,7 +32,11 @@ class VSearch:
 
         self.__check_match_rate()
         self.__collect_files()
-        self.__perform_alignment()
+
+        for file in self.file_paths:
+            fasta_file_path = self.__convert_to_fasta(file)
+            self.__perform_alignment(fasta_file_path)
+            self.__cleanup_paths()
 
     def __check_match_rate(self):
         """
@@ -62,31 +67,59 @@ class VSearch:
         self.file_paths = file_info.file_paths
         self.number_of_files = file_info.total_files
 
-    def __perform_alignment(self):
+    def __convert_to_fasta(self, input_file):
+        """
+        vsearch requires a fasta file, so this method will do exactly that
+        We are using the seqkit toolkit from the following link: https://bioinf.shenwei.me/seqkit/
+
+        Returns: the file path containing the fatsa file
+        """
+
+        # we will first make a temporary directory under the save path
+        temp_directory = self.save_directory + ".temp/"
+        os.makedirs(temp_directory, exist_ok=True)
+
+        # create our fasta file path
+        barcode_number = BarcodeNumber(input_file).return_barcode_number
+
+        # able to find a barcode number
+        if barcode_number is not None:
+
+            #$ create our temporary file path
+            temp_file_path = temp_directory + "{0}.fasta".format(input_file[barcode_number.start():barcode_number.end()])
+
+            # create the fasta file
+            message = "seqkit fq2fa {fastq_file} -o {fasta_file}".format(fastq_file=input_file, fasta_file=temp_file_path)
+            message = message.split(" ")
+            subprocess.call(message)
+
+            return temp_file_path
+        else:
+            return ""
+
+    def __perform_alignment(self, input_file):
         """
         This function will perform vsearch on all files in the self.file_paths list.
-
-        Returns:
-            None
+        Args:
+            input_file (str): This is the exact file path to the input file
         """
-        for file in self.file_paths:
-            sam_save_path = self.__return_new_save_path(file, "sam")
-            uc_save_path = self.__return_new_save_path(file, "uc")
+        sam_save_path = self.__return_new_save_path(input_file, "sam")
+        uc_save_path = self.__return_new_save_path(input_file, "uc")
 
-            message = "vsearch --usearch_global {input_file} --db {reference_file} --acceptall --samout {sam_file_output} --ucout {uc_file_output}".format(
-                input_file=file,
-                reference_file=self.reference_file,
-                sam_file_output=sam_save_path,
-                uc_file_output=uc_save_path)
+        message = "vsearch --usearch_global {input_file} --db {reference_file} --id 0 --samout {sam_file_output} --uc {uc_file_output}".format(
+            input_file=input_file,
+            reference_file=self.reference_file,
+            sam_file_output=sam_save_path,
+            uc_file_output=uc_save_path)
 
-            message = message.split(" ")
-            # we are going to clear out the output file so vsearch does not create duplicate results
-            open(sam_save_path, 'w').close()
-            open(uc_save_path, 'w').close()
+        message = message.split(" ")
+        # we are going to clear out the output file so vsearch does not create duplicate results
+        open(sam_save_path, 'w').close()
+        open(uc_save_path, 'w').close()
 
-            self.__update_task()
-            command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-            self.__log_to_file(message)
+        self.__update_task()
+        command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        self.__log_to_file(message)
 
     def __return_new_save_path(self, file_path: str, sam_or_uc_file: str):
         """
@@ -125,6 +158,15 @@ class VSearch:
             open(new_file_name, 'w').close()
 
         return new_file_name
+
+    def __cleanup_paths(self):
+        """
+        This method will clean up any temp folders that are created during the VSearch alignment process
+        Returns: None
+        """
+
+        temp_directory = self.save_directory + ".temp/"
+        shutil.rmtree(temp_directory)
 
     def __update_task(self):
         """

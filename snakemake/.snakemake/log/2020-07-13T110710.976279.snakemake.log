@@ -1,0 +1,10 @@
+Building DAG of jobs...
+MissingInputException in line 23 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+Missing input files for rule all:
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/unclassified
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_1055
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_1275
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_163
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_539
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_806
+/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/FAL03879_67a0761e_11

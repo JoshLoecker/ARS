@@ -1,5 +1,5 @@
-Total reads: 0
-Classified reads: 0
-Unclassified reads: 0
-Percent classified: No barcode ids. Divide by zero error
-Percent unclassified: No barcode ids. Divide by zero error
+Total reads: 157
+Classified reads: 139
+Unclassified reads: 18
+Percent classified: 88.535%
+Percent unclassified: 11.465%
