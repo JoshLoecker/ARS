@@ -1,0 +1,16 @@
+Building DAG of jobs...
+Job counts:
+	count	jobs
+	1	all
+	6	barcode
+	7
+
+[Mon Jul 13 11:10:47 2020]
+rule barcode:
+    input: /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+    output: /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+    jobid: 11
+    wildcards: fastq_files=FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+
+RuleException in line 61 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
+'Params' object has no attribute 'merge_files'
