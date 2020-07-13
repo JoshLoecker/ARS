@@ -4,11 +4,13 @@ configfile: "config.yaml"
 def ReturnBarcodeFolderNames():
     import os
     folder_names = list()
-    for root, directory, files in os.walk(config['results_folder'] + "Basecall/"):
+    for root, directory, files in os.walk(config['results_folder'] + "Barcode/"):
         for direc in directory:
+        # we are only trying to get the topmost folders (those right below `Barcode/`)
             if "fastq_runid_" not in direc:
                 if "barcode" not in direc:
-                    folder_paths.append(direc)
+                    folder_names.append(direc)
+                    os.makedirs( os.path.join(root, direc), exist_ok=True)
     return folder_names
 
 
@@ -27,14 +29,13 @@ rule all:
         expand(config['results_folder'] + "Barcode/{fastq_files}", fastq_files=BARCODE_SAMPLES),
 
         # merge barcode files
-        expand(config['results_folder'] + ".tempMergeFolder/{folder}", folder=ReturnBarcodeFolderNames)
-
+        config['results_folder'] + "Barcode/merge_complete.txt"
 
 rule basecall:
     input:
         config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5"
     output:
-        directory(config['results_folder'] + "Basecall/{fast5_files}"),
+        directory(config['results_folder'] + "Basecall/{fast5_files}")
     conda:
         "envs/pythonEnv.yaml"
     shell:
@@ -54,14 +55,14 @@ rule basecall:
 
          "echo BASECALL FILE OUTPUT: {output}"
 
-
 rule barcode:
     input:
         config['results_folder'] + "Basecall/{fastq_files}.fastq"
     output:
         directory(config['results_folder'] + "Barcode/{fastq_files}")
     params:
-        return_input_directories = config['parent_folder'] + "snakemake/scripts/ReturnInputDirectory.py"
+        return_input_directories = config['parent_folder'] + "snakemake/scripts/ReturnInputDirectory.py",
+        merge_files = config['parent_folder'] + "snakemake/scripts/MergeFiles.py"
     conda:
         "envs/pythonEnv.yaml"
     shell:
@@ -78,16 +79,17 @@ rule barcode:
         "--barcode_kits EXP-PBC096 "
         "--require_barcodes_both_ends "
 
-        " && "
+        # " && "
+        # "echo BARCODE FILE OUTPUT: {output}"
 
-        "echo BARCODE FILE OUTPUT: {output}"
+         " && "
+
+         "python3 {params.merge_files} {output}"
 
 rule merge_files:
     input:
-        expand(config['results_folder'] + "Barcode/{folder}", folder=ReturnBarcodeFolderNames)
+        expand(config['results_folder'] + "Barcode/{folder}", folder=ReturnBarcodeFolderNames())
     output:
-        temp(directory(config['results_folder'] + ".tempMergeFolder"))
-    params:
-        config['results_folder'] + "Barcode/{folders}"
+        touch(config['results_folder'] + "Barcode/merge_complete.txt")
     shell:
-        "echo {params}"
+        "echo {input}"
