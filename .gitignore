@@ -1,3 +1,4 @@
 /venv/
 /Results/DataFiles/fast5/
 /Results/DataFiles/silva_alignment_reference.fasta
+/snakemake/.snakemake/
