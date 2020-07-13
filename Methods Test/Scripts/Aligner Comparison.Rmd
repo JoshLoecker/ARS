@@ -22,3 +22,55 @@ knitr::opts_chunk$set(message=FALSE,
 					  fig.align='center')
 ```
 
+Selecting an aligner for the MinION metabarcoding pipeline. We're comparing minimap2, guppy_aligner (which is either a custom minimap2 or centrifuge, unclear), and vsearch for now. We want to characterize the tradeoffs between:
+
+1. Sequence retention
+2. Reproducibility
+3. Accuracy
+
+As we adjust the %identity for kept alignments. 
+
+## Load
+```{r}
+libs = c('pROC', 'lattice', 'here', 'magrittr')
+for (i in libs) library(i, character.only=TRUE)
+
+```
+
+```{r}
+in_clas = "collated_primary_alignment_data.tsv"
+in_uncl = "collated_unclassified_alignment_data.tsv"
+in_dir = file.path('Data', 'Pipeline Results', 'Alignments')
+
+new_colnames = c(read_id = 'READ_ID', 
+             alignment_genome = 'MATCH_ID', 
+             quality_score = 'QUALITY_SCORE', 
+             lignment_score = 'ALIGNMENT_SCORE', 
+             per_base_divergence = 'DIVERGENCE', 
+             barcode_number = 'BARCODE', 
+             input_file = 'SOURCE', 
+             alignment_tool = 'ALIGNER')
+process_source = function(x) {
+  x %<>% as.character %>% 
+    strsplit('/') %>% 
+    sapply(function(y) y[length(y)])
+}
+
+clas = here(in_dir, in_clas) %>% 
+  read.table(stringsAsFactors=FALSE, header=TRUE)
+colnames(clas) %<>% new_colnames[.]
+clas$SOURCE %<>% process_source
+
+uncl = here(in_dir, in_uncl) %>% 
+  read.table(stringsAsFactors=FALSE, header=TRUE)
+colnames(uncl) %<>% new_colnames[.]
+uncl$SOURCE %<>% process_source
+```
+
+## Investigate Data
+```{r}
+clas %<>% split(clas$ALIGNER)
+
+
+```
+
