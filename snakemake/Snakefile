@@ -1,41 +1,26 @@
 configfile: "config.yaml"
 
-# functions to return file/folder paths
-def ReturnBarcodeFolderNames():
-    import os
-    folder_names = list()
-    for root, directory, files in os.walk(config['results_folder'] + "Barcode/"):
-        for direc in directory:
-        # we are only trying to get the topmost folders (those right below `Barcode/`)
-            if "fastq_runid_" not in direc:
-                if "barcode" not in direc:
-                    folder_names.append(direc)
-                    os.makedirs( os.path.join(root, direc), exist_ok=True)
-    return folder_names
-
 
 # Wildcard section; this is how file names will be retrieved
 # commas are added after the file name to "unpack" the tuple that is generated
-BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "/DataFiles/fast5/{fast5_files}.fast5")
-BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fast5_files}.fastq")
+BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5")
+BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
 
 
 rule all:
     input:
         # basecall
-        expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=BASECALL_SAMPLES),
+        expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=BASECALL_SAMPLES),
 
         # barcode
-        expand(config['results_folder'] + "Barcode/{fastq_files}", fastq_files=BARCODE_SAMPLES),
+        expand(config['results_folder'] + "Barcode/{fastq_file}", fastq_file=BARCODE_SAMPLES)
 
-        # merge barcode files
-        config['results_folder'] + "Barcode/merge_complete.txt"
 
 rule basecall:
     input:
-        config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5"
+        config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5"
     output:
-        directory(config['results_folder'] + "Basecall/{fast5_files}")
+        directory(config['results_folder'] + "Basecall/{fast5_file}")
     conda:
         "envs/pythonEnv.yaml"
     shell:
@@ -53,15 +38,17 @@ rule basecall:
 
         " && "
 
-         "echo BASECALL FILE OUTPUT: {output}"
+        "echo BASECALL FILE OUTPUT: {output}"
+
 
 rule barcode:
     input:
-        config['results_folder'] + "Basecall/{fastq_files}.fastq"
+        config['results_folder'] + "Basecall/{fastq_file}.fastq"
     output:
-        directory(config['results_folder'] + "Barcode/{fastq_files}")
+        directory(config['results_folder'] + "Barcode/{fastq_file}")
     params:
         return_input_directories = config['parent_folder'] + "snakemake/scripts/ReturnInputDirectory.py",
+        return_output_directories = config['parent_folder'] + "snakemake/scripts/ReturnBarcodeOutputDirectory.py",
         merge_files = config['parent_folder'] + "snakemake/scripts/MergeFiles.py"
     conda:
         "envs/pythonEnv.yaml"
@@ -79,16 +66,14 @@ rule barcode:
         "--barcode_kits EXP-PBC096 "
         "--require_barcodes_both_ends "
 
-        # " && "
-        # "echo BARCODE FILE OUTPUT: {output}"
+        " && "
 
-         " && "
+        "echo BARCODE FILE OUTPUT: {output}"
 
-         "python3 {params.merge_files} {output}"
 
 rule merge_files:
     input:
-        expand(config['results_folder'] + "Barcode/{folder}", folder=ReturnBarcodeFolderNames())
+        config['results_folder'] + "Alignments/guppy/collated_primary_alignment_data.csv"
     output:
         touch(config['results_folder'] + "Barcode/merge_complete.txt")
     shell:

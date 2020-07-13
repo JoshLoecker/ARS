@@ -1,0 +1,11 @@
+2020-07-13 16:46:52.945700 [guppy/message] ONT Guppy barcoding software version 4.0.11+f1071ce
+input path:         /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055
+save path:          /Users/joshl/PycharmProjects/ARS/Results/Barcode/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0
+arrangement files:  barcode_arrs_pcr96.cfg 
+min. score front:   60
+min. score rear:    60
+
+2020-07-13 16:46:52.946365 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-13 16:46:52.946590 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-13 16:47:05.678554 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-13 16:47:05.678646 [guppy/message] Done in 12733 ms.
