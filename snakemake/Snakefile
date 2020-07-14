@@ -5,7 +5,7 @@ configfile: "config.yaml"
 # commas are added after the file name to "unpack" the tuple that is generated
 BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5")
 BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
-
+MERGE_FILES_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
 
 rule all:
     input:
@@ -13,8 +13,10 @@ rule all:
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=BASECALL_SAMPLES),
 
         # barcode
-        expand(config['results_folder'] + "Barcode/{fastq_file}", fastq_file=BARCODE_SAMPLES)
+        expand(config['results_folder'] + "Barcode/{fastq_file}", fastq_file=BARCODE_SAMPLES),
 
+        # merge files
+        config['results_folder'] + "Barcode/merged_files.txt"
 
 rule basecall:
     input:
@@ -45,7 +47,7 @@ rule barcode:
     input:
         config['results_folder'] + "Basecall/{fastq_file}.fastq"
     output:
-        directory(config['results_folder'] + "Barcode/{fastq_file}")
+        directory = directory(config['results_folder'] + "Barcode/{fastq_file}")
     params:
         return_input_directories = config['parent_folder'] + "snakemake/scripts/ReturnInputDirectory.py",
         return_output_directories = config['parent_folder'] + "snakemake/scripts/ReturnBarcodeOutputDirectory.py",
@@ -60,7 +62,7 @@ rule barcode:
         "guppy_barcoder "
         "--quiet "
         "--input_path $INPUT_DIREC "
-        "--save_path {output} "
+        "--save_path {output.directory} "
         "--config configuration.cfg "
         "--worker_threads 2 "
         "--barcode_kits EXP-PBC096 "
@@ -68,13 +70,15 @@ rule barcode:
 
         " && "
 
-        "echo BARCODE FILE OUTPUT: {output}"
+        "echo BARCODE FILE OUTPUT: {output.directory}"
 
 
 rule merge_files:
-    input:
-        config['results_folder'] + "Alignments/guppy/collated_primary_alignment_data.csv"
     output:
-        touch(config['results_folder'] + "Barcode/merge_complete.txt")
-    shell:
-        "echo {input}"
+        # TODO: Remove the `temp()` flag
+        temp(touch(config['results_folder'] + "Barcode/merged_files.txt"))
+    params:
+        samples = BARCODE_SAMPLES,
+        barcode_folder = config['results_folder'] + "Barcode/"
+    script:
+        "scripts/MergeFiles.py"
