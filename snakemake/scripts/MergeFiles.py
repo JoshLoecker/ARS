@@ -1,69 +1,67 @@
-import re
+# import libraries needed to find files, search for names, and move files
 import os
+import shutil
+import re
 
-class MergeFiles:
-    def __init__(self, input_sample_folders, barcode_parent_folder):
-        # we want to build a path to each of the parent directories
-        #   this concatenates the barcode_parent_folder with one input_sample_folder
-        self.input_sample_folders = input_sample_folders
-        self.barcode_parent_folder = barcode_parent_folder
-        self.barcode_parent_paths = []
-        for item in self.input_sample_folders:
-            self.barcode_parent_paths.append(self.barcode_parent_folder + item)
+# get our parent folder so we don't have to type `rules.merge_files.input` every time
+#parent_folder = str(rules.merge_files.input)
+parent_folder = "/Users/joshl/PycharmProjects/ARS/Results/Barcode/"
 
-        # now, we want to get the path of each barcode directory from each of the barcode_parent_paths
-        #   we will create a dictionary containing each barcode, along with each of their paths
-        #   one path will exist for each basecall sample ran
-        self.all_barcode_paths_dict = dict()
-        for item in self.barcode_parent_paths:
-            for root, directories, files in os.walk(item):
+# iterate through each directory in our parent folder
+for root, directories, files in os.walk(parent_folder):
+    for directory in directories:
 
-                # we want to add each barcode as a key one time to the dictionary
-                for direc in directories:
-                    if "barcode" in direc:
-                        key = direc
-                    elif "unclassified" in direc:
-                        key = direc
-                    else:
-                        key = None
+        # get the number of files in the directory
+        current_dir_path = os.path.join(root, directory)
+        number_of_files = len(os.listdir(current_dir_path))
 
-                    # we have found a barcode
-                    if key is not None:
-                        # key is not already present, add it to the dictionary
-                        if key not in self.all_barcode_paths_dict.keys():
-                            self.all_barcode_paths_dict[key] = ''
+        # get the old file path
+        current_file_path = current_dir_path + "/" + str(os.listdir(current_dir_path)[0])
 
-                # now we want to iterate through each file path and add its path to the appropriate barcode number
-                for file in files:
-                    full_file_path = os.path.join(root, file)
+        # find its barcode number (to set a new name)
+        barcode_number = re.search("(barcode)[0-9]{2}", current_file_path)
+        if barcode_number is None:
+            barcode_number = re.search("(unclassified)", current_file_path)
+        barcode_number = current_file_path[barcode_number.start():barcode_number.end()]
 
+        # create our new file path
+        new_file_path = current_dir_path + "/merged_{0}.fastq".format(barcode_number)
 
-    def __find_keys(self):
+        # we only need to rename the file (technically move it) from the old path to the new path
+        # both paths are in the same folder, just different names
+        if number_of_files < 2:
 
+            # move the file to its new location
+            shutil.move(current_file_path, new_file_path)
 
-    def add_values_to_dict(self, key):
+        # we need to concatenate if there are 2 or more files in the directory
+        else:
+            # first get the files we need to concatenate
+            files_to_concatenate = os.listdir(current_dir_path)
 
+            try:
+                open(new_file_path, 'r').close()
+            # we did not find the file, create one instead
+            except FileNotFoundError:
+                open(new_file_path, 'w').close()
 
+            # now open the new file as output_stream to write data
+            with open(new_file_path, 'a') as output_stream:
 
-if __name__ == '__main__':
+                # iterate through each of our files to concatenate
+                for file in files_to_concatenate:
 
-    try:
-        # list of folders (FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0/)
-        input_sample_folders = snakemake.params.samples
+                    # create our input file path
+                    input_file_path = current_dir_path + "/" + file
 
-        # results folder (/Users/joshl/PycharmProjects/ARS/Results/Barcode/)
-        barcode_parent_folder = snakemake.params.barcode_folder
-    except NameError:
-        input_sample_folders = [
-            'FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0',
-            'FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0',
-            'FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0',
-            'FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0',
-            'FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0',
-            'FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0'
-        ]
-        barcode_parent_folder = "/Users/joshl/PycharmProjects/ARS/Results/Barcode/"
+                    # now open our input file path as input_stream so we can read data
+                    with open(input_file_path, 'r') as input_stream:
 
-    MergeFiles(input_sample_folders, barcode_parent_folder)
+                        # iterate through each line in the file and write it to our new file
+                        for each_line in input_stream:
+                            output_stream.write(each_line)
 
-
+            # we can now delete the old files
+            for file in files_to_concatenate:
+                delete_file_path = current_dir_path + "/" + file
+                os.remove(delete_file_path)
