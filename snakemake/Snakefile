@@ -18,9 +18,8 @@ ReturnBarcodeTextFileNames()
 # Wildcard section; this is how file names will be retrieved
 # commas are added after the file name to "unpack" the tuple that is generated
 BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5")
-BARCODE_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_files}.fastq")
 BARCODE_FILE_NUMBER = ReturnBarcodeTextFileNames()
-MERGE_FILES_SAMPLES, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
+TRIM_SAMPLES, = glob_wildcards(config['results_folder'] + "Barcode/{fastq_file}.fastq")
 
 rule all:
     input:
@@ -31,7 +30,10 @@ rule all:
         expand(config['results_folder'] + "Barcode/basecall_id_{run_id}_delete_to_run_again", run_id=BARCODE_FILE_NUMBER),
 
         # merge files
-        config['results_folder'] + "Barcode/delete_this_to_merge_files_again"
+        config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again",
+
+        # trim reads
+        # expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES)
 
 rule basecall:
     input:
@@ -102,12 +104,12 @@ To get around this, we are going to simply create a file when this rule is compl
     occurred
 This rule will not show the total number of files that need to be concatenatd, as this process is very fast
 """
+# TODO: Files are not always merged
 rule merge_files:
     input:
         config['results_folder'] + "Barcode"
     output:
-        # TODO: Remove the `temp()` flag
-        touch(config['results_folder'] + "Barcode/delete_this_to_merge_files_again")
+        touch(config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again")
     run:
         # import libraries needed to find files, search for names, and move files
         import os
@@ -116,7 +118,6 @@ rule merge_files:
 
         # get our parent folder so we don't have to type `rules.merge_files.input` every time
         parent_folder = str(rules.merge_files.input)
-        print(parent_folder)
 
         # iterate through each directory in our parent folder
         for root, directories, files in os.walk(parent_folder):
@@ -127,23 +128,24 @@ rule merge_files:
                 number_of_files = len(os.listdir(current_dir_path))
 
                 # get the old file path
-                current_file_path = current_dir_path + "/" + str(os.listdir(current_dir_path)[0])
+                old_file_path = current_dir_path + "/" + str(os.listdir(current_dir_path)[0])
 
                 # find its barcode number (to set a new name)
-                barcode_number = re.search("(barcode)[0-9]{2}", current_file_path)
+                barcode_number = re.search("(barcode)[0-9]{2}", old_file_path)
                 if barcode_number is None:
-                    barcode_number = re.search("(unclassified)", current_file_path)
-                barcode_number = current_file_path[barcode_number.start():barcode_number.end()]
+                    barcode_number = re.search("(unclassified)", old_file_path)
+                barcode_number = old_file_path[barcode_number.start():barcode_number.end()]
 
                 # create our new file path
-                new_file_path = current_dir_path + "/merged_{0}.fastq".format(barcode_number)
+                new_file_path = current_dir_path + "/{0}.merged.fastq".format(barcode_number)
 
                 # we only need to rename the file (technically move it) from the old path to the new path
                 # both paths are in the same folder, just different names
                 if number_of_files < 2:
 
                     # move the file to its new location
-                    shutil.move(current_file_path, new_file_path)
+                    shutil.copy2(old_file_path, new_file_path)
+                    os.remove(old_file_path)
 
                 # we need to concatenate if there are 2 or more files in the directory
                 else:
@@ -176,3 +178,24 @@ rule merge_files:
                     for file in files_to_concatenate:
                         delete_file_path = current_dir_path + "/" + file
                         os.remove(delete_file_path)
+
+# TODO: Cutadapt throws error talking about file extensions
+rule trim_reads:
+    input:
+        config['results_folder'] + "Barcode/{fastq_file}.fastq"
+    output:
+        config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq"
+    params:
+        three_prime_adapter = "ACTTGCCTGTCGCTCTATCTTCTACCTTGTTACGACTT",
+        five_prime_adapter = "TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG",
+        error_rate = 0.15
+    shell:
+        "cutadapt "
+        "--revcomp "
+        # "--quiet "
+        "--cores 0 "  # auto assign cores
+        "--adapter {params.three_prime_adapter} "
+        "--front {params.five_prime_adapter} "
+        "--error-rate {params.error_rate} "
+        "--output {output} "
+        "{input}"
