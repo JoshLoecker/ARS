@@ -42,7 +42,16 @@ rule all:
         expand(config['results_folder'] + "NanoQC/{barcode_folder}/{barcode_folder}.nanoqc.html", barcode_folder=POST_TRIM_FOLDER_NAMES),
 
         # NanoFilt
-        expand(config['results_folder'] + "NanoFilt/{barcode_folder}.nanofilt.fastq", barcode_folder=POST_TRIM_FOLDER_NAMES)
+        expand(config['results_folder'] + "NanoFilt/{barcode_folder}/{barcode_folder}.nanofilt.fastq", barcode_folder=POST_TRIM_FOLDER_NAMES),
+
+        # guppy aligner
+        expand(config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv", barcode_number=POST_TRIM_FOLDER_NAMES),
+        expand(config['results_folder'] + "Alignments/guppy/logs/{barcode_number}.guppy.log", barcode_number=POST_TRIM_FOLDER_NAMES),
+        expand(config['results_folder'] + "Alignments/guppy/sam_files/{barcode_number}.guppy.sam", barcode_number=POST_TRIM_FOLDER_NAMES),
+        expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt", barcode_number=POST_TRIM_FOLDER_NAMES),
+
+        # collate guppy simple simple statistics
+        # config['results_folder'] + "Alignments/guppy/collated_simple_statistics.txt"
 
 rule basecall:
     input:
@@ -233,6 +242,59 @@ rule NanoFilt:
     input:
         config['results_folder'] + "Trim/{barcode_folder}/{barcode_folder}.merged.trimmed.fastq"
     output:
-        config['results_folder'] + "NanoFilt/{barcode_folder}.nanofilt.fastq"
+        config['results_folder'] + "NanoFilt/{barcode_folder}/{barcode_folder}.nanofilt.fastq"
     shell:
         "nanofilt {input} > {output}"
+
+"""
+Much like guppy_barcoder, guppy_aligner prefers to use folders as input as well. We are going to use a direct copy from NanoFilt's output to this input
+    so snakemake knows that it must wait for NanoFilt to be finished before it can run guppy_aligner
+However, for our output, we are going to use a temporary input and output path so that each instance of guppy_aligner that is created is only given one file,
+    as opposed to the entire NanoFilt directory. This will ensure that only one instance of the guppy_aligner rule processes one file.
+We will then move our outputs after each instance of the rule is run, and delete the temporary output folder (.temp_output/barcode##)
+"""
+rule guppy_aligner:
+    input:
+        config['results_folder'] + "NanoFilt/{barcode_number}/{barcode_number}.nanofilt.fastq"
+    output:
+        alignment_summary = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv",
+        log_files = config['results_folder'] + "Alignments/guppy/logs/{barcode_number}.guppy.log",
+        sam_files = config['results_folder'] + "Alignments/guppy/sam_files/{barcode_number}.guppy.sam",
+        simple_statistics = config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt",
+        temp_output = temp(directory(config['results_folder'] + "Alignments/guppy/.temp_output/{barcode_number}"))
+    params:
+        temp_input = config['results_folder'] + "NanoFilt/{barcode_number}",
+        alignment_reference_location = config['alignment_reference_file'],
+        barcode_number = '{barcode_number}'
+    shell:
+        "rm -rf {output.temp_output}"  # remove current directories otherwise guppy is upset
+
+        " && "
+
+        # run guppy aligner with the following parameters
+        "guppy_aligner "
+        "--quiet "
+        "--input_path {params.temp_input} "
+        "--save_path {output.temp_output} "
+        "--align_ref {params.alignment_reference_location} "
+
+        " && "
+
+        # move output files from .temp_output to their respective folders
+        "mv {output.temp_output}/*.txt {output.alignment_summary}"
+        " && "
+        "mv {output.temp_output}/*.sam {output.sam_files}"
+        " && "
+        "mv {output.temp_output}/*.log {output.log_files}"
+
+        # TODO: Determine a method of creating simple_statistics output
+        " && "
+        "touch {output.simple_statistics}"
+
+rule guppy_aligner_collated_simple_statistics:
+    input:
+        expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt", barcode_number=POST_TRIM_FOLDER_NAMES)
+    output:
+        config['results_folder'] + "Alignments/guppy/collated_simple_statistics.txt"
+    shell:
+        "touch {output}"
