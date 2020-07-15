@@ -48,10 +48,10 @@ rule all:
         expand(config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv", barcode_number=POST_TRIM_FOLDER_NAMES),
         expand(config['results_folder'] + "Alignments/guppy/logs/{barcode_number}.guppy.log", barcode_number=POST_TRIM_FOLDER_NAMES),
         expand(config['results_folder'] + "Alignments/guppy/sam_files/{barcode_number}.guppy.sam", barcode_number=POST_TRIM_FOLDER_NAMES),
-        expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt", barcode_number=POST_TRIM_FOLDER_NAMES),
 
-        # collate guppy simple simple statistics
-        # config['results_folder'] + "Alignments/guppy/collated_simple_statistics.txt"
+        # create simple statistics
+        expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES),
+
 
 rule basecall:
     input:
@@ -260,12 +260,12 @@ rule guppy_aligner:
         alignment_summary = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv",
         log_files = config['results_folder'] + "Alignments/guppy/logs/{barcode_number}.guppy.log",
         sam_files = config['results_folder'] + "Alignments/guppy/sam_files/{barcode_number}.guppy.sam",
-        simple_statistics = config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt",
-        temp_output = temp(directory(config['results_folder'] + "Alignments/guppy/.temp_output/{barcode_number}"))
+        temp_output = temp(directory(config['results_folder'] + "Alignments/guppy/.temp_output/{barcode_number}")),
     params:
         temp_input = config['results_folder'] + "NanoFilt/{barcode_number}",
         alignment_reference_location = config['alignment_reference_file'],
-        barcode_number = '{barcode_number}'
+        barcode_number = '{barcode_number}',
+        simple_statistics = config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv"
     shell:
         "rm -rf {output.temp_output}"  # remove current directories otherwise guppy is upset
 
@@ -286,10 +286,60 @@ rule guppy_aligner:
         "mv {output.temp_output}/*.sam {output.sam_files}"
         " && "
         "mv {output.temp_output}/*.log {output.log_files}"
-
-        # TODO: Determine a method of creating simple_statistics output
         " && "
-        "touch {output.simple_statistics}"
+        "touch {params.simple_statistics}"
+
+rule guppy_write_simple_statistics:
+    input:
+        input_file = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv"
+    output:
+        statistics_path = config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv"
+    run:
+        import csv
+        import pandas as pd
+        import numpy as np
+
+        id_classified = 0
+        id_unclassified = 0
+
+        input_file = rules.guppy_write_simple_statistics.input.input_file
+
+        data_frame = pd.read_csv(filepath_or_buffer=input_file,
+                                 sep="\t",
+                                 header=0,
+                                 dtype={
+                                     "read_id": np.str,
+                                     "alignment_genome": np.str,
+                                     "alignment_genome_start": np.int,
+                                     "alignment_genome_end": np.int,
+                                     "alignment_strand_start": np.int,
+                                     "alignment_strand_end": np.int,
+                                     "alignment_num_insertions": np.int,
+                                     "alignment_num_deletions": np.int,
+                                     "alignment_num_aligned": np.int,
+                                     "alignment_num_correct": np.int,
+                                     "alignment_identity": np.float,
+                                     "alignment_accuracy": np.float,
+                                     "alignment_score": np.int})
+
+        for row in data_frame['alignment_genome']:
+            if row == "*":
+                id_unclassified += 1
+            else:
+                id_classified += 1
+
+        barcode_reads = id_classified + id_unclassified
+        percent_classified = "{:.3f}".format( (id_classified / barcode_reads) * 100 )
+        percent_unclassified = "{:.3f}".format( (id_unclassified / barcode_reads) * 100 )
+
+        row_one = ["barcode_reads", "classified_reads", "unclassified_reads", "percent_classified", "percent_unclassified"]
+        row_two = [barcode_reads, id_classified, id_unclassified, percent_classified, percent_unclassified]
+
+        with open("{output.statistics_path}", 'w') as output_stream:
+            csv_writer = csv.writer(output_stream, delimiter="\t")
+            csv_writer.writerow(row_one)
+            csv_writer.writerow(row_two)
+
 
 rule guppy_aligner_collated_simple_statistics:
     input:

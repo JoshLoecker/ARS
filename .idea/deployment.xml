@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Elements" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" traceLevel="BRIEF">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Elements" overwriteAll="false" deleteMissingItems="true" createEmptyFolders="true" traceLevel="BRIEF" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
     <serverData>
       <paths name="Elements">
         <serverdata>
