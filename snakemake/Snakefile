@@ -33,7 +33,7 @@ rule all:
         config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again",
 
         # trim reads
-        # expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES)
+        expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES)
 
 rule basecall:
     input:
@@ -112,7 +112,6 @@ rule merge_files:
     output:
         touch(config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again")
     run:
-        print("Starting to merge")
         # import libraries needed to find files, search for names, and move files
         import os
         import shutil
@@ -194,7 +193,7 @@ rule trim_reads:
     shell:
         "cutadapt "
         "--revcomp "
-        # "--quiet "
+        "--quiet "
         "--cores 0 "  # auto assign cores
         "--adapter {params.three_prime_adapter} "
         "--front {params.five_prime_adapter} "
