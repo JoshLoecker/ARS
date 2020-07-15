@@ -20,7 +20,7 @@ BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{
 BARCODE_FILE_NUMBER = ReturnBarcodeTextFileNames()
 TRIM_SAMPLES, = glob_wildcards(config['results_folder'] + "Barcode/{fastq_file}.fastq")
 NANOQC_SAMPLES, = glob_wildcards(config['results_folder'] + "Trim/{fastq_file}.fastq")
-NANOQC_FOLDER_NAMES = os.listdir(config['results_folder'] + "Trim")
+POST_TRIM_FOLDER_NAMES = os.listdir(config['results_folder'] + "Trim")
 
 
 rule all:
@@ -38,8 +38,11 @@ rule all:
         expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES),
 
         # NanoQC
-        expand(config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folder}.log", barcode_folder=NANOQC_FOLDER_NAMES),
-        expand(config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folder}.html", barcode_folder=NANOQC_FOLDER_NAMES)
+        expand(config['results_folder'] + "NanoQC/{barcode_folder}/{barcode_folder}.nanoqc.log", barcode_folder=POST_TRIM_FOLDER_NAMES),
+        expand(config['results_folder'] + "NanoQC/{barcode_folder}/{barcode_folder}.nanoqc.html", barcode_folder=POST_TRIM_FOLDER_NAMES),
+
+        # NanoFilt
+        expand(config['results_folder'] + "NanoFilt/{barcode_folder}.nanofilt.fastq", barcode_folder=POST_TRIM_FOLDER_NAMES)
 
 rule basecall:
     input:
@@ -188,7 +191,7 @@ rule merge_files:
 
 rule trim_reads:
     input:
-        config['results_folder'] + "Barcode/{fastq_file}.fastq"
+        config['results_folder'] + "Barcode/{fastq_file}.merged.fastq"
     output:
         config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq"
     params:
@@ -206,13 +209,12 @@ rule trim_reads:
         "--output {output} "
         "{input}"
 
-# TODO: snakemake is not seeing NanoQC output, or NanoQC is not able to make some output. Not sure why
 rule NanoQC:
     input:
         config['results_folder'] + "Trim/{barcode_folder}/{barcode_folder}.merged.trimmed.fastq"
     output:
-        log_file = config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folders}.log",
-        html_file = config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folders}.html"
+        log_file = config['results_folder'] + "NanoQC/{barcode_folder}/{barcode_folder}.nanoqc.log",
+        html_file = config['results_folder'] + "NanoQC/{barcode_folder}/{barcode_folder}.nanoqc.html"
     params:
         output_dir = config['results_folder'] + "NanoQC/{barcode_folder}",
         barcode_folder = "{barcode_folder}"
@@ -223,6 +225,14 @@ rule NanoQC:
 
         " && "
 
-        "mv {params.output_dir}/nanoQC.html {params.output_dir}/NanoQC_{params.barcode_folder}.html"
+        "mv {params.output_dir}/nanoQC.html {output.html_file}"
         " && "
-        "mv {params.output_dir}/NanoQC.log {params.output_dir}/NanoQC_{params.barcode_folder}.log"
+        "mv {params.output_dir}/NanoQC.log {output.log_file}"
+
+rule NanoFilt:
+    input:
+        config['results_folder'] + "Trim/{barcode_folder}/{barcode_folder}.merged.trimmed.fastq"
+    output:
+        config['results_folder'] + "NanoFilt/{barcode_folder}.nanofilt.fastq"
+    shell:
+        "nanofilt {input} > {output}"
