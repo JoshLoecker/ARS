@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 configfile: "config.yaml"
 
 def ReturnBarcodeTextFileNames():
@@ -13,13 +14,14 @@ def ReturnBarcodeTextFileNames():
             folder_numbers.append(folder_number)
     return folder_numbers
 
-ReturnBarcodeTextFileNames()
-
 # Wildcard section; this is how file names will be retrieved
 # commas are added after the file name to "unpack" the tuple that is generated
 BASECALL_SAMPLES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5")
 BARCODE_FILE_NUMBER = ReturnBarcodeTextFileNames()
 TRIM_SAMPLES, = glob_wildcards(config['results_folder'] + "Barcode/{fastq_file}.fastq")
+NANOQC_SAMPLES, = glob_wildcards(config['results_folder'] + "Trim/{fastq_file}.fastq")
+NANOQC_FOLDER_NAMES = os.listdir(config['results_folder'] + "Trim")
+
 
 rule all:
     input:
@@ -33,7 +35,11 @@ rule all:
         config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again",
 
         # trim reads
-        expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES)
+        expand(config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq", fastq_file=TRIM_SAMPLES),
+
+        # NanoQC
+        expand(config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folder}.log", barcode_folder=NANOQC_FOLDER_NAMES),
+        expand(config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folder}.html", barcode_folder=NANOQC_FOLDER_NAMES)
 
 rule basecall:
     input:
@@ -180,7 +186,6 @@ rule merge_files:
                         delete_file_path = current_dir_path + "/" + file
                         os.remove(delete_file_path)
 
-# TODO: Cutadapt throws error talking about file extensions
 rule trim_reads:
     input:
         config['results_folder'] + "Barcode/{fastq_file}.fastq"
@@ -200,3 +205,24 @@ rule trim_reads:
         "--error-rate {params.error_rate} "
         "--output {output} "
         "{input}"
+
+# TODO: snakemake is not seeing NanoQC output, or NanoQC is not able to make some output. Not sure why
+rule NanoQC:
+    input:
+        config['results_folder'] + "Trim/{barcode_folder}/{barcode_folder}.merged.trimmed.fastq"
+    output:
+        log_file = config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folders}.log",
+        html_file = config['results_folder'] + "NanoQC/{barcode_folder}/NanoQC_{barcode_folders}.html"
+    params:
+        output_dir = config['results_folder'] + "NanoQC/{barcode_folder}",
+        barcode_folder = "{barcode_folder}"
+    shell:
+        "nanoqc "
+        "-o {params.output_dir} "
+        "{input} "
+
+        " && "
+
+        "mv {params.output_dir}/nanoQC.html {params.output_dir}/NanoQC_{params.barcode_folder}.html"
+        " && "
+        "mv {params.output_dir}/NanoQC.log {params.output_dir}/NanoQC_{params.barcode_folder}.log"
