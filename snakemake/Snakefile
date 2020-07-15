@@ -102,22 +102,24 @@ As in the `rule barcode`, a similar practice is happening here
 It is not possible to use the same input and output within a rule in snakemake, otherwise a cyclic dependency occurs
 To get around this, we are going to simply create a file when this rule is complete, indicating that merging has
     occurred
-This rule will not show the total number of files that need to be concatenatd, as this process is very fast
+This rule will not show the total number of files that need to be concatenated, as this process is very fast
+We are also using the output from `rule barcode` as input here so this rule does not complete before barcoding is done
 """
-# TODO: Files are not always merged
 rule merge_files:
     input:
-        config['results_folder'] + "Barcode"
+        barcode_folders = config['results_folder'] + "Barcode",
+        barcode_output_status = expand(config['results_folder'] + "Barcode/basecall_id_{run_id}_delete_to_run_again", run_id=BARCODE_FILE_NUMBER)
     output:
         touch(config['results_folder'] + "Barcode/merge_files_delete_this_to_merge_again")
     run:
+        print("Starting to merge")
         # import libraries needed to find files, search for names, and move files
         import os
         import shutil
         import re
 
         # get our parent folder so we don't have to type `rules.merge_files.input` every time
-        parent_folder = str(rules.merge_files.input)
+        parent_folder = str(rules.merge_files.input.barcode_folders)
 
         # iterate through each directory in our parent folder
         for root, directories, files in os.walk(parent_folder):

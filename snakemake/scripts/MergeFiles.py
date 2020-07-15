@@ -4,8 +4,7 @@ import shutil
 import re
 
 # get our parent folder so we don't have to type `rules.merge_files.input` every time
-#parent_folder = str(rules.merge_files.input)
-parent_folder = "/Users/joshl/PycharmProjects/ARS/Results/Barcode/"
+parent_folder = "/Users/joshl/Desktop/BarcodeTest"
 
 # iterate through each directory in our parent folder
 for root, directories, files in os.walk(parent_folder):
@@ -16,23 +15,24 @@ for root, directories, files in os.walk(parent_folder):
         number_of_files = len(os.listdir(current_dir_path))
 
         # get the old file path
-        current_file_path = current_dir_path + "/" + str(os.listdir(current_dir_path)[0])
+        old_file_path = current_dir_path + "/" + str(os.listdir(current_dir_path)[0])
 
         # find its barcode number (to set a new name)
-        barcode_number = re.search("(barcode)[0-9]{2}", current_file_path)
+        barcode_number = re.search("(barcode)[0-9]{2}", old_file_path)
         if barcode_number is None:
-            barcode_number = re.search("(unclassified)", current_file_path)
-        barcode_number = current_file_path[barcode_number.start():barcode_number.end()]
+            barcode_number = re.search("(unclassified)", old_file_path)
+        barcode_number = old_file_path[barcode_number.start():barcode_number.end()]
 
         # create our new file path
-        new_file_path = current_dir_path + "/merged_{0}.fastq".format(barcode_number)
+        new_file_path = current_dir_path + "/{0}.merged.fastq".format(barcode_number)
 
         # we only need to rename the file (technically move it) from the old path to the new path
         # both paths are in the same folder, just different names
         if number_of_files < 2:
 
             # move the file to its new location
-            shutil.move(current_file_path, new_file_path)
+            shutil.copy2(old_file_path, new_file_path)
+            os.remove(old_file_path)
 
         # we need to concatenate if there are 2 or more files in the directory
         else:
