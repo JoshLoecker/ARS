@@ -74,6 +74,11 @@ rule all:
         expand(config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.txt", barcode_number=POST_TRIM_FOLDER_NAMES),
         expand(config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.input.fasta", barcode_number=POST_TRIM_FOLDER_NAMES),
 
+        # counting reads
+        config['results_folder']  + "CountReads/merge_files_count_reads.csv",
+        config['results_folder'] + "CountReads/trim_count_reads.csv",
+        config['results_folder'] + "CountReads/nanofilt_count_reads.csv"
+
 rule basecall:
     input:
         config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5"
@@ -462,3 +467,33 @@ rule vsearch:
         "--quiet "
         "--db {params.reference_file} "
         "--samout {output.sam_output_file}"
+
+rule count_barcode_reads:
+    input:
+        expand(config['results_folder'] + "Barcode/{barcode_number}/{barcode_number}.merged.fastq", barcode_number=POST_TRIM_FOLDER_NAMES)
+    output:
+        config['results_folder']  + "CountReads/merge_files_count_reads.csv"
+    shell:
+        "echo {input}"
+        " && "
+        "echo {output}"
+
+rule count_trimmed_reads:
+    input:
+        expand(config['results_folder'] + "Trim/{barcode_number}/{barcode_number}.merged.trimmed.fastq", barcode_number=POST_TRIM_FOLDER_NAMES)
+    output:
+        config['results_folder'] + "CountReads/trim_count_reads.csv"
+    shell:
+        "echo {input}"
+        " && "
+        "echo {output}"
+
+rule count_nanofilt_reads:
+    input:
+        expand(config['results_folder'] + "NanoFilt/{barcode_number}/{barcode_number}.nanofilt.fastq", barcode_number=POST_TRIM_FOLDER_NAMES)
+    output:
+        config['results_folder'] + "CountReads/nanofilt_count_reads.csv"
+    shell:
+        "echo {input}"
+        " && "
+        "echo {output}"
