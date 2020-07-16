@@ -1,47 +1,46 @@
-input = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/alignment_summary/barcode01.guppy.alignment_summary.csv"
-save = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/simple_statistics/barcode01/barcode01.guppy.simple_statistics.csv"
+inputs = [
+    "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/simple_statistics/barcode01.guppy.simple_statistics.csv",
+    "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/simple_statistics/barcode02.guppy.simple_statistics.csv"
+]
+save = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/collated_simple_statistics.csv"
 """
 ----------------
 """
 
 import csv
 
-import numpy as np
 import pandas as pd
 
-id_classified = 0
-id_unclassified = 0
+barcode_reads = 0
+classified_reads = 0
+unclassified_reads = 0
 
-data_frame = pd.read_csv(filepath_or_buffer=input,
-                         sep="\t",
-                         header=0,
-                         dtype={
-                             "read_id": np.str,
-                             "alignment_genome": np.str,
-                             "alignment_genome_start": np.int,
-                             "alignment_genome_end": np.int,
-                             "alignment_strand_start": np.int,
-                             "alignment_strand_end": np.int,
-                             "alignment_num_insertions": np.int,
-                             "alignment_num_deletions": np.int,
-                             "alignment_num_aligned": np.int,
-                             "alignment_num_correct": np.int,
-                             "alignment_identity": np.float,
-                             "alignment_accuracy": np.float,
-                             "alignment_score": np.int})
+for file in inputs:
+    data_frame = pd.read_csv(filepath_or_buffer=file,
+                             sep="\t",
+                             header=0,
+                             dtype={
+                                 "barcode_reads":int,
+                                 "classified_reads":int,
+                                 "unclassified_reads":int,
+                                 "percent_classified":float,
+                                 "percent_unclassified":float
+                             })
+    barcode_reads += data_frame['barcode_reads']
+    classified_reads += data_frame['classified_reads']
+    unclassified_reads += data_frame['unclassified_reads']
 
-for row in data_frame['alignment_genome']:
-    if row == "*":
-        id_unclassified += 1
-    else:
-        id_classified += 1
-
-barcode_reads = id_classified + id_unclassified
-percent_classified = "{:.3f}".format( (id_classified / barcode_reads) * 100 )
-percent_unclassified = "{:.3f}".format( (id_unclassified / barcode_reads) * 100 )
+percent_classified = (classified_reads / barcode_reads) * 100
+percent_unclassified = (unclassified_reads / barcode_reads) * 100
 
 row_one = ["barcode_reads", "classified_reads", "unclassified_reads", "percent_classified", "percent_unclassified"]
-row_two = [barcode_reads, id_classified, id_unclassified, percent_classified, percent_unclassified]
+row_two = [
+    int(barcode_reads),
+    int(classified_reads),
+    int(unclassified_reads),
+    "{:.3f}".format(float(percent_classified)),
+    "{:.3f}".format(float(percent_unclassified))
+]
 
 with open(save, 'w') as output_stream:
     csv_writer = csv.writer(output_stream, delimiter="\t")

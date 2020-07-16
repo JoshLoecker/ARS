@@ -67,6 +67,9 @@ rule all:
         # create simple statistics
         expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES),
 
+        # create collated simple statistics
+        config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv"
+
 
 rule basecall:
     input:
@@ -100,11 +103,11 @@ To overcome this, we will `touch` an output file when this process is done
 This allows us to move the real output files around (with `rule merge_files`), without having
     to redo barcoding every time because snakemake thinks it has not been ran yet
 
-To get around the issue of showing the number of barcodes that need to be ran, we will create a 'hidden' file
+To get around the issue of showing the number of barcodes that need to be ran, we will create a file
+
     by placing a period in front of a text file, but keep our actual output directories as a parameter
 This allows us to still manipulate the output in `rule merge_files`, while still letting snakemake know that
     the barcodes do not need to be run
-
 """
 rule barcode:
     input:
@@ -117,10 +120,10 @@ rule barcode:
         "envs/pythonEnv.yaml"
     shell:
         "guppy_barcoder "
-        "--recursive "
-        "--quiet "
         "--input_path {input} "
         "--save_path {params.real_output} "
+        "--recursive "
+        "--quiet "
         "--config configuration.cfg "
         "--worker_threads 2 "
         "--barcode_kits EXP-PBC096 "
@@ -314,7 +317,6 @@ rule guppy_write_simple_statistics:
     run:
         import csv
         import pandas as pd
-        import numpy as np
 
         id_classified = 0
         id_unclassified = 0
@@ -325,19 +327,19 @@ rule guppy_write_simple_statistics:
                                  sep="\t",
                                  header=0,
                                  dtype={
-                                     "read_id": np.str,
-                                     "alignment_genome": np.str,
-                                     "alignment_genome_start": np.int,
-                                     "alignment_genome_end": np.int,
-                                     "alignment_strand_start": np.int,
-                                     "alignment_strand_end": np.int,
-                                     "alignment_num_insertions": np.int,
-                                     "alignment_num_deletions": np.int,
-                                     "alignment_num_aligned": np.int,
-                                     "alignment_num_correct": np.int,
-                                     "alignment_identity": np.float,
-                                     "alignment_accuracy": np.float,
-                                     "alignment_score": np.int})
+                                     "read_id": str(),
+                                     "alignment_genome": str(),
+                                     "alignment_genome_start": int,
+                                     "alignment_genome_end": int,
+                                     "alignment_strand_start": int,
+                                     "alignment_strand_end": int,
+                                     "alignment_num_insertions": int,
+                                     "alignment_num_deletions": int,
+                                     "alignment_num_aligned": int,
+                                     "alignment_num_correct": int,
+                                     "alignment_identity": float,
+                                     "alignment_accuracy": float,
+                                     "alignment_score": int})
 
         for row in data_frame['alignment_genome']:
             if row == "*":
@@ -357,11 +359,53 @@ rule guppy_write_simple_statistics:
             csv_writer.writerow(row_one)
             csv_writer.writerow(row_two)
 
-
+"""
+This rule will iterate over the simple statistics csv files found under ARS/Results/Alignments/guppy/simple_statistics and collate their results into
+    one master statistics file. The same statistics are going to be found (total barcodes, classified, unclassified, percent classified, pecent unclassified)
+"""
 rule guppy_aligner_collated_simple_statistics:
     input:
-        expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_stats.txt", barcode_number=POST_TRIM_FOLDER_NAMES)
+        files = [expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES)]
     output:
-        config['results_folder'] + "Alignments/guppy/collated_simple_statistics.txt"
-    shell:
-        "touch {output}"
+        save_file = config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv"
+    run:
+        import csv
+        import pandas as pd
+
+        # we have to split our input because snakemake is passing the input as a string, not a list
+        input_files = str(input.files).split(" ")
+
+        barcode_reads = 0
+        classified_reads = 0
+        unclassified_reads = 0
+
+        for file in input_files:
+            data_frame = pd.read_csv(filepath_or_buffer=file,
+                                     sep="\t",
+                                     header=0,
+                                     dtype={
+                                         "barcode_reads":int,
+                                         "classified_reads":int,
+                                         "unclassified_reads":int,
+                                         "percent_classified":float,
+                                         "percent_unclassified":float
+                                     })
+            barcode_reads += data_frame['barcode_reads']
+            classified_reads += data_frame['classified_reads']
+            unclassified_reads += data_frame['unclassified_reads']
+
+        percent_classified = (classified_reads / barcode_reads) * 100
+        percent_unclassified = (unclassified_reads / barcode_reads) * 100
+
+        row_one = ["barcode_reads", "classified_reads", "unclassified_reads", "percent_classified", "percent_unclassified"]
+        row_two = [
+            int(barcode_reads),
+            int(classified_reads),
+            int(unclassified_reads),
+            "{:.3f}".format(float(percent_classified)),
+            "{:.3f}".format(float(percent_unclassified))]
+
+        with open(output.save_file, 'w') as output_stream:
+            csv_writer = csv.writer(output_stream, delimiter="\t")
+            csv_writer.writerow(row_one)
+            csv_writer.writerow(row_two)
