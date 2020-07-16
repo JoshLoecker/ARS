@@ -1,5 +1,3 @@
-import os
-from pprint import pprint
 configfile: "config.yaml"
 
 # we are going to make some top level directories under Results so that errors do not occur
@@ -37,7 +35,6 @@ NANOQC_SAMPLES, = glob_wildcards(config['results_folder'] + "Trim/{fastq_file}.f
 POST_TRIM_FOLDER_NAMES = os.listdir(config['results_folder'] + "Trim")
 
 
-
 rule all:
     input:
         # basecall
@@ -68,7 +65,10 @@ rule all:
         expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES),
 
         # create collated simple statistics
-        config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv"
+        config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv",
+
+        # MiniMap2
+        expand(config['results_folder'] + "Alignments/minimap/{barcode_number}.minimap.sam", barcode_number=POST_TRIM_FOLDER_NAMES)
 
 
 rule basecall:
@@ -132,6 +132,7 @@ rule barcode:
         " && "
 
         "echo BARCODE FILE OUTPUT: {params.real_output}"
+
 
 """
 As in the `rule barcode`, a similar practice is happening here
@@ -216,6 +217,7 @@ rule merge_files:
                         delete_file_path = current_dir_path + "/" + file
                         os.remove(delete_file_path)
 
+
 rule trim_reads:
     input:
         config['results_folder'] + "Barcode/{barcode_number}.fastq"
@@ -235,6 +237,7 @@ rule trim_reads:
         "--error-rate {params.error_rate} "
         "--output {output} "
         "{input}"
+
 
 rule NanoQC:
     input:
@@ -256,6 +259,7 @@ rule NanoQC:
         " && "
         "mv {params.output_dir}/NanoQC.log {output.log_file}"
 
+
 rule NanoFilt:
     input:
         config['results_folder'] + "Trim/{barcode_folder}/{barcode_folder}.merged.trimmed.fastq"
@@ -263,6 +267,7 @@ rule NanoFilt:
         config['results_folder'] + "NanoFilt/{barcode_folder}/{barcode_folder}.nanofilt.fastq"
     shell:
         "nanofilt {input} > {output}"
+
 
 """
 Much like guppy_barcoder, guppy_aligner prefers to use folders as input as well. We are going to use a direct copy from NanoFilt's output to this input
@@ -306,6 +311,7 @@ rule guppy_aligner:
         "mv {output.temp_output}/*.log {output.log_files}"
         " && "
         "touch {params.simple_statistics}"
+
 
 rule guppy_write_simple_statistics:
     input:
@@ -359,6 +365,7 @@ rule guppy_write_simple_statistics:
             csv_writer.writerow(row_one)
             csv_writer.writerow(row_two)
 
+
 """
 This rule will iterate over the simple statistics csv files found under ARS/Results/Alignments/guppy/simple_statistics and collate their results into
     one master statistics file. The same statistics are going to be found (total barcodes, classified, unclassified, percent classified, pecent unclassified)
@@ -409,3 +416,18 @@ rule guppy_aligner_collated_simple_statistics:
             csv_writer = csv.writer(output_stream, delimiter="\t")
             csv_writer.writerow(row_one)
             csv_writer.writerow(row_two)
+
+
+rule minimap:
+    input:
+        config['results_folder'] + "NanoFilt/{barcode_number}/{barcode_number}.nanofilt.fastq"
+    output:
+        config['results_folder'] + "Alignments/minimap/{barcode_number}.minimap.sam"
+    params:
+        reference_file = config['alignment_reference_file']
+    shell:
+        "minimap2 "
+        "-ax map-ont "
+        "{params.reference_file} "
+        "{input} "
+        "-o {output}"
