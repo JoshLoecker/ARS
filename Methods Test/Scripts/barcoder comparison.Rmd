@@ -34,7 +34,7 @@ guppy_barcoder has a number of options to optimize binning. These include:
 
 Gap penalties can also be modified for starting (40), opening (40), extending (40), and ending (40). 
 
-The min_scores are calculated by modified Needleman-Wunsch algorithm. Scores for matches and mismatches are: 
+The scores are calculated by modified Needleman-Wunsch algorithm, and normalized by the length of the barcode sequence. Scores for matches and mismatches are (available in /opt/ont/guppy/data/barcoding): 
 
 `
    	  A	     C	   G	   T	N
@@ -44,4 +44,17 @@ The min_scores are calculated by modified Needleman-Wunsch algorithm. Scores for
   T	-369	-295	-329	 100	0
   N	   0	   0	   0	   0	0
 `
+
+Because scores are normalized, the highest possible score is 100. The highest score barcode is considered a candidate match, which if above `--min_score`, is considered successful. 
+
+Guppy_barcoder produces a summary table for each read, which includes the read id, barcode matches, sequences, and scores, etc. We'll use that to set a proper threshold given our knowledge of the samples. 
+
+```{r}
+libs = c('lattice', 'here', 'magrittr')
+
+for (i in libs) library(i, character.only=TRUE)
+
+df = here('Data', 'barcoding_summary.txt') %>% 
+  read.table(header=TRUE)
+```
 

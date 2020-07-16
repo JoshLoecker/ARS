@@ -69,44 +69,44 @@ guppy = here(in_path) %>%
   }) %>% 
   do.call(rbind, .)
 
-in_path = in_minimap
-ext = '.csv'
-minimap = here(in_path) %>% 
-  list.files(pattern=ext) #%>% 
-  lapply(function(x) {
-    out = here(in_path, x) %>% 
-      load_sam
-    out$aligner = strsplit(x, '_') %>% 
-      sapply(extract, 1)
-    out$barcode = strsplit(x, '_barcode') %>% 
-      sapply(extract, 2) %>% 
-      gsub(ext, '', .) %>% 
-      sapply(function(y) ifelse(is.na(y), 'Unknown', y))
-    out$filename = x
-    return(out)
-  }) %>% 
-  do.call(rbind, .)
-
-minimap = here(in_minimap) %>% 
-  list.files(pattern='*.csv') %>% 
-  lapply(function(x) {
-    out = here(in_minimap, x) %>% 
-      load_sam
-    out$aligner = strsplit(x, '_') %>% 
-      sapply(extract, 1)
-    out$barcode = strsplit(x, '_barcode') %>% 
-      sapply(extract, 2) %>% 
-      gsub('.sam', '', .) %>% 
-      sapply(function(y) ifelse(is.na(y), 'Unknown', y))
-    out$filename = x
-    return(out)
-  }) %>% 
-  do.call(rbind, .)
+# in_path = in_minimap
+# ext = '.csv'
+# minimap = here(in_path) %>% 
+#   # list.files(pattern=ext) #%>% 
+#   lapply(function(x) {
+#     out = here(in_path, x) %>% 
+#       load_sam
+#     out$aligner = strsplit(x, '_') %>% 
+#       sapply(extract, 1)
+#     out$barcode = strsplit(x, '_barcode') %>% 
+#       sapply(extract, 2) %>% 
+#       gsub(ext, '', .) %>% 
+#       sapply(function(y) ifelse(is.na(y), 'Unknown', y))
+#     out$filename = x
+#     return(out)
+#   }) %>% 
+#   do.call(rbind, .)
+# 
+# minimap = here(in_minimap) %>% 
+#   list.files(pattern='*.csv') %>% 
+#   lapply(function(x) {
+#     out = here(in_minimap, x) %>% 
+#       load_sam
+#     out$aligner = strsplit(x, '_') %>% 
+#       sapply(extract, 1)
+#     out$barcode = strsplit(x, '_barcode') %>% 
+#       sapply(extract, 2) %>% 
+#       gsub('.sam', '', .) %>% 
+#       sapply(function(y) ifelse(is.na(y), 'Unknown', y))
+#     out$filename = x
+#     return(out)
+#   }) %>% 
+#   do.call(rbind, .)
 
 meta = read.csv(in_meta, stringsAsFactors=FALSE)
 meta$BARCODE %<>% gsub('BC', '', .)
 
-df = merge(df, meta[, c('BARCODE', 'TYPE')], by.x='barcode', by.y='BARCODE', all.x=TRUE)
+df = merge(guppy, meta[, c('BARCODE', 'TYPE')], by.x='barcode', by.y='BARCODE', all.x=TRUE)
 pos = subset(df, df$TYPE == 'positive')
 ```
 
