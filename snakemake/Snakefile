@@ -68,8 +68,11 @@ rule all:
         config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv",
 
         # MiniMap2
-        expand(config['results_folder'] + "Alignments/minimap/{barcode_number}.minimap.sam", barcode_number=POST_TRIM_FOLDER_NAMES)
+        expand(config['results_folder'] + "Alignments/minimap/{barcode_number}.minimap.sam", barcode_number=POST_TRIM_FOLDER_NAMES),
 
+        # VSearch
+        expand(config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.txt", barcode_number=POST_TRIM_FOLDER_NAMES),
+        expand(config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.input.fasta", barcode_number=POST_TRIM_FOLDER_NAMES),
 
 rule basecall:
     input:
@@ -283,7 +286,7 @@ rule guppy_aligner:
         alignment_summary = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv",
         log_files = config['results_folder'] + "Alignments/guppy/logs/{barcode_number}.guppy.log",
         sam_files = config['results_folder'] + "Alignments/guppy/sam_files/{barcode_number}.guppy.sam",
-        temp_output = temp(directory(config['results_folder'] + "Alignments/guppy/.temp_output/{barcode_number}")),
+        temp_output = temp(directory(config['results_folder'] + "Alignments/guppy/{barcode_number}")),
     params:
         temp_input = config['results_folder'] + "NanoFilt/{barcode_number}",
         alignment_reference_location = config['alignment_reference_file'],
@@ -372,7 +375,7 @@ This rule will iterate over the simple statistics csv files found under ARS/Resu
 """
 rule guppy_aligner_collated_simple_statistics:
     input:
-        files = [expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES)]
+        files = expand(config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv", barcode_number=POST_TRIM_FOLDER_NAMES)
     output:
         save_file = config['results_folder'] + "Alignments/guppy/collated_simple_statistics.csv"
     run:
@@ -431,3 +434,31 @@ rule minimap:
         "{params.reference_file} "
         "{input} "
         "-o {output}"
+
+
+"""
+Much like barcoding and merging files, we are forced to use temporary output files as our input folders for vsearch
+Due to vsearch requiring fasta files, we must convert our fastq files from NanoFilt into a fasta format.
+Since the fasta files are not needed afterwards, we are going to place them into a temporary folder (.temp_output under output).
+This way, the files will be deleted after they are done being used
+"""
+rule vsearch:
+    input:
+        config['results_folder'] + "NanoFilt/{barcode_number}/{barcode_number}.nanofilt.fastq"
+    output:
+        sam_output_file = config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.txt",
+        fasta_input_file = temp(config['results_folder'] + "Alignments/vsearch/{barcode_number}.vsearch.input.fasta")
+    params:
+        reference_file = config['alignment_reference_file']
+    shell:
+        "seqkit fq2fa {input} > {output.fasta_input_file}"
+
+        " && "
+
+        "vsearch "
+        "--usearch_global "
+        "{output.fasta_input_file} "
+        "--id 0 "
+        "--quiet "
+        "--db {params.reference_file} "
+        "--samout {output.sam_output_file}"
