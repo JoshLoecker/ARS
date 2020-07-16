@@ -2,6 +2,20 @@ import os
 from pprint import pprint
 configfile: "config.yaml"
 
+# we are going to make some top level directories under Results so that errors do not occur
+os.makedirs(config['results_folder'] + "Alignments/", exist_ok=True)
+os.makedirs(config['results_folder'] + "guppy/", exist_ok=True)
+os.makedirs(config['results_folder'] + "vsearch/", exist_ok=True)
+os.makedirs(config['results_folder'] + "minimap/", exist_ok=True)
+os.makedirs(config['results_folder'] + "Barcode/", exist_ok=True)
+os.makedirs(config['results_folder'] + "Basecall/", exist_ok=True)
+os.makedirs(config['results_folder'] + "CountReads/", exist_ok=True)
+os.makedirs(config['results_folder'] + "DataFiles/", exist_ok=True)
+os.makedirs(config['results_folder'] + "NanoFilt/", exist_ok=True)
+os.makedirs(config['results_folder'] + "NanoQC/", exist_ok=True)
+os.makedirs(config['results_folder'] + "Trim/", exist_ok=True)
+os.makedirs(config['results_folder'] + "Visuals/", exist_ok=True)
+
 def ReturnBarcodeTextFileNames():
     folder_numbers = list()
     directory_path = config['results_folder'] + "Basecall"
@@ -21,6 +35,7 @@ BARCODE_FILE_NUMBER = ReturnBarcodeTextFileNames()
 TRIM_SAMPLES, = glob_wildcards(config['results_folder'] + "Barcode/{fastq_file}.fastq")
 NANOQC_SAMPLES, = glob_wildcards(config['results_folder'] + "Trim/{fastq_file}.fastq")
 POST_TRIM_FOLDER_NAMES = os.listdir(config['results_folder'] + "Trim")
+
 
 
 rule all:
@@ -200,9 +215,9 @@ rule merge_files:
 
 rule trim_reads:
     input:
-        config['results_folder'] + "Barcode/{fastq_file}.merged.fastq"
+        config['results_folder'] + "Barcode/{barcode_number}.fastq"
     output:
-        config['results_folder'] + "Trim/{fastq_file}.trimmed.fastq"
+        config['results_folder'] + "Trim/{barcode_number}.trimmed.fastq"
     params:
         three_prime_adapter = "ACTTGCCTGTCGCTCTATCTTCTACCTTGTTACGACTT",
         five_prime_adapter = "TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG",
@@ -294,6 +309,8 @@ rule guppy_write_simple_statistics:
         input_file = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv"
     output:
         statistics_path = config['results_folder'] + "Alignments/guppy/simple_statistics/{barcode_number}.guppy.simple_statistics.csv"
+    params:
+        file_path = config['results_folder'] + "Alignments/guppy/alignment_summary/{barcode_number}.guppy.alignment_summary.csv"
     run:
         import csv
         import pandas as pd
@@ -302,7 +319,7 @@ rule guppy_write_simple_statistics:
         id_classified = 0
         id_unclassified = 0
 
-        input_file = rules.guppy_write_simple_statistics.input.input_file
+        input_file = input.input_file
 
         data_frame = pd.read_csv(filepath_or_buffer=input_file,
                                  sep="\t",
@@ -335,7 +352,7 @@ rule guppy_write_simple_statistics:
         row_one = ["barcode_reads", "classified_reads", "unclassified_reads", "percent_classified", "percent_unclassified"]
         row_two = [barcode_reads, id_classified, id_unclassified, percent_classified, percent_unclassified]
 
-        with open("{output.statistics_path}", 'w') as output_stream:
+        with open(output.statistics_path, 'w') as output_stream:
             csv_writer = csv.writer(output_stream, delimiter="\t")
             csv_writer.writerow(row_one)
             csv_writer.writerow(row_two)

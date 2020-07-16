@@ -1,0 +1,98 @@
+2020-07-16 09:05:33.327059 [guppy/message] ONT Guppy barcoding software version 4.0.11+f1071ce
+input path:         /Users/joshl/PycharmProjects/ARS/Results/Basecall/
+save path:          /Users/joshl/PycharmProjects/ARS/Results/Barcode/
+arrangement files:  barcode_arrs_pcr96.cfg 
+min. score front:   60
+min. score rear:    60
+
+2020-07-16 09:05:33.328410 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-16 09:05:33.329201 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-16 09:05:48.344408 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-16 09:05:48.344458 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-16 09:06:02.545785 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-16 09:06:02.545843 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-16 09:06:13.909232 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.f2020-07-16 09:06:16.193740 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 2020-07-16 09:06:31.938570 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-16 09:06:31.938614 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-16 09:06:34.002804 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_1.fastq' will be overwritten.
+2020-07-16 09:06:47.733885 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-16 09:06:47.733935 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-16 09:07:00.168854 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-16 09:07:00.168905 [guppy/message] Done in 86835 ms.
+2020-07-16 09:07:00.180377 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode01/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.186328 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode02/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.190270 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode03/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.193842 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode04/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.197152 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode05/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.200633 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode06/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.204697 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode07/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.208864 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode08/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.214694 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode09/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.218444 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode10/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.221936 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.226098 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode12/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.228663 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode13/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.232378 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode14/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.235910 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode15/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.239359 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode16/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.242117 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode17/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.245202 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode18/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.248638 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode20/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.254542 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode21/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.258141 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode22/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.261601 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode23/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.265275 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode24/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.268187 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode25/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.272070 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode26/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.275314 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode27/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.278918 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode28/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.281977 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode29/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.284557 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode31/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.287352 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode32/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.291826 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode33/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.294791 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode35/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.298784 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode36/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.302308 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode37/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.306085 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode38/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.309373 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode39/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.312231 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode40/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.315402 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode41/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.317409 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode42/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.320076 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode45/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.322623 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode46/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.324670 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode47/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.328142 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode49/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.331213 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode50/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.334756 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode51/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.337604 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode52/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.341410 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode53/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.344151 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode54/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.346399 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode55/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.352960 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode56/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.358118 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode57/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.360769 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode58/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.363086 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode59/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.366258 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode60/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.370991 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode61/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.373567 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode62/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.376230 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode63/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.379613 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode64/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.382818 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode65/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.385060 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode66/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.387084 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode67/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.390174 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode69/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.393184 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode70/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.395239 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode76/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.399854 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode77/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.402484 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode78/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.404247 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode79/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.408159 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode81/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.409660 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode82/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.411260 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode83/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.413063 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode85/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.413254 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode89/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.416165 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode90/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.419856 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode91/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.423741 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode93/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.426008 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/barcode95/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq' will be overwritten.
+2020-07-16 09:07:00.429556 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_2.fastq' will be overwritten.
+2020-07-16 09:06:58.872341 [guppy/info] The output file '/Users/joshl/PycharmProjects/ARS/Results/Barcode/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_2.fastq' will be overwritten.
