@@ -1,6 +1,6 @@
 ---
-title: "Aligner Comparison"
-subtitle: "Created July 13, 2020"
+title: "Barcoder Parameters"
+subtitle: "Created July 17, 2020"
 author: "PME"
 date: "`r format(Sys.time(), '%d %B, %Y, %H:%M')`"
 knit: (function(inputFile, encoding) {
@@ -21,4 +21,27 @@ knitr::opts_chunk$set(message=FALSE,
                       warning=FALSE,
 					  fig.align='center')
 ```
+
+guppy_barcoder has a number of options to optimize binning. These include:
+
+- `--min_score` (60)
+- `--require_both_ends` (FALSE)
+- `--min_score_rear_override`
+- `--detect_mid_strand_barcodes` (FALSE)
+- `--min_score_mid_barcodes` (50)
+- `--front_window_size` (50)
+- `--rear_window_size`
+
+Gap penalties can also be modified for starting (40), opening (40), extending (40), and ending (40). 
+
+The min_scores are calculated by modified Needleman-Wunsch algorithm. Scores for matches and mismatches are: 
+
+`
+   	  A	     C	   G	   T	N
+  A	 96	  -316	-192	-369	0
+  C	-316	 100	-352	-295	0
+  G	-192	-352  	98	-329	0
+  T	-369	-295	-329	 100	0
+  N	   0	   0	   0	   0	0
+`
 
