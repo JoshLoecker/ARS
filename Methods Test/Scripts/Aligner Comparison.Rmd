@@ -32,125 +32,146 @@ As we adjust the %identity for kept alignments.
 
 ## Load
 ```{r}
-libs = c('pROC', 'lattice', 'here', 'magrittr', 'data.table')
+libs = c('pROC', 'lattice', 'latticeExtra', 'here', 'magrittr', 'data.table')
 for (i in libs) library(i, character.only=TRUE)
 
+fns = here('Scripts', 'Functions') %>% 
+  list.files(pattern='.R', full.names=TRUE)
+for (f in fns) source(f)
+
 path = here('Data', 'Pipeline Results', 'Alignments', 'guppy', 'SAM_Files', 'guppy_aligner_barcode01.sam')
-
-#' load_sam to load a sam file from minimap2 and extract useful information from it.
-#' currently extracts sequence ID, match, length, 
-#'
-#' @Parameters
-#' @param path: character. full path to .sam file.
-#' @param drop_secondary: logical. Skip secondary alignments?
-#'
-#' @Returns
-#' A data.frame with columns:
-#' `seq_id`: character. unique sequence identifier.
-#' `ref_id`: character. sequence ID of the primary match in the reference database
-#' `bit_flag`: integer. bitwise flag. See https://samtools.github.io/hts-specs/SAMv1.pdf and 'Notes'
-#' `seq_length`: integer. Length in bp of the aligned sequence.
-#' `quality`: integer. Q = -10*log10(prob wrong). Note this is dependent on the database, as well as the sequence.
-#' `divergence`: float. per-base divergence of seq from match
-#' `score`: integer. smith-waterman alignment score of the entire sequence.
-#' `chimeric`: character. sequence ID of a chimeric match. 
-#'
-#' @Notes
-#' Common bitwise flags are: 0 = primary alignment, no problems; 4 = segment unmapped; 
-#' 16 = sequence is being reverse-complimented; 256 = secondary alignment; 
-#' 2048 = supplementary alignment (i.e. chimeric)
-
-
-load_sam = function(path, drop_secondary=TRUE) {
-  
-  sam = readLines(path)
-  
-  is_header = grepl('@SQ', sam)
-  sam %<>% 
-    .[!is_header] %>% 
-    strsplit('\t') 
-  
-  if (drop_secondary) {
-    is_secondary = sapply(sam, function(x) x[2] == 256)
-    sam %<>% .[!is_secondary]
-  }
-  
-  sam %<>%
-    lapply(function(x) {
-      if (x[2] == 4) { # was not aligned
-        out = c(seq_id = x[1],
-                ref_id = NA,
-                bit_flag = 4,
-                seq_length = NA,
-                quality = 0,
-                divergence = NA,
-                score = NA,
-                chimeric = NA)
-      } else {
-        is_chimeric = grepl('SA:Z:', x) %>% 
-          any
-        out = c(
-          seq_id = x[1],
-          ref_id = x[3],
-          bit_flag = x[2],
-          seq_length = nchar(x[10]),
-          quality = x[5],
-          divergence = x[grepl('dv:f:', x)],
-          score = x[grepl('AS:i:', x)],
-          # chimeric = x[grepl('SA:A', x)]
-          chimeric = ifelse(is_chimeric, x[grepl('SA:Z:', x)], NA)
-        )
-      }
-      return(out)
-    }) %>% 
-    do.call(rbind, .) %>% 
-    as.data.frame
-  
-  sam$divergence %<>% gsub('dv:f:', '', .)
-  sam$score %<>% gsub('AS:i:', '', .)
-  sam$chimeric %<>% gsub('SA:Z:', '', .) %>% 
-    strsplit(',') %>% 
-    sapply(extract, 1)
-  sam %<>% type.convert(as.is=TRUE)
-  return(sam)
-}
-
-QtoPr = function(x) 10^(x/-10)
 
 ```
 
 ```{r }
 # in_clas = "collated_primary_alignment_data.tsv"
 # in_uncl = "collated_unclassified_alignment_data.tsv"
-in_dir = file.path('Data', 'Pipeline Results', 'Alignments', 'guppy', 'SAM_Files')
+in_sam = file.path('Data', 'Pipeline Results', 'Alignments')
+in_guppy = file.path(in_sam, 'guppy', 'SAM_Files')
+in_minimap = file.path(in_sam, 'minimap', 'csv_results')
+in_meta = here('Data', 'MinION CLC Barcodes.csv')
 
-ff = here(in_dir) %>% 
-  list.files(pattern='*.sam') %>% 
+in_path = in_guppy
+ext = '.sam'
+guppy = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
   lapply(function(x) {
-    out = here(in_dir, x) %>% 
+    out = here(in_path, x) %>% 
       load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    out$barcode = strsplit(x, '_barcode') %>% 
+      sapply(extract, 2) %>% 
+      gsub(ext, '', .) %>% 
+      sapply(function(y) ifelse(is.na(y), 'Unknown', y))
     out$filename = x
     return(out)
   }) %>% 
   do.call(rbind, .)
-ff$aligner = 'guppy'
-ff$barcode = gsub('guppy_aligner_', '', ff$filename) %>% 
-  gsub('barcode', '', .) %>% 
-  gsub('.sam', '', .)
+
+in_path = in_minimap
+ext = '.csv'
+minimap = here(in_path) %>% 
+  list.files(pattern=ext) #%>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    out$barcode = strsplit(x, '_barcode') %>% 
+      sapply(extract, 2) %>% 
+      gsub(ext, '', .) %>% 
+      sapply(function(y) ifelse(is.na(y), 'Unknown', y))
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+minimap = here(in_minimap) %>% 
+  list.files(pattern='*.csv') %>% 
+  lapply(function(x) {
+    out = here(in_minimap, x) %>% 
+      load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    out$barcode = strsplit(x, '_barcode') %>% 
+      sapply(extract, 2) %>% 
+      gsub('.sam', '', .) %>% 
+      sapply(function(y) ifelse(is.na(y), 'Unknown', y))
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+meta = read.csv(in_meta, stringsAsFactors=FALSE)
+meta$BARCODE %<>% gsub('BC', '', .)
+
+df = merge(df, meta[, c('BARCODE', 'TYPE')], by.x='barcode', by.y='BARCODE', all.x=TRUE)
+pos = subset(df, df$TYPE == 'positive')
 ```
 
 ```{r fig.height=4, fig.width=8}
-dotplot(QtoPr(quality)~barcode, data=subset(ff, bit_flag==0), scales=list(x=list(rot=90)), alpha=0.2, pch=20)
+densityplot(~QtoPr(quality) | barcode, data=pos, group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90, limits=c(-0.1,1.1))), alpha=0.5, pch=20)
 ```
 
 ```{r fig.height=4, fig.width=8}
-dotplot(divergence~barcode, data=subset(ff, bit_flag==0), scales=list(x=list(rot=90)), alpha=0.2, pch=1)
+dotplot(divergence~barcode, data=subset(ff), group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90)), alpha=0.2, pch=1)
 ```
 
 ```{r fig.height=10, fig.width=7.5}
-xyplot(divergence ~ score | barcode, data=subset(ff, bit_flag==0), alpha=0.2, pch=1, type=c('r', 'p'))
+xyplot(divergence ~ score | barcode, group=bit_flag, data=subset(ff), auto.key=list(columns=3), alpha=0.2, pch=1)
+```
+```{r fig.height=5, fig.width=8}
+barchart(log2(summary(as.factor(ff$barcode))))
+barchart(tapply(ff$seq_length, as.factor(ff$barcode), mean, na.rm=TRUE))
+dotplot(score ~ barcode, data=subset(ff, bit_flag==0), alpha=0.2, pch=1)
 ```
 
-```{r fig.height=10, fig.width=7.5}
-xyplot(divergence ~ QtoPr(quality) | barcode, data=subset(ff, bit_flag==0), alpha=0.2, pch=1, type=c('r', 'p'))
+```{r fig.height=5, fig.width=8}
+pltdf = subset(ff, bit_flag==0 & barcode %in% c(56, 60))
+pltdf$score_ratio = with(pltdf, score / seq_length)
+pr = c(0.001, 0.01, 0.05, 0.1, 0.5, 0.75, 0.9, 0.95, 0.99, 0.999)
+
+val = 'score_ratio'
+plt_data = pltdf[, val]
+densityplot(~plt_data, xlab=val, alpha=0.5, pch=1, scales=list(y='free'), main=paste(100*pr, collapse='%, ')) +
+              layer(panel.abline(v=quantile(plt_data, probs=pr)))
 ```
+```{r}
+pltdf = subset(ff, bit_flag==0 & barcode %in% c(56, 60))
+pltdf$score_ratio = with(pltdf, score / seq_length)
+pr = c(0.001, 0.01, 0.05, 0.1, 0.5, 0.75, 0.9, 0.95, 0.99, 0.999)
+
+val = 'score'
+plt_data = pltdf[, val]
+densityplot(~plt_data, xlab=val, alpha=0.5, pch=1, scales=list(y='free'), main=paste(100*pr, collapse='%, ')) +
+              layer(panel.abline(v=quantile(plt_data, probs=pr)))
+```
+
+```{r fig.height=5, fig.width=8}
+pltdf = subset(ff, bit_flag==0 & !(barcode %in% c(56, 60)))
+pltdf$score_ratio = with(pltdf, score / seq_length)
+pr = c(0.001, 0.01, 0.05, 0.1, 0.5, 0.75, 0.9, 0.95, 0.99, 0.999)
+
+val = 'score_ratio'
+plt_data = pltdf[, val]
+densityplot(~plt_data, xlab=val, alpha=0.5, pch=1, scales=list(y='free'), main=paste(100*pr, collapse='%, ')) +
+              layer(panel.abline(v=quantile(plt_data, probs=pr)))
+```
+
+```{r}
+plt_data = pltdf$divergence
+densityplot(~plt_data, alpha=0.5, pch=1, scales=list(y='free'), main=paste(pr, collapse='%, ')) +
+              layer(panel.abline(v=quantile(plt_data, probs=pr)))
+
+```
+
+```{r}
+summary(factor(sff$quality))/nrow(sff)
+
+
+subset(ff, bit_flag==0 & barcode %in% c(56, 60)) %>% 
+  extract(, 'score') %>% 
+  quantile(probs=c(0.001, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.99, 0.999))
+```
+
