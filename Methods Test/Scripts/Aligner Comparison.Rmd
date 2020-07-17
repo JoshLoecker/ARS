@@ -106,7 +106,7 @@ guppy = here(in_path) %>%
 meta = read.csv(in_meta, stringsAsFactors=FALSE)
 meta$BARCODE %<>% gsub('BC', '', .)
 
-df = merge(guppy, meta[, c('BARCODE', 'TYPE')], by.x='barcode', by.y='BARCODE', all.x=TRUE)
+df = merge(guppy, meta[, c('BARCODE', 'TYPE')], by.x='barcode', by.y='BARCODE', all=TRUE)
 pos = subset(df, df$TYPE == 'positive')
 ```
 
@@ -115,7 +115,7 @@ densityplot(~QtoPr(quality) | barcode, data=pos, group=bit_flag, auto.key=list(c
 ```
 
 ```{r fig.height=4, fig.width=8}
-dotplot(divergence~barcode, data=subset(ff), group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90)), alpha=0.2, pch=1)
+dotplot(divergence~barcode, data=df, group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90)), alpha=0.2, pch=1)
 ```
 
 ```{r fig.height=10, fig.width=7.5}
