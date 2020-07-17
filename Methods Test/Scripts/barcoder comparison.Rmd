@@ -1,0 +1,284 @@
+---
+title: "Barcoder Parameters"
+subtitle: "Created July 17, 2020"
+author: "PME"
+date: "`r format(Sys.time(), '%d %B, %Y, %H:%M')`"
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding=encoding, output_dir=here::here('Results'))})
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    df_print: paged
+    code_folding: hide
+  pdf_document: default
+  word_document: default
+---
+
+```{r set_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, 
+                      warning=FALSE,
+					  fig.align='center')
+```
+
+# Overview
+`guppy_barcoder` has a number of options to optimize binning. These include:
+
+- `--min_score` (60)
+- `--require_both_ends` (FALSE)
+- `--min_score_rear_override`
+- `--detect_mid_strand_barcodes` (FALSE)
+- `--min_score_mid_barcodes` (50)
+- `--front_window_size` (50)
+- `--rear_window_size`
+
+Gap penalties can also be modified for starting (40), opening (40), extending (40), and ending (40). 
+
+The scores are calculated by modified Needleman-Wunsch algorithm, and normalized by the length of the barcode sequence. Scores for matches and mismatches are (available in /opt/ont/guppy/data/barcoding): 
+
+`  .	   A	   C	   G	   T	N`
+   	  
+`  A	  96	-316	-192	-369	0`
+  
+`  C	-316	 100	-352	-295	0`
+  
+`  G	-192	-352      98	-329	0`
+  
+`  T	-369	-295	-329	 100	0`
+  
+`  N	   0	   0	   0	   0	0`
+`
+
+Because scores are normalized, the highest possible score is 100. The highest score barcode is considered a candidate match, which if above `--min_score`, is considered successful. 
+
+`guppy_barcoder` produces a summary table for each read, which includes the read id, barcode matches, sequences, and scores, etc. We'll use that to set a proper threshold given our knowledge of the samples. 
+
+```{r}
+libs = c('here', 'magrittr', 'ggplot2', 'reshape2')
+
+for (i in libs) library(i, character.only=TRUE)
+
+df = here('Data', 'barcoding_summary.txt') %>% 
+  read.table(header=TRUE, stringsAsFactors=FALSE)
+
+meta = here('Data', 'MinION CLC Barcodes.csv') %>% 
+  read.csv(stringsAsFactors=FALSE)
+```
+The summary has a lot of columns. Let's clean this up. 
+
+```{r}
+keep_cols = c('read_id',
+              'barcode_arrangement',
+              'barcode_front_id',
+              'barcode_front_score',
+              'barcode_front_foundseq_length',
+              'barcode_rear_id',
+              'barcode_rear_score',
+              'barcode_rear_foundseq_length')
+
+df = df[keep_cols]
+names(df) %<>% gsub('barcode_', '', .) %>% 
+  gsub('foundseq_', '', .) %>% 
+  gsub('arrangement', 'barcode', .)
+
+df$barcode %<>% gsub('barcode', 'BC', .)
+
+df$front_id %<>% gsub('_FWD', '', .)
+df$rear_id %<>% gsub('_REV', '', .)
+
+df %<>%
+  merge(meta[, c('BARCODE', 'TYPE')],
+        by.x='barcode',
+        by.y='BARCODE', 
+        all=TRUE)
+
+head(df)
+```
+
+## Score and length distributions
+Now we'll look at the distributions of scores and lengths matched for each location. 
+```{r fig.height=3, fig.width=6}
+pltdf = rbind(
+  data.frame(df[, c('front_length',
+                    'front_score')] %>% 
+               set_names(c('length', 'score')),
+             location = 'front'
+             ),
+  data.frame(df[, c('rear_length',
+                    'rear_score')] %>% 
+               set_names(c('length', 'score')),
+             location = 'rear'
+             )
+)
+
+ggplot(pltdf,
+       aes(x=score,
+           y=length)) +
+  facet_wrap(~location) +
+  scale_fill_continuous(type='viridis') +
+  geom_bin2d() +
+  geom_vline(aes(xintercept=60), color='tomato2') +
+  geom_hline(aes(yintercept=60), color='tomato2') +
+  theme_light()
+```
+The vertical line is the default minimum score. We can see that the rear barcodes don't fare as well - they tend to be of lower quality, and lower matched length. The horizontal line is the expected length (60 bp). Scores are scaled so that a perfect match across all bases is 100. 
+
+Looking at the profile of these shapes highlights how the rear barcode is generally of lower quality. 
+```{r fig.height=3, fig.width=6}
+ggplot(data=melt(pltdf),
+       aes(x=value,
+           color=location)) +
+  facet_wrap(~variable,
+             scales='free') +
+  geom_vline(aes(xintercept=60)) +
+  geom_density() +
+  theme_light()
+```
+Currently, we are requiring a minimum score of 60 for both front and rear barcodes. This will remove a number of samples, possibly unnecessarily. The proportion of excluded reads based on the front or the rear are:
+
+```{r}
+nr = nrow(df)
+find_p = function(x, val) {
+  x %<>% na.omit
+  out = sum(x < val) / length(x)
+  return(out)
+}
+c(front = find_p(df$front_score, 60),
+  rear = find_p(df$rear_score, 60)) %>% 
+  round(3)
+```
+So at least 18% of reads are excluded based on a poor rear barcode score. 
+
+To run some comparisions, we need to make a few variables:
+
+1. whether the front and rear agree
+2. the score to use when requiring a minimum score at both ends.
+```{r}
+df$agree = df$front_id == df$rear_id
+df$both_score = apply(df[, c('front_score', 'rear_score')], 1, function(x) min(x[1], x[2]))# keep minimum score
+```
+
+
+# Test Parameters
+
+## Approach
+We want to maximize read retention, while minimizing false assignments. Luckily, we have a number of "blanks" - barcodes that *should* be empty. 
+
+Therefore, as we vary the minimum score for the front, rear, or both, we will:
+
+1. Count the number of reads that are retained.
+2. Count the number of reads assigned to blanks.
+
+The trick is converting the false assignment number to a standardized number that accounts for the expected rate. To identify an approahc to this, we'll generate some data: 96 barcodes, 10000 sequences, and process it using two scenarios:
+
+1. 6 blank barcodes. How many blanks would we expect to observe, given completely random assignments?
+2. All good barcodes. How much agreement would we expect, given completely random assignments?
+
+This will provide a "randomness" factor. 
+```{r}
+
+bc = seq_len(96)
+bad_bc = seq_len(6)
+nseq = 10000
+
+truth = sample(bc, nseq, replace=TRUE)
+perms = sapply(seq_len(100), function(x) sample(bc, nseq, replace=TRUE))
+
+
+```
+
+We can see that the expected number of observations per blank sample, given completely random assignments, is equal to the expected number of correct assignments given completely random assignents:
+```{r}
+misassign = apply(perms, c(1,2), function(x) x %in% bad_bc)
+misassign = colSums(misassign)/nrow(misassign)
+
+mis1 = apply(perms, 2, function(x) x == truth)
+mis1 = colSums(mis1)/nrow(mis1)
+
+t.test(misassign/6, mis1)
+```
+
+Here, that proportion of expected blanks is 6/96 = `r 6/96 %>% round(3)`. So we can use this as a baseline. If we have `r 6/96 %>% round(3)` of our reads assigned to blanks, we assume we are completely random and 'r 95/96 %>% round(3)` percent of our reads will be misassigned. 
+
+The equation for calculating false assignments therefore is:
+
+$misassignments = \frac{(nbarcodes - 1)}{nbarcodes} * \frac{observed blanks}{total reads} \div \frac{nblanks}{nbarcodes}$
+
+The first term is the maximum misassignment rate under random assignment. The last term is the expected proportion of blanks with random assignment. The middle is the observed proportion of blanks. Calculating the proporiton of observed to expected blanks ratio allows us to scale the misassignment rate. Of course, this assumes that all barcodes have equal chance of being misassigned as each other, which probably isn't true. 
+
+## Test
+We'll graph the response of assignment and misassignment given a few variables:
+
+1. Increasing minimum score
+2. Requiring a front, rear, or both barcodes to be above that minimum score.
+
+The function below will assign a barcode to a read given a cutoff and barcode location. It then returns the proporitons of misasigned, blanks, and assigned reads.
+```{r}
+blanks = subset(meta, TYPE=='blank')[, 'BARCODE']
+
+assign_barcode = function(x, location, cutoff, blanks) {
+  x = na.omit(x)
+  nblanks = length(blanks)
+  nbarcodes = 96
+  max_blanks = nblanks/nbarcodes
+  max_misassign = (nbarcodes-1)/nbarcodes
+  
+  nreads = nrow(x)
+  score_name = paste0(location, '_score')
+  x$ASSIGN = ifelse(x[, score_name] >= cutoff, x[, 'barcode'], 'Unassigned')
+  
+  p_assign = sum(x$ASSIGN != 'Unassigned')/nreads
+  p_blanks = sum(x$ASSIGN %in% blanks)/nreads
+  
+  p_misassign = max_misassign * p_blanks * max_blanks
+  
+  out = c(cutoff = cutoff,
+          p_assign = p_assign,
+          p_blanks = p_blanks,
+          p_misassign = p_misassign)
+  return(out)
+}
+
+```
+
+
+We'll run this function across cutoff scores of -100 to 100 (the minimum and maximum possible), requiring scores to be greater than or equal to the cutoff for the front, rear, or both locations.
+```{r}
+scores = c(-100:100)
+vals = c('front', 'rear', 'both') %>% 
+  lapply(function(y) {
+    out = sapply(scores, function(x) assign_barcode(df, y, x, blanks)) %>% 
+      t %>% 
+      data.frame(location = y)
+  }) %>% 
+  do.call(rbind, .)
+summary(vals)
+```
+We can see that very few reads are misassigned, in any scenario. This is likely due to our small sample size (`r nrow(na.omit(df))` reads).
+
+## Results
+```{r}
+pltdf = melt(vals, id.vars=c('cutoff', 'location'))
+ggplot(data=pltdf,
+       aes(x=cutoff,
+           y=value,
+           color=location, 
+           shape=variable)) +
+  scale_color_brewer(palette='Dark2') +
+  ylab('Proportion of Reads') +
+  geom_point(alpha=0.5) +
+  geom_vline(aes(xintercept=60)) +
+  theme_minimal()
+```
+
+The cutoff value of 60 is right at the break point of the front barcode. The cutoff of 50 is good for the rear. Both is quite stringent. However, in all cases, basically no barcodes are misassigned. 
+
+Finally, the front and the rear agreed `r round(sum(na.omit(df)$front_id == na.omit(df)$rear_id)/nrow(na.omit(df)), 3)*100`% of the time, regardless of whether the rear score was terrible. 
+
+# Summary
+This suggests that:
+
+1. The front barcode is adequate for barcoding, as the rear always agrees with the front. 
+2. Tag-switching is minimal, as the rear always agrees with the front.
+3. A cutoff of 60 is qualitatively ideal, but 50 or even 25 is probably fine. These will retain `r (100*vals[vals$cutoff==60 & vals$location=='front', 'p_assign']) %>% round(1)`%, `r (100*vals[vals$cutoff==50 & vals$location=='front', 'p_assign']) %>% round(1)`%, and `r (100*vals[vals$cutoff==25 & vals$location=='front', 'p_assign']) %>% round(1)`% of reads, respectively, with a minimal risk of false assignments. 

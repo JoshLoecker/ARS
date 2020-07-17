@@ -1,0 +1,97 @@
+SAMPLE,EXTRACTION,PCR,BATCH,CONCENTRATION,BARCODE,TYPE,
+FC-1035A,Pendleton,Pendleton,0,,BC01,sample,1
+FC-1035B,Pendleton,Pendleton,0,,BC02,sample,2
+FC-1035C,Pendleton,Pendleton,0,,BC03,sample,3
+FC-1036A,Pendleton,Pendleton,0,,BC04,sample,4
+PenAW-R1C,Pendleton,Brookings,2,15,BC05,sample,5
+PenAW-R1B,Pendleton,Brookings,2,12.5,BC06,sample,6
+FC-1035C,Pendleton,Brookings,2,15.6,BC07,sample,7
+FC-1035A,Pendleton,Brookings,2,19.3,BC08,sample,8
+PenAW-R3B,Brookings,Brookings,1,14.7,BC09,sample,9
+PenAW-R3C,Brookings,Brookings,1,13.5,BC10,sample,10
+PenAW-R4C,Brookings,Brookings,1,14.5,BC11,sample,11
+PenAW-R1B,Brookings,Brookings,1,9.7,BC12,sample,12
+FC-1036B,Pendleton,Pendleton,0,,BC13,sample,13
+FC-1036C,Pendleton,Pendleton,0,,BC14,sample,14
+FC-1037A,Pendleton,Pendleton,0,,BC15,sample,15
+FC-1037B,Pendleton,Pendleton,0,,BC16,sample,16
+PenAW-R3C,Pendleton,Brookings,2,15.4,BC17,sample,17
+FC-1038B,Pendleton,Brookings,2,12.8,BC18,sample,18
+NEG-A,Pendleton,Brookings,2,0,BC19,negative,19
+FC-1035B,Pendleton,Brookings,2,20.9,BC20,sample,20
+PenAW-R2A,Brookings,Brookings,1,12.6,BC21,sample,21
+PenAW-R4B,Brookings,Brookings,1,10.6,BC22,sample,22
+FC-1036B,Brookings,Brookings,1,13.4,BC23,sample,23
+FC-1035C,Brookings,Brookings,1,11.5,BC24,sample,24
+FC-1037C,Pendleton,Pendleton,0,,BC25,sample,25
+FC-1038A,Pendleton,Pendleton,0,,BC26,sample,26
+FC-1038B,Pendleton,Pendleton,0,,BC27,sample,27
+FC-1038C,Pendleton,Pendleton,0,,BC28,sample,28
+PenAW-R4C,Pendleton,Brookings,2,11.7,BC29,sample,29
+NEG-C,Pendleton,Brookings,2,0.19,BC30,negative,30
+FC-1036A,Pendleton,Brookings,2,11.1,BC31,sample,31
+FC-1036C,Pendleton,Brookings,2,20,BC32,sample,32
+PenAW-R2C,Brookings,Brookings,1,12,BC33,sample,33
+NEG-C,Brookings,Brookings,1,0,BC34,negative,34
+FC-1035A,Brookings,Brookings,1,15.3,BC35,sample,35
+FC-1036C,Brookings,Brookings,1,10.5,BC36,sample,36
+PenAW-R1A,Pendleton,Pendleton,0,,BC37,sample,37
+PenAW-R1B,Pendleton,Pendleton,0,,BC38,sample,38
+PenAW-R1C,Pendleton,Pendleton,0,,BC39,sample,39
+PenAW-R2A,Pendleton,Pendleton,0,,BC40,sample,40
+PenAW-R3A,Pendleton,Brookings,2,8.3,BC41,sample,41
+PenAW-R2B,Pendleton,Brookings,2,11.6,BC42,sample,42
+NEG-B,Pendleton,Brookings,2,0.07,BC43,negative,43
+PCR1 Neg 2,Pendleton,Brookings,2,0.12,BC44,negative,44
+PenAW-R1A,Brookings,Brookings,1,10.5,BC45,sample,45
+FC-1038C,Brookings,Brookings,1,7.3,BC46,sample,46
+PenAW-R4A,Brookings,Brookings,1,12.1,BC47,sample,47
+PCR1 Neg 1,Brookings,Brookings,1,0,BC48,negative,48
+PenAW-R2B,Pendleton,Pendleton,0,,BC49,sample,49
+PenAW-R2C,Pendleton,Pendleton,0,,BC50,sample,50
+PenAW-R3A,Pendleton,Pendleton,0,,BC51,sample,51
+PenAW-R3B,Pendleton,Pendleton,0,,BC52,sample,52
+FC-1036B,Pendleton,Brookings,2,11,BC53,sample,53
+PenAW-R2A,Pendleton,Brookings,2,10.1,BC54,sample,54
+FC-1037A,Pendleton,Brookings,2,11.1,BC55,sample,55
+PCR1 Pos 2,Pendleton,Brookings,2,24.9,BC56,positive,56
+FC-1037C,Brookings,Brookings,1,12.2,BC57,sample,57
+FC-1037A,Brookings,Brookings,1,8.1,BC58,sample,58
+FC-1035B,Brookings,Brookings,1,10.7,BC59,sample,59
+PCR1 Pos 1,Brookings,Brookings,1,21.3,BC60,positive,60
+PenAW-R3C,Pendleton,Pendleton,0,,BC61,sample,61
+PenAW-R4A,Pendleton,Pendleton,0,,BC62,sample,62
+PenAW-R4B,Pendleton,Pendleton,0,,BC63,sample,63
+PenAW-R4C,Pendleton,Pendleton,0,,BC64,sample,64
+FC-1038C,Pendleton,Brookings,2,8.9,BC65,sample,65
+PenAW-R4A,Pendleton,Brookings,2,9.7,BC66,sample,66
+PenAW-R3B,Pendleton,Brookings,2,12.1,BC67,sample,67
+PCR2 Neg 2,Pendleton,Brookings,2,0.07,BC68,negative,68
+FC-1038A,Brookings,Brookings,1,10.8,BC69,sample,69
+FC-1038B,Brookings,Brookings,1,8.2,BC70,sample,70
+NEG-B,Brookings,Brookings,1,0.34,BC71,negative,71
+PCR2 Neg 1,Brookings,Brookings,1,0,BC72,negative,72
+NEG-A,Pendleton,Pendleton,0,,BC73,negative,73
+NEG-B,Pendleton,Pendleton,0,,BC74,negative,74
+NEG-C,Pendleton,Pendleton,0,,BC75,negative,75
+PCR1 Pos 3,Pendleton,Pendleton,0,,BC76,positive,76
+FC-1037B,Pendleton,Brookings,2,12.6,BC77,sample,77
+PenAW-R4B,Pendleton,Brookings,2,7.1,BC78,sample,78
+FC-1037C,Pendleton,Brookings,2,17.3,BC79,sample,79
+BLANK,NA,NA,NA,NA,BC80,blank,80
+PenAW-R3A,Brookings,Brookings,1,6.2,BC81,sample,81
+PenAW-R1C,Brookings,Brookings,1,6.1,BC82,sample,82
+FC-1036A,Brookings,Brookings,1,7.4,BC83,sample,83
+BLANK,NA,NA,NA,NA,BC84,blank,84
+PCR1 Neg 3,Pendleton,Pendleton,0,,BC85,negative,85
+PCR2 Neg 3,Pendleton,Pendleton,0,,BC86,negative,86
+BLANK,NA,NA,NA,NA,BC87,blank,87
+BLANK,NA,NA,NA,NA,BC88,blank,88
+PenAW-R2C,Pendleton,Brookings,2,13,BC89,sample,89
+PenAW-R1A,Pendleton,Brookings,2,16.7,BC90,sample,90
+FC-1038A,Pendleton,Brookings,2,16.3,BC91,sample,91
+BLANK,NA,NA,NA,NA,BC92,blank,92
+PenAW-R2B,Brookings,Brookings,1,9.9,BC93,sample,93
+NEG-A,Brookings,Brookings,1,0,BC94,negative,94
+FC-1037B,Brookings,Brookings,1,12.7,BC95,sample,95
+BLANK,NA,NA,NA,NA,BC96,blank,96
