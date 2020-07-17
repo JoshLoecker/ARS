@@ -1,7 +1,8 @@
+import os
+import re
 import subprocess
 from subprocess import PIPE
-import re
-import os
+
 from Global import Log, Update, Files
 
 
