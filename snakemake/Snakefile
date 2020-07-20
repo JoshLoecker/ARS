@@ -1,16 +1,17 @@
-POST_TRIM_FOLDER_NAMES = os.listdir("/Users/joshl/Documents/Trim")
+configfile: "config.yaml"
 
+FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
 
-rule test:
+rule all:
     input:
-        files = expand("/Users/joshl/Documents/Trim/{barcode_number}/{barcode_number}.merged.trimmed.fastq", barcode_number=POST_TRIM_FOLDER_NAMES)
+        expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=FAST5_FILES)
+
+
+
+rule basecall:
+    input:
+         config['results_folder'] + "DataFiles/fast5/{fast5_files}"
     output:
-        "/Users/joshl/Desktop/outputfile.txt"
-    params:
-        barcode_number = lambda wildcards: "{barcode_number}",
-        bar = "{barcode_number}"
-    log:
-        "/Users/joshl/Desktop/logs.log"
-    message: "This is a message"
+        config['results_folder'] + "Basecall/{fast5_files}"
     shell:
-        "echo {params.barcode_number}"
+        "echo {input}"
