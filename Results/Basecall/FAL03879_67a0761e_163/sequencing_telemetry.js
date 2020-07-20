@@ -1,7 +1,7 @@
 [
     {
         "aggregation": "segment",
-        "analysis_id": "621da53e-d33d-4af6-ad80-9724401ff3f3",
+        "analysis_id": "c91955ab-38a1-46cb-8773-142a6eaca20a",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 583,
@@ -107,8 +107,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.3197078704834,
-                "sum": 37278.83203125
+                "mean": 9.31971168518066,
+                "sum": 37278.84765625
             },
             "read_len_events_sum_temp": 17081350,
             "seq_len_bases_dist_temp": [
@@ -188,13 +188,13 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 80.6473922729492,
-                "sum": 322589.5625
+                "mean": 80.6473159790039,
+                "sum": 322589.25
             },
             "strand_sd_pa": {
                 "count": 4000,
-                "mean": 9.26277637481689,
-                "sum": 37051.10546875
+                "mean": 9.26276111602783,
+                "sum": 37051.04296875
             }
         },
         "channel_count": 434,
@@ -238,7 +238,7 @@
             "chunks_per_runner": "160",
             "client_id": "-1",
             "compress_fastq": "0",
-            "cpu_threads_per_caller": "2",
+            "cpu_threads_per_caller": "6",
             "detect_mid_strand_barcodes": "0",
             "device": "",
             "disable_events": "0",
@@ -271,7 +271,7 @@
             "num_alignment_threads": "4",
             "num_barcode_threads": "4",
             "num_barcoding_buffers": "96",
-            "num_callers": "1",
+            "num_callers": "2",
             "num_extra_bases_trim": "0",
             "open_gap1": "40",
             "open_gap2": "160",
@@ -2064,7 +2064,7 @@
         "software": {
             "analysis": "1d_basecalling",
             "name": "guppy-basecalling",
-            "version": "4.0.11+f1071ce"
+            "version": "4.0.14+8d3226e"
         },
         "tracking_id": {
             "asic_id": "4111609456",
@@ -2089,21 +2089,21 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "610e743b-562c-4ee6-90d7-c012d83fabc2",
+            "msg_id": "b35de788-13c3-461f-89e6-a9ef56b6feb0",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-13T21:44:52Z",
+            "time_stamp": "2020-07-20T21:34:31Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }
     },
     {
         "aggregation": "cumulative",
-        "analysis_id": "621da53e-d33d-4af6-ad80-9724401ff3f3",
+        "analysis_id": "c91955ab-38a1-46cb-8773-142a6eaca20a",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 583,
@@ -2209,8 +2209,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.3197078704834,
-                "sum": 37278.83203125
+                "mean": 9.31971168518066,
+                "sum": 37278.84765625
             },
             "read_len_events_sum_temp": 17081350,
             "seq_len_bases_dist_temp": [
@@ -2290,13 +2290,13 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 80.6473922729492,
-                "sum": 322589.5625
+                "mean": 80.6473159790039,
+                "sum": 322589.25
             },
             "strand_sd_pa": {
                 "count": 4000,
-                "mean": 9.26277637481689,
-                "sum": 37051.10546875
+                "mean": 9.26276111602783,
+                "sum": 37051.04296875
             }
         },
         "channel_count": 434,
@@ -2340,7 +2340,7 @@
             "chunks_per_runner": "160",
             "client_id": "-1",
             "compress_fastq": "0",
-            "cpu_threads_per_caller": "2",
+            "cpu_threads_per_caller": "6",
             "detect_mid_strand_barcodes": "0",
             "device": "",
             "disable_events": "0",
@@ -2373,7 +2373,7 @@
             "num_alignment_threads": "4",
             "num_barcode_threads": "4",
             "num_barcoding_buffers": "96",
-            "num_callers": "1",
+            "num_callers": "2",
             "num_extra_bases_trim": "0",
             "open_gap1": "40",
             "open_gap2": "160",
@@ -4166,7 +4166,7 @@
         "software": {
             "analysis": "1d_basecalling",
             "name": "guppy-basecalling",
-            "version": "4.0.11+f1071ce"
+            "version": "4.0.14+8d3226e"
         },
         "tracking_id": {
             "asic_id": "4111609456",
@@ -4191,14 +4191,14 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "7f17c3ec-e927-42e0-8ec4-db38509066b1",
+            "msg_id": "ec47d37f-361c-4b46-8917-05ed5cd3cdee",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-13T21:44:52Z",
+            "time_stamp": "2020-07-20T21:34:31Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }
