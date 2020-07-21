@@ -1,19 +1,37 @@
+import os
 configfile: "config.yaml"
 
-def pair_name_to_infiles():
-    pass
-    # follow the following stackoverflow question
-    # https://stackoverflow.com/questions/50413374/glob-wildcards-on-multiple-directories-with-different-file-names
+def fastq_runid_file_name():
+    path = config['results_folder'] + "Basecall/"
+    fastq_file_name = ""
+    break_loop = False
+    for root, directory, files in os.walk(path):
+        for file in files:
+            if ".fastq" in file:
+                fastq_file_name = file
+                break_loop = True
+        if break_loop:
+            break
+    return fastq_file_name
 
+def ReturnBarcodeFolderNames():
+    path = config['results_folder'] + "Barcode/"
+    return_direc = []
+    for root, directory, files in os.walk(path):
+        for direc in directory:
+            return_direc.append(direc)
+    return return_direc
 
+folder_names = glob_wildcards(config['results_folder'] + "Barcode/.tempOutput/{folder}")
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
-BARCODE, = expand(glob_wildcards(config['results_folder'] + "Basecall/{fast5_folder}/{{fastq_file}}.fastq"), fast5_folder=FAST5_FILES)
-
+BARCODE, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
+merge_files_file_name = fastq_runid_file_name()
 
 rule all:
     input:
         expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=FAST5_FILES),
-
+        # expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=ReturnBarcodeFolderNames())
+        expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=folder_names)
 
 rule basecall:
     input:
@@ -32,15 +50,25 @@ rule basecall:
         "--num_callers 2 "
         "--cpu_threads_per_caller 6 "
 
-rule barcode:
+checkpoint barcode:
     input:
-        expand(config['results_folder'] + "Basecall/{fast5_folder}/{fastq_file}", fast5_folder=FAST5_FILES)
+        expand(config['results_folder'] + "Basecall/{fast5_files}/{fastq_file}",
+               fast5_files=FAST5_FILES,
+               fastq_file=fastq_runid_file_name())
     output:
-        temp(directory(config['results_folder'] + "Barocde/{fast5_folder}"))
+        temp(directory(config['results_folder'] + "Barcode/.tempOutput/"))
     shell:
         "guppy_barcoder "
         "--input_path {input} "
         "--save_path {output} "
         "--barcode_kits EXP-PBC096 "
-        "--recursive "
-        "--quiet"
+        "--recursive"
+
+
+rule merge:
+    input:
+        config['results_folder'] + "Barcode/.tempOutput/"
+    output:
+        config['results_folder'] + "Barcode/{folder}.merged.fastq"
+    shell:
+         "echo {input}"
