@@ -1,37 +1,21 @@
 import os
 configfile: "config.yaml"
 
-def fastq_runid_file_name():
-    path = config['results_folder'] + "Basecall/"
-    fastq_file_name = ""
-    break_loop = False
-    for root, directory, files in os.walk(path):
-        for file in files:
-            if ".fastq" in file:
-                fastq_file_name = file
-                break_loop = True
-        if break_loop:
-            break
-    return fastq_file_name
-
 def ReturnBarcodeFolderNames():
-    path = config['results_folder'] + "Barcode/"
-    return_direc = []
+    path = config['results_folder'] + "Barcode/.tempOutput"
+    directory_names = []
     for root, directory, files in os.walk(path):
         for direc in directory:
-            return_direc.append(direc)
-    return return_direc
+            directory_names.append(direc)
+    return directory_names
 
-folder_names = glob_wildcards(config['results_folder'] + "Barcode/.tempOutput/{folder}")
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
-BARCODE, = glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq")
-merge_files_file_name = fastq_runid_file_name()
 
 rule all:
     input:
         expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=FAST5_FILES),
-        # expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=ReturnBarcodeFolderNames())
-        expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=folder_names)
+        config['results_folder'] + "Barcode/.tempOutput/",
+        expand(config['results_folder'] + "Barcode/{barcode_folder}.merged.fastq", barcode_folder=ReturnBarcodeFolderNames())
 
 rule basecall:
     input:
@@ -39,36 +23,59 @@ rule basecall:
     output:
         directory(config['results_folder'] + "Basecall/{fast5_files}")
     shell:
-        "ls {input}"
-        
-        " | "
-        
-        "guppy_basecaller "
-        "--quiet "
-        "--save_path {output} "
-        "--config dna_r9.4.1_450bps_fast.cfg "
-        "--num_callers 2 "
-        "--cpu_threads_per_caller 6 "
+         r"""
+         ls {input} \
+         | \
+         guppy_basecaller \
+         --quiet \
+         --save_path {output} \
+         --config dna_r9.4.1_450bps_fast.cfg \
+         --num_callers 2 \
+         --cpu_threads_per_caller 6
+         """
 
 checkpoint barcode:
     input:
-        expand(config['results_folder'] + "Basecall/{fast5_files}/{fastq_file}",
-               fast5_files=FAST5_FILES,
-               fastq_file=fastq_runid_file_name())
+        expand(config['results_folder'] + "Basecall/{fast5_files}", fast5_files=FAST5_FILES)
     output:
         temp(directory(config['results_folder'] + "Barcode/.tempOutput/"))
     shell:
-        "guppy_barcoder "
-        "--input_path {input} "
-        "--save_path {output} "
-        "--barcode_kits EXP-PBC096 "
-        "--recursive"
+         r"""
+         guppy_barcoder \
+        --input_path {input} \
+        --save_path {output} \
+        --barcode_kits EXP-PBC096 \
+        --recursive
+         """
+
+def aggregate_barcode_folders_for_merging(wildcards):
+    """
+    Collect barcode folder paths
+    """
+
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
+    folder_names = []
+    # iterate through each item in our output
+    for root, directories, files in os.walk(checkpoint_output):
+        # iterate through each directory in the output
+        for direc in directories:
+            # append the directory to our folder names
+            folder_names.append(direc)
+    # return a list of folder paths under the Barcode/.tempOutput folder
+    return expand(config['results_folder'] + "Barcode/.tempOutput/{barcode_folder}", barcode_folder=folder_names)
 
 
 rule merge:
     input:
-        config['results_folder'] + "Barcode/.tempOutput/"
+        aggregate_barcode_folders_for_merging
     output:
-        config['results_folder'] + "Barcode/{folder}.merged.fastq"
+        config['results_folder'] + "Barcode/{barcode_folder}.merged.fastq"
+    params:
+        temp_folder = config['results_folder'] + "Barcode/.tempOutput",
+        output_folder = config['results_folder'] + "Barcode"
     shell:
-         "echo {input}"
+         r"""
+         mv \
+         {params.temp_folder}/{wildcards.barcode_folder}/*.fastq \
+         {params.output_folder}/{wildcards.barcode_folder}.merged.fastq
+         """
