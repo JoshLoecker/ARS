@@ -28,7 +28,9 @@ Selecting an aligner for the MinION metabarcoding pipeline. We're comparing mini
 2. Reproducibility
 3. Accuracy
 
-As we adjust the %identity for kept alignments. 
+As we adjust the %identity for kept alignments. This suggests receiver-operator characteristics as one approach.
+
+We can also use power analysis to identify thresholds. The ideal threshold will have the most discriminatory power among groups, in this case, soil sources and samples. We can use permanova to test this. 
 
 ## Load
 ```{r}
