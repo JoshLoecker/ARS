@@ -1,41 +1,33 @@
-"""
-Currently, I am trying to get folder names of folders that do not exist. As a result, snakemake does not see that
-    both barcoding and merging should be ran, as there are no files to update
-Maybe the question I asked on stackoverflow can help?
-"""
-
 import os
+from pathlib import Path
+
 configfile: "config.yaml"
 
 def CheckBarcodeFolderPathsUsingWildcards(wildcards):
     path = checkpoints.barcode.get().output[0]
-    directory_paths = []
-    for root, directory, files in os.walk(path):
-        for direc in directory:
-            full_path = os.path.join(root, direc)
-            directory_paths.append(full_path)
-    return directory_paths
+    full_directory_paths = []
+    for item in os.listdir(path):
+        full_path = Path(os.path.join(path, item))
+        if full_path.is_dir():
+            full_directory_paths.append(str(full_path))
+    return full_directory_paths
 
-def ReturnBarcodeFolderNamesNoWildcards():
-    path = config['results_folder'] + "Barcode/.tempOutput/"
-    directory_name = []
-    for root, directory, files in os.walk(path):
-        for direc in directory:
-            directory_name.append(direc)
-    return directory_name
-
+def ReturnBarcodeFolderNames():
+    path = config['results_folder'] + ".barcodeTempOutput"
+    directory_names = []
+    for item in os.listdir(path):
+        full_path = Path(os.path.join(path, item))
+        if full_path.is_dir():
+            directory_names.append(str(item))
+    return directory_names
 
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
-FAST5_IDENTIFIER = [i.split("_")[-1] for i in FAST5_FILES]
-
 
 rule all:
     input:
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
-         CheckBarcodeFolderPathsUsingWildcards,
-        expand(config['results_folder'] + "Barcode/{barcode_folder}", barcode_folder=ReturnBarcodeFolderNamesNoWildcards()),
-
-
+        # config['results_folder'] + "Barcode/merge_complete"  # SAVE THIS
+        expand(config['results_folder'] + "Barcode/{barcode_folder}", barcode_folder=ReturnBarcodeFolderNames())
 
 rule basecall:
     input:
@@ -58,10 +50,9 @@ checkpoint barcode:
     input:
         config['results_folder'] + "Basecall/"
     output:
-        temp(expand(config['results_folder'] + ".barcodeTempOutput/{fast5_files}", fast5_files=FAST5_FILES))
+        temp(directory(config['results_folder'] + ".barcodeTempOutput/basecall_summary.txt"))
     shell:
          r"""
-         echo {input} \
          guppy_barcoder \
         --input_path {input} \
         --save_path {output} \
@@ -71,14 +62,16 @@ checkpoint barcode:
 
 rule merge_files:
     input:
-        expand(config['results_folder'] + ".barcodeTempOutput/{fast5_files}", fast5_files=FAST5_FILES),
+        # config['results_folder'] + ".barcodeTempOutput/",
         CheckBarcodeFolderPathsUsingWildcards
     output:
-        config['results_folder'] + "Barcode/{barcode_folder}"
-        # config['results_folder'] + "Barcode/{wildcards.directory_paths}"
+        # config['results_folder'] + "Barcode/merge_complete"  # BEST OPTION SO FAR
+        directory(config['results_folder'] + "Barcode/{barcode_folder}")
+    params:
+        barcode_number = "{barcode_folder}",
+        temp_barcode_path = config['results_folder'] + ".barcodeTempOutput/" + "{barcode_folder}"
     shell:
         r"""
-        echo input {input} \
-        echo output {output}
+        cp -r {params.temp_barcode_path} {output}
         """
 
