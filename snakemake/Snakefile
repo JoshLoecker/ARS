@@ -8,23 +8,19 @@ TEMP_BARCODE_FOLDER = config['results_folder']
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
 BARCODE_FOLDER = os.listdir(config['results_folder'] + ".")
 
+def aggregate_barcode_folder_names(wildcards):
+    checkpoint_output = checkpoints.barcode.get().output[0]
+    folder_names = []
+    for item in os.scandir(checkpoint_output):
+        if Path(item).is_dir():
+            folder_names.append(item)
+    return expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=folder_names)
+
+
 rule all:
     input:
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
-
-        # expand(config['results_folder'] + "Barcode/{folder}.merged.fastsq"),
-        expand(config['results_folder'] + "Barcode/{folder}.merged.fastq",
-               folder=[
-                   Path(
-                       os.path.join(
-                           TEMP_BARCODE_FOLDER, folder)
-                   ).is_dir() for folder in os.listdir(
-                       TEMP_BARCODE_FOLDER
-                   )
-         ]
-         )
-        # config['results_folder'] + "Barcode/merge_complete",  # SAVE THIS
-        # expand(config['results_folder'] + "Barcode/{barcode_folder}", barcode_folder=)
+        aggregate_barcode_folder_names
 
 rule basecall:
     input:
@@ -57,29 +53,11 @@ checkpoint barcode:
         --recursive
          """
 
-def aggregate_barcode_folder_names(wildcards):
-    checkpoint_output = checkpoints.barcode.get().output[0]
-    folders = expand(checkpoint_output + "{folder}/{fastq_file}.fastq",
-                     folder=wildcards.folder,
-                     fastq_file=glob_wildcards(os.path.join(checkpoint_output, "{fastq_file}.fastq")).fastq)
-    print(folders)
-    return folders
-
 rule merge_files:
     input:
-        # config['results_folder'] + ".barcodeTempOutput/",
-        aggregate_barcode_folder_names
+        config['results_folder'] + ".barcodeTempOutput/{folder}"
     output:
-        # touch(config['results_folder'] + "Barcode/merge_complete"),  # BEST OPTION SO FAR
-        config['results_folder'] + "Barcode/{folder}.merged.fastq",
+        config['results_folder'] + "Barcode/{folder}.merged.fastq"
     shell:
         "echo {input}"
 
-
-rule trim_reads:
-    input:
-        config['results_folder'] + "Barcode/{folder}.merged.fastq",
-    output:
-        config['results_folder'] + "Trim/{folder}.trimmed.fastq"
-    shell:
-        "echo {input}"
