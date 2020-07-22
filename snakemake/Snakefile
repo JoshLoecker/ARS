@@ -3,31 +3,28 @@ from pathlib import Path
 
 configfile: "config.yaml"
 
-def CheckBarcodeFolderPathsUsingWildcards(wildcards):
-    path = checkpoints.barcode.get().output[0]
-    full_directory_paths = []
-    for item in os.listdir(path):
-        full_path = Path(os.path.join(path, item))
-        if full_path.is_dir():
-            full_directory_paths.append(str(full_path))
-    return full_directory_paths
 
-def ReturnBarcodeFolderNames():
-    path = config['results_folder'] + ".barcodeTempOutput"
-    directory_names = []
-    for item in os.listdir(path):
-        full_path = Path(os.path.join(path, item))
-        if full_path.is_dir():
-            directory_names.append(str(item))
-    return directory_names
-
+TEMP_BARCODE_FOLDER = config['results_folder']
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
+BARCODE_FOLDER = os.listdir(config['results_folder'] + ".")
 
 rule all:
     input:
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
-        # config['results_folder'] + "Barcode/merge_complete"  # SAVE THIS
-        expand(config['results_folder'] + "Barcode/{barcode_folder}", barcode_folder=ReturnBarcodeFolderNames())
+
+        # expand(config['results_folder'] + "Barcode/{folder}.merged.fastsq"),
+        expand(config['results_folder'] + "Barcode/{folder}.merged.fastq",
+               folder=[
+                   Path(
+                       os.path.join(
+                           TEMP_BARCODE_FOLDER, folder)
+                   ).is_dir() for folder in os.listdir(
+                       TEMP_BARCODE_FOLDER
+                   )
+         ]
+         )
+        # config['results_folder'] + "Barcode/merge_complete",  # SAVE THIS
+        # expand(config['results_folder'] + "Barcode/{barcode_folder}", barcode_folder=)
 
 rule basecall:
     input:
@@ -50,7 +47,7 @@ checkpoint barcode:
     input:
         config['results_folder'] + "Basecall/"
     output:
-        temp(directory(config['results_folder'] + ".barcodeTempOutput/basecall_summary.txt"))
+        temp(directory(config['results_folder'] + ".barcodeTempOutput/"))
     shell:
          r"""
          guppy_barcoder \
@@ -60,18 +57,29 @@ checkpoint barcode:
         --recursive
          """
 
+def aggregate_barcode_folder_names(wildcards):
+    checkpoint_output = checkpoints.barcode.get().output[0]
+    folders = expand(checkpoint_output + "{folder}/{fastq_file}.fastq",
+                     folder=wildcards.folder,
+                     fastq_file=glob_wildcards(os.path.join(checkpoint_output, "{fastq_file}.fastq")).fastq)
+    print(folders)
+    return folders
+
 rule merge_files:
     input:
         # config['results_folder'] + ".barcodeTempOutput/",
-        CheckBarcodeFolderPathsUsingWildcards
+        aggregate_barcode_folder_names
     output:
-        # config['results_folder'] + "Barcode/merge_complete"  # BEST OPTION SO FAR
-        directory(config['results_folder'] + "Barcode/{barcode_folder}")
-    params:
-        barcode_number = "{barcode_folder}",
-        temp_barcode_path = config['results_folder'] + ".barcodeTempOutput/" + "{barcode_folder}"
+        # touch(config['results_folder'] + "Barcode/merge_complete"),  # BEST OPTION SO FAR
+        config['results_folder'] + "Barcode/{folder}.merged.fastq",
     shell:
-        r"""
-        cp -r {params.temp_barcode_path} {output}
-        """
+        "echo {input}"
 
+
+rule trim_reads:
+    input:
+        config['results_folder'] + "Barcode/{folder}.merged.fastq",
+    output:
+        config['results_folder'] + "Trim/{folder}.trimmed.fastq"
+    shell:
+        "echo {input}"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="Elements" overwriteAll="false" createEmptyFolders="true" traceLevel="BRIEF" autoUploadExternalChanges="true" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
+  <component name="PublishConfigData" serverName="Elements" overwriteAll="false" createEmptyFolders="true" traceLevel="BRIEF" autoUploadExternalChanges="true" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
     <serverData>
       <paths name="Elements">
         <serverdata>
@@ -10,6 +10,5 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
   </component>
 </project>
