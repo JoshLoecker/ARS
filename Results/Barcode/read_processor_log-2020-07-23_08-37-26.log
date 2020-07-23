@@ -1,0 +1,20 @@
+2020-07-23 08:37:26.086497 [guppy/message] ONT Guppy barcoding software version 4.0.14+8d3226e
+input path:         /Users/joshl/PycharmProjects/ARS/Results/Basecall/
+save path:          /Users/joshl/PycharmProjects/ARS/Results/.barcodeTempOutput/
+arrangement files:  barcode_arrs_pcr96.cfg 
+min. score front:   60
+min. score rear:    60
+
+2020-07-23 08:37:26.087013 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-23 08:37:26.087543 [guppy/message] Found 5 fastq files.
+2020-07-23 08:37:26.087574 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-23 08:37:33.327535 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1055/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-23 08:37:33.327636 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-23 08:37:40.039725 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_806/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-23 08:37:40.039804 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-23 08:37:45.198052 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_539/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-23 08:37:45.198132 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-23 08:37:50.999155 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_163/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-23 08:37:50.999273 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq
+2020-07-23 08:37:54.356087 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Basecall/FAL03879_67a0761e_1275/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0_0.fastq (4000 reads)
+2020-07-23 08:37:54.356198 [guppy/message] Done in 28270 ms.

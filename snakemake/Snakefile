@@ -2,25 +2,31 @@ import os
 from pathlib import Path
 
 configfile: "config.yaml"
-
-
 TEMP_BARCODE_FOLDER = config['results_folder']
 FAST5_FILES, = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5")
-BARCODE_FOLDER = os.listdir(config['results_folder'] + ".")
 
 def aggregate_barcode_folder_names(wildcards):
     checkpoint_output = checkpoints.barcode.get().output[0]
     folder_names = []
     for item in os.scandir(checkpoint_output):
         if Path(item).is_dir():
-            folder_names.append(item)
-    return expand(config['results_folder'] + "Barcode/{folder}.merged.fastq", folder=folder_names)
+            folder_names.append(item.name)
+    return expand(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq", barcode_number=folder_names)
+
 
 
 rule all:
     input:
+        # basecall
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
-        aggregate_barcode_folder_names
+         # barcode && merge files
+        aggregate_barcode_folder_names,
+         # NanoQC pre-trim
+        expand(config['results_folder'] + "NanoQC/Pre-Trim/{barcode_number}.nanoqc.pretrim.fastq",
+               barcode_number=glob_wildcards(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq").barcode_number),
+        # NanoQC post-trim
+        expand(config['results_folder'] + "NanoQC/Post-Trim/{barcode_number}.nanoqc.posttrim.fastq",
+               barcode_number=glob_wildcards(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq").barcode_number)
 
 rule basecall:
     input:
@@ -43,7 +49,7 @@ checkpoint barcode:
     input:
         config['results_folder'] + "Basecall/"
     output:
-        temp(directory(config['results_folder'] + ".barcodeTempOutput/"))
+        temp(directory(config['results_folder'] + ".barcodeTempOutput"))
     shell:
          r"""
          guppy_barcoder \
@@ -55,9 +61,47 @@ checkpoint barcode:
 
 rule merge_files:
     input:
-        config['results_folder'] + ".barcodeTempOutput/{folder}"
+        config['results_folder'] + ".barcodeTempOutput/{barcode_number}"
     output:
-        config['results_folder'] + "Barcode/{folder}.merged.fastq"
+        config['results_folder'] + "Barcode/{barcode_number}.merged.fastq"
+    params:
+        temp_barcode_folder = config['results_folder'] + ".barcodeTempOutput",
+        barcoding_save_path = config['results_folder'] + "Barcode/barcoding_summary.txt",
+        read_log_save_path = config['results_folder'] + "Barcode/"
+    shell:
+        r"""
+        # run all files in our input through a `for` loop
+        for FILE in `ls {input}`
+        do
+            # for each file in the folder, create its file path
+            FILE_PATH={input}/$FILE
+            
+            # place our old file into the new file. This will run for each file in the folder
+            #   effectively concatenates all files per barcode to a new file
+            cat $FILE_PATH > {output}
+        done
+        
+        # remove our input folder as it is no longer needed
+        rm -r {input}
+        
+        # we are going to move the barcoding summary and read processor log as well
+        BARCODING_SUMMARY = {params.temp_barcode_folder}/barcoding_summary.txt
+        READ_LOG = {params.temp_barcode_folder}/read_*.log
+        
+        
+        # this will test if the barcoding summary file exists. If it does, we can assume that both files are present
+        # if the file does not exist, there is no need to try to move them
+        if [ -f $BARCODING_SUMMARY]; then
+            mv $BARCODING_SUMMARY {params.barcoding_save_path}
+            mv $READ_LOG {params.read_log_save_path}
+        fi
+        """
+
+rule NanoQC:
+    input:
+        config['results_folder'] + "Barcode/{barcode_number}.merged.fastq"
+    output:
+        config['results_folder'] + "NanoQC/Pre-Trim/{barcode_number}.nanoqc.pretrim.fastq"
     shell:
         "echo {input}"
 
