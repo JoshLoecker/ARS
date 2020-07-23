@@ -1,0 +1,10 @@
+2020-07-23 17:12:33.900197 [guppy/message] ONT Guppy barcoding software version 4.0.14+8d3226e
+input path:         /Users/joshl/PycharmProjects/ARS/Results/Basecall
+save path:          /Users/joshl/PycharmProjects/ARS/Results/.barcodeTempOutput
+arrangement files:  barcode_arrs_pcr96.cfg 
+min. score front:   60
+min. score rear:    60
+
+2020-07-23 17:12:33.901188 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-23 17:12:33.901463 [guppy/message] Found 0 fastq files.
+2020-07-23 17:12:33.901555 [guppy/message] Done in 1 ms.
