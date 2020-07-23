@@ -1,38 +1,16 @@
-#
-#                          READ ME
-#
-#   Place a trailing slash after every directory name
-#   If this is not done, you may find that files are ending up in the wrong places,
-#       or the pipeline is not being completed properly.
-#   In the future, I hope to modify this so a trailing slash is optional.
-
-# GLOBAL CONFIG
-# set this variable to the location of your scripts folder
-# Set this location where you would like all files to be placed
+# set the results_folder to the place that you would like results to be saved
 results_folder: "/Users/joshl/PycharmProjects/ARS/Results/"
-parent_folder: "/Users/joshl/PycharmProjects/ARS/"
 
-scripts_folder: "/Users/joshl/PycharmProjects/ARS/Scripts/"
-log_path: "/Users/joshl/PycharmProjects/ARS/Results/logs.csv"
+# Set this to the location of your alignment reference file for the aligner tool you are using (guppy/minimap/vsearch)
 alignment_reference_file: "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
-
-# COUNT READS CONFIG
-barcode_file_name: "barcode_count_reads"
-trim_file_name: "trim_count_reads"
-NanoFilt_file_name: "nanofilt_count_reads"
 
 # ORIENT/TRIMMING CONFIG (cutadapt)
 trim_error_rate: 0.15
+trim_three_prime_adapter: ACTTGCCTGTCGCTCTATCTTCTACCTTGTTACGACTT
+trim_five_prime_adapter: TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG
 
 # VSEARCH ALIGNER
 # The match rate is a percentage of each read that must be matched before it is classified
-#   Raising this value gives fewer resutls that are matched more closely
+#   Raising this value gives fewer results that are matched more closely
 #   Lowering this value gives more results that are not as closely matched
 vsearch_match_rate: 0.90
-
-# GENOMIC DATA
-# The header line is the line at the top of the .csv file that will be written to the top of the file. This should not be changed
-header_line: "read_id\talignment_genome\tquality_score\tlignment_score\tper_base_divergence\tbarcode_number\tinput_file\talignment_tool"
-
-# NanoPlot
-# The input directory uses the data from any .fastx file. Using the folder containing NanoFilt data will provide graphs on the most recent output

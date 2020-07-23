@@ -1,7 +1,7 @@
 [
     {
         "aggregation": "segment",
-        "analysis_id": "8fdda902-3532-49cd-913b-f44da266165e",
+        "analysis_id": "2e04358f-a23a-44e8-a5c2-60a5173f7b71",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 536,
@@ -103,8 +103,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.48215198516846,
-                "sum": 37928.609375
+                "mean": 9.48214721679688,
+                "sum": 37928.58984375
             },
             "read_len_events_sum_temp": 18899246,
             "seq_len_bases_dist_temp": [
@@ -200,13 +200,13 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 81.1853103637695,
-                "sum": 324741.25
+                "mean": 81.1852569580078,
+                "sum": 324741.03125
             },
             "strand_sd_pa": {
                 "count": 4000,
-                "mean": 9.35349178314209,
-                "sum": 37413.96875
+                "mean": 9.35346698760986,
+                "sum": 37413.8671875
             }
         },
         "channel_count": 421,
@@ -2049,21 +2049,21 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "88fa4185-a786-4885-a74a-54feda8cd05f",
+            "msg_id": "2f447342-754a-47d5-ab79-e327649fd90f",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-21T19:42:46Z",
+            "time_stamp": "2020-07-23T16:22:53Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }
     },
     {
         "aggregation": "cumulative",
-        "analysis_id": "8fdda902-3532-49cd-913b-f44da266165e",
+        "analysis_id": "2e04358f-a23a-44e8-a5c2-60a5173f7b71",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 536,
@@ -2165,8 +2165,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.48215198516846,
-                "sum": 37928.609375
+                "mean": 9.48214721679688,
+                "sum": 37928.58984375
             },
             "read_len_events_sum_temp": 18899246,
             "seq_len_bases_dist_temp": [
@@ -2262,13 +2262,13 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 81.1853103637695,
-                "sum": 324741.25
+                "mean": 81.1852569580078,
+                "sum": 324741.03125
             },
             "strand_sd_pa": {
                 "count": 4000,
-                "mean": 9.35349178314209,
-                "sum": 37413.96875
+                "mean": 9.35346698760986,
+                "sum": 37413.8671875
             }
         },
         "channel_count": 421,
@@ -4111,14 +4111,14 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "cf4205e4-9efa-446a-8697-49042e68d565",
+            "msg_id": "718b37fc-b63c-48aa-a513-64907d43c6b0",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-21T19:42:46Z",
+            "time_stamp": "2020-07-23T16:22:53Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }
