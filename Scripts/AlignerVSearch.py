@@ -1,8 +1,9 @@
+import os
+import re
 import shutil
 import subprocess
 from subprocess import PIPE
-import re
-import os
+
 from Global import Log, Update, Files, BarcodeNumber
 
 
@@ -16,7 +17,7 @@ class VSearch:
 
         Args:
             input_directory (str): This is the directory containing .fasta/.fastq files
-            save_directory (str): This is the directory where results should be saved. DataFiles will have the barcode number of the input file
+            save_directory (str): This is the directory where results should be saved. ElementsFiles will have the barcode number of the input file
             match_rate (float): This is the `id` rate of vsearch. It specifies the specificity in percent that vsearch should use. By default, it is set to 0.90 (90%)
 
         Returns:
@@ -103,18 +104,15 @@ class VSearch:
         Args:
             input_file (str): This is the exact file path to the input file
         """
-        sam_save_path = self.__return_new_save_path(input_file, "sam")
         uc_save_path = self.__return_new_save_path(input_file, "uc")
 
-        message = "vsearch --usearch_global {input_file} --db {reference_file} --id 0 --samout {sam_file_output} --uc {uc_file_output}".format(
+        message = "vsearch --usearch_global {input_file} --db {reference_file} --id 0 --uc {uc_file_output}".format(
             input_file=input_file,
             reference_file=self.reference_file,
-            sam_file_output=sam_save_path,
             uc_file_output=uc_save_path)
 
         message = message.split(" ")
         # we are going to clear out the output file so vsearch does not create duplicate results
-        open(sam_save_path, 'w').close()
         open(uc_save_path, 'w').close()
 
         self.__update_task()
@@ -196,9 +194,9 @@ if __name__ == '__main__':
         reference_file = str(snakemake.params.alignment_file)
         match_rate = float(snakemake.params.match_rate)
     except NameError:
-        input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
-        save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/vsearch/"
-        reference_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
+        input_directory = "/Volumes/Elements/TempAlignerRun/NanoFilt/"
+        save_directory = "/Volumes/Elements/TempAlignerRun/vsearch/"
+        reference_file = "/Volumes/Elements/TempAlignerRun/silva_alignment_reference.fasta"
         match_rate = 0.90
 
     print("Starting VSearch Aligner")

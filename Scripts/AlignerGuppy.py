@@ -1,12 +1,14 @@
-import time
-import re
 import os
+import re
 import shutil
 import subprocess
+import time
+from pathlib import Path
 from subprocess import PIPE
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
+
 from Global import Update, Log, Files
 
 
@@ -329,9 +331,9 @@ if __name__ == '__main__':
         save_directory = str(snakemake.output.save_directory)
         alignment_file = str(snakemake.params.alignment_file)
     except NameError:
-        input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
-        save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/"
-        alignment_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
+        input_directory = "/Volumes/Elements/TempAlignerRun/NanoFilt/"
+        save_directory = "/Volumes/Elements/TempAlignerRun/guppy/"
+        alignment_file = "/Volumes/Elements/TempAlignerRun/silva_alignment_reference.fasta"
 
     print("Starting Guppy Aligner")
 

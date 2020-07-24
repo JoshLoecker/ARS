@@ -1,7 +1,6 @@
-from pathlib import Path
-import subprocess
-from subprocess import PIPE
 import re
+from pathlib import Path
+
 from Global import Log, Update, Files
 
 
@@ -54,14 +53,21 @@ class MiniMap2:
 
             # -a: output in SAM format
             # -x: use map-ont for mapping results
-            message = "minimap2 -ax map-ont {reference} {input} -o {output}".format(reference=self.alignment_reference, input=file, output=file_save_path)
+            message = "minimap2 -ax map-ont {reference} {input} > {output}".format(
+                reference=self.alignment_reference,
+                input=file,
+                output=file_save_path)
+
+            print(message)
+
             self.__write_logs_to_file(message)
 
             message = message.split(" ")
             # I am collecting all output from the MiniMap2 commands because it is not needed. If it is needed in the future, remove the PIPE commands from here
             # alternatively, print the results with print(command.stdout) and print(command.
-            self.__update_task()
-            command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            #self.__update_task()
+            open(file_save_path, 'w').close()
+            # command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
 
     def __return_save_path(self, input_file):
@@ -112,7 +118,7 @@ if __name__ == '__main__':
     except NameError:
         input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
         save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/minimap/"
-        alignment_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
+        alignment_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/silva_alignment_reference.fasta"
 
     print("Starting MiniMap2 Aligner")
 
