@@ -1,0 +1,719 @@
+---
+title: "Aligner Performance on Mock Communities Mapped to the Mock Database"
+subtitle: "Created July 13, 2020"
+author: "PME"
+date: "`r format(Sys.time(), '%d %B, %Y, %H:%M')`"
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding=encoding, output_dir=here::here('Results'))})
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    df_print: paged
+    code_folding: hide
+  pdf_document: default
+  word_document: default
+---
+
+```{r set_options, include=FALSE}
+knitr::opts_chunk$set(message=FALSE, 
+                      warning=FALSE,
+					  fig.align='center')
+```
+
+This notebook gives an overview of the properties of `guppy_aligner`, `minimap2`, and `vsearch` in assigning a well-defined community to a well-defined database. We're going to subset the positive controls from the CLC experiment, which sequence the zymogen even mock community (DNA standard, item #D6305). As a result, all data below is a best-case scenario.
+
+We are interested specifically in:
+
+1. Sequence retention within an aligner
+2. Reproducibility across aligners
+3. Accuracy in recreating the community
+
+Including as we increase the threshold for matches. The threshold will be on sequence divergence between the observed and expected sequence for each read/assignment pair. 
+
+Sincere apologies for sloppy code in this one.
+
+
+## Load
+```{r}
+libs = c('here', 'magrittr', 'ggplot2', 'reshape2')
+for (i in libs) library(i, character.only=TRUE)
+
+fns = here('Scripts', 'Functions') %>% 
+  list.files(pattern='.R', full.names=TRUE)
+for (f in fns) source(f)
+
+path = here('Data', 'Pipeline Results', 'Alignments', 'guppy', 'SAM_Files', 'guppy_aligner_barcode01.sam')
+
+```
+
+```{r }
+# in_clas = "collated_primary_alignment_data.tsv"
+# in_uncl = "collated_unclassified_alignment_data.tsv"
+in_sam = file.path('Data', 'Pipeline Results', 'Alignments')
+in_guppy = file.path(in_sam, 'guppy', 'SAM_Files')
+in_vsearch = file.path(in_sam, 'vsearch', 'UC_Files')
+in_minimap = file.path(in_sam, 'minimap', 'csv_results')
+in_meta = here('Data', 'MinION CLC Barcodes.csv')
+in_zymo = here('Data', 'Zymogen Relative Abundances.csv')
+
+in_path = in_guppy
+ext = '.sam'
+guppy = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+in_path = in_minimap
+ext = '.csv'
+minimap = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+in_path = in_vsearch
+ext = '.uc'
+vsearch = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_uc
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+meta = read.csv(in_meta, stringsAsFactors=FALSE)
+names(meta) %<>% tolower
+meta$barcode %<>% gsub('BC', '', .)
+
+zymo = read.csv(in_zymo, stringsAsFactors=FALSE)
+names(zymo) %<>% tolower
+
+```
+
+Process aligner dataframes
+```{r}
+df_ls = list(guppy=guppy,
+             minimap=minimap,
+             vsearch=vsearch)
+
+# Make spp-level assignments
+df_ls %<>% lapply(function(x) {
+  x$ref_spp = strsplit(x$ref_id, '_') %>% 
+    sapply(function(x) paste(x[1:2], collapse='_'))
+  x$ref_spp = ifelse(is.na(x$ref_id), NA, x$ref_spp)
+  return(x)
+})
+
+# rename most columns
+keep_cols = c('seq_id', 'barcode', 'ref_id', 'ref_spp', 'bit_flag', 'seq_length', 'divergence', 'score', 'chimeric')
+df_ls = lapply(names(df_ls), function(x) {
+  tt = df_ls[[x]]
+  subkeep = keep_cols[keep_cols %in% names(tt)]
+  tt = tt[subkeep]
+  names(tt)[-c(1:2)] %<>% paste(x, sep='_')
+  return(tt)
+})
+
+# merge into a single, wide dataframe
+df = df_ls[[1]]
+for (i in 2:length(df_ls)) {
+  df %<>% merge(df_ls[[i]], by=c('seq_id', 'barcode'), all=TRUE)
+}
+
+# add sample info
+df %<>% merge(meta[, c('barcode', 'type')], by='barcode', all=TRUE)
+```
+
+
+```{r fig.height=8, fig.width=8, warning=FALSE}
+pos = subset(df, type=='positive')
+```
+
+
+
+# Aligner Agreement
+## Metrics
+How do the important alingner diagnostics relate to each other? These are:
+
+1. Sequence length (of the query sequence)
+2. Divergence between the query and the reference. This is calculated differently among each aligner. Specifically:
+  1. minimap2 reports a gap-compressed divergence
+  2. guppy_aligner reports an "approximate" divergence
+  3. vsearch reports an exact (basewise) divergence
+3. Alignment score (matches - (gaps + mismatches))
+
+```{r fig.height=7, fig.width=7}
+c('seq_length', 'divergence', 'score') %>% 
+  sapply(function(x) grepl(x, names(df))) %>% 
+  apply(1, any) %>% 
+  pos[, .] %>% 
+  pairs(col='#00000022', cex=0.1, main='Positive Controls')
+```
+
+This cross-correlation matrix shows that:
+
+1. scores for minimap and guppy are nearly, but not quite, identical. Could this could be due to some stochasticity in the mapping algorithm?
+2. Divergence is not identical, but is similar. This is due to the different calculation method: Minimap's errors are gap-compressed, whereas guppy_aligner's are approximate (including gaps). Vsearch divergence is definitely correlated, as well, but less so as between minimap and guppy. In particular, vsearch finds a number of matches that are very poor. Ageement across aligners is better for higher-confidence reads. 
+3. Aligned length is not identical, but is close.
+4. The range of diverence values is much larger for vsearch than the other aligners. 
+
+
+## Assignments
+Pairwise disagreements. Do minimap2 and guppy_aligner find the same chimeras?
+
+**Chimeras**
+```{r}
+find_disagreement = function(data, value) {
+  val = grepl(value, names(data)) %>% 
+    data[.]
+  val_df = apply(val, 1, function(x) any(!is.na(x))) %>% 
+    val[., ]
+
+  # convert names to numeric ensuring correct factor levels
+  lvls = unlist(val_df) %>% unique
+  val = val_df %>% 
+    as.data.frame %>% 
+    lapply(factor, levels=lvls) %>%
+    sapply(as.numeric) %>% 
+    cor(use='complete.obs')  # correlate
+
+  # calculate disagreement
+  val = 1-val
+  return(list(disagreement = val, data = val_df))
+}
+
+# extract chimeras
+find_disagreement(pos, 'chimeric')
+```
+These disagreements are mostly at the strain level. The aligners flag the same sequences as chimeric. Most of these are within-species "chimeras". 
+
+**Strain assignment** of primary alignments
+```{r}
+primaries = subset(pos, bit_flag_guppy < 2048)
+find_disagreement(primaries, 'ref_id')$disagreement
+```
+They all produce quite different results at the strain level. The minion does not give strain-level resolution in metabarcoding.
+
+**Species assignment** of primary alignments
+```{r}
+find_disagreement(primaries, 'ref_spp')$disagreement
+```
+For the most part, agreement is quite high. Minimap and guppy disagree 1% of the time. Vsearch disagrees 8% of the time. It appears we have *could* have genus-level resolution. We will test this further with a reduced zymogen dataset.
+
+Where are these disagreements?
+```{r}
+#' fuzzy column selection
+#' 
+#' @param data data.frame or matrix
+#' @param columns vector of characters to match in `colnames(data)` using `grepl()`.
+col_subset = function(data, columns) {
+  require(magrittr)
+  is_col = sapply(columns, function(x) grepl(x, names(data))) %>% 
+    apply(1, any)
+  data %<>% .[is_col]
+  return(data)
+}
+
+disagrees = col_subset(primaries, 'ref_spp') %>% 
+  apply(1, function(x) any(x[-1] != x[1]))
+
+disagrees = primaries[disagrees, ] %>% 
+  col_subset(c('seq_id', 'ref_spp', 'divergence', 'seq_length'))
+
+disagrees
+```
+Generally, guppy and vsearch agree, and minimap is the outlier. I wouldn't say this means guppy is better than minimap, though. Anyway, differences are small. Also, vsearch finds *S. cerevisiae* in this dataset... albeit with very high divergence.
+
+Do disagreements correspond with score or sequence length?
+
+Large, red circles are disagreements. Blue circles are agreements.
+```{r}
+disagree = col_subset(primaries, c('ref_spp')) %>% 
+  apply(1, function(x) {
+    sapply(x, function(y) any(y != x)) %>% 
+      any
+  })
+
+c('divergence', 'seq_length') %>% 
+  lapply(function(x) col_subset(primaries, x)) %>% 
+  lapply(pairs, cex=disagree+1, col=adjustcolor(c('blue', 'red'), alpha.f=0.2)[disagree+1])
+```
+No obvious patterns here. They just disagree sometimes (big and red are disagreements).
+
+# Community Composition of Positive Controls
+Let's look at the composition of the positive controls versus expected at the barcode level. Note that this is a very small subset of the data currently, and so is liable to be noisy. 
+
+```{r}
+assigns = col_subset(primaries, c('ref_spp', 'barcode'))
+bc_reads = with(assigns, tapply(barcode, barcode, length))
+
+tax_reads = melt(assigns, id.vars='barcode') %>% 
+  aggregate(.[3], ., length)
+colnames(tax_reads)[4] = 'count'
+
+split_extract = function(x, split, n) {
+  require(magrittr)
+  x %<>%
+    as.character %>% 
+    strsplit(split) %>% 
+    sapply(extract, n)
+  return(x)
+}
+
+tax_reads$count %<>% divide_by(bc_reads[tax_reads$barcode])
+tax_reads$variable %<>%
+  split_extract('_', 3)
+
+# add zymo
+add_zymo = data.frame(barcode=56,
+                      variable='zymo',
+                      value=zymo$taxa,
+                      count=zymo$abundance)
+pltdf = rbind(add_zymo,
+              tax_reads)
+# pltdf$barcode %<>% as.factor
+
+ggplot(pltdf, 
+       aes(x=barcode,
+           y=count,
+           fill=value)) +
+  scale_fill_brewer(palette='Set3') +
+  facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Barcode',
+       y='Read Proportion') +
+  theme_minimal()
+```
+Generally, this looks pretty good. We see some noise but large bars are large, small bars are small. 
+
+Same data, but aggregated across barcodes:
+```{r}
+
+tt = col_subset(primaries, 'ref_spp') %>% 
+  lapply(function(x) tapply(x, x, length))
+tt = names(tt) %>% 
+  lapply(function(x) {
+    out = data.frame(method=x, 
+                     taxa=names(tt[[x]]),
+                     value=tt[[x]])
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+reads = tapply(tt$value, tt$method, sum)
+tt$proportion = tt$value / reads[tt$method]
+tt$value = NULL
+tt$method %<>% 
+  split_extract('_', 3)
+
+add_zymo = data.frame(method='zymo',
+                      taxa=zymo$taxa,
+                      proportion=zymo$abundance)
+
+pltdf = rbind(add_zymo, tt)
+ggplot(pltdf, 
+       aes(x=method,
+           y=proportion,
+           fill=taxa)) +
+  scale_fill_brewer(palette='Set3') +
+  # facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Barcode',
+       y='Read Proportion') +
+  theme_minimal()
+```
+We see some bias in the MinION data, but this is consistent across mappers. It generally is close to expected. Note that we are accepting basically all reads, regardless of % sequence identity with the reference. Therefore, the MinION is not systematically biasing relative abundances at the level of producing sequences. Instead, any bias we observe is due to mismatches with the reference database - i.e. the representation of closely related taxa in the reference database. 
+
+*E. faecalis* and *E. coli* seem underrepresented.
+
+Here's an ordination showing distances. Variances along each axis are the left plot (basically, only axis 1 is important).
+Here is an ordination of the methods compared to the zymo, to show distance. 0% mapping identitiy threshold. 
+
+```{r}
+ord_mat = col_subset(primaries, 'ref_spp') %>% 
+  lapply(function(x) tapply(x, x, length))
+
+ord_mat %<>%
+  names %>% 
+  lapply(function(x) {
+    out = data.frame(method=x,
+                     taxa=names(ord_mat[[x]]),
+                     count=ord_mat[[x]])
+    return(out)
+  }) %>% 
+  do.call(rbind, .) %>% 
+  dcast(method ~ taxa)
+
+ord_mat[is.na(ord_mat)] = 0.5
+rownames(ord_mat) = ord_mat$method
+ord_mat$method = NULL
+
+add_zymo = zymo[, 'abundance'] %>% 
+  set_names(zymo[, 'taxa']) %>% 
+  .[colnames(ord_mat)]
+
+ord_mat %<>% rbind(zymo = add_zymo) %>% 
+  sweep(., 1, rowSums(.), '/')
+ord_mat[ord_mat==0] = 1E-6
+
+rownames(ord_mat) %<>% 
+  strsplit('_') %>% 
+  sapply(function(x) x[length(x)])
+
+
+
+clr = function(x) {
+  n = length(x)
+  ll = log(x)
+  geomean = exp((1/n)*sum(ll))
+  out = log(x/geomean)
+  return(out)
+}
+
+ord_mat %<>% 
+  apply(1, clr) %>% 
+  t
+
+ord = prcomp(ord_mat)
+
+{
+  par(mfrow=c(1,2))
+  plot(ord, main='Scree')
+  biplot(ord)
+  par(mfrow=c(1,1))
+}
+```
+Guppy and minimap are basically the same, but disagree with the zymo community about as much as vsearch. Really, they're all the same.
+
+
+# Assignment of reads by % sequence divergence threshold
+
+```{r}
+thresholds = seq(0, 0.6, by=0.01)
+seq_div = c('guppy', 'minimap', 'vsearch')
+seq_div %<>%  
+  lapply(function(x) col_subset(pos, x)) %>% 
+  set_names(seq_div) %>% 
+  lapply(function(x) {
+    x %<>% na.omit
+    assigned = sapply(thresholds, function(y) {
+      sum(col_subset(x, 'divergence') <= y) / nrow(x)
+    }) %>% 
+      set_names(thresholds)
+  }) %>% 
+  do.call(cbind, .) %>% 
+  cbind(threshold = thresholds) %>% 
+  melt(id.vars=threshold)
+
+subset(seq_div, Var2 != 'threshold') %>% 
+  ggplot(aes(x=Var1,
+             y=value,
+             color=Var2)) +
+  # geom_point() +
+  geom_path() +
+  labs(x='Maximum "Divergence"',
+       y='Proportion of Reads Assigned',
+       color='Alignment Method',
+       title='Positive Control Reads Mapped to Zymo') +
+  theme_minimal()
+  
+```
+At 90% minimum (gap-compressed, approximate) identity, guppy and minimap both align maybe 66% of reads, and around half of reads at 95% identity. Vsearch aligns half of reads at only 83% (absolute) identity. 
+
+We can conclude that 80% identity for minimap and 84% for guppy gives high sensitivity, but probably not high specificity. 
+
+# Samples - mapped to zymo
+Let's look at the same metric for the samples, which are almost entirely not part of the zymogen database:
+
+```{r}
+spl = subset(df, type=='sample')
+thresholds = seq(0, 0.6, by=0.01)
+seq_div = c('guppy', 'minimap', 'vsearch')
+seq_div %<>%  
+  lapply(function(x) col_subset(spl, x)) %>% 
+  set_names(seq_div) %>% 
+  lapply(function(x) {
+    x %<>% na.omit
+    assigned = sapply(thresholds, function(y) {
+      sum(col_subset(x, 'divergence') <= y) / nrow(x)
+    }) %>% 
+      set_names(thresholds)
+  }) %>% 
+  do.call(cbind, .) %>% 
+  cbind(threshold = thresholds) %>% 
+  melt(id.vars=threshold)
+
+subset(seq_div, Var2 != 'threshold') %>% 
+  ggplot(aes(x=Var1,
+             y=value,
+             color=Var2)) +
+  geom_vline(aes(xintercept=0.16),
+             color='gray') +
+  geom_vline(aes(xintercept=0.2),
+             color='gray') +
+  geom_path() +
+  labs(x='Maximum "Divergence"',
+       y='Percent Retained Reads',
+       color='Alignment Method',
+       main='Sample Reads Mapped to Zymo') +
+  theme_minimal()
+  
+```
+For both guppy and minimap, we see a shoulder at around 5% of reads at relatively high divergence (>90%). All map by 75% divergence. Vsearch matches these at 80% identity.
+
+At the their respective maximum sensitivity thresholds, guppy and minimap assign 60% (guppy) and 55% (minimap) of reads to the zymogen mock community. These are probably almost all false positives, meaning a very low classification accuracy. 
+
+Looking at the positive controls mapped to a large reference database will clarify this. We will assume that the assignments for the positive controls shown here are correct. They approximately match expected proportions, and we saw very little evidence of barcode switching in the barcoder test. 
+
+If we map at 90% identity, how does this change the observed community structure?
+
+```{r}
+mappers = c('guppy', 'minimap', 'vsearch')
+
+pct_id = 0.90
+ss = lapply(mappers, function(x) {
+  tt = col_subset(primaries, x)
+  passes = col_subset(tt, 'divergence') <= 1-pct_id
+  tt = tt[passes, ] %>% 
+    col_subset('ref_spp')
+  tt = tapply(tt[, 1], tt[, 1], length)
+  tt = tt/sum(tt)
+  
+  tt = data.frame(taxa = names(tt),
+                  value = tt)
+  return(tt)
+}) %>% 
+  set_names(mappers)
+
+ss = lapply(mappers, function(x) {
+  if (nrow(ss[[x]])>0) {
+    data.frame(method = x, 
+               ss[[x]])
+  }
+}) %>% 
+  do.call(rbind, .)
+
+add_zymo = data.frame(method='zymo',
+                      taxa=zymo$taxa,
+                      value=zymo$abundance)
+pltdf = rbind(add_zymo,
+              ss)
+title = (100*pct_id) %>% 
+  paste0('% Minimum Identity')
+
+ggplot(pltdf,
+       aes(x=method,
+           y=value,
+           fill=taxa)) +
+  scale_fill_brewer(palette='Set3') +
+  # facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Mapper',
+       y='Read Proportion',
+       title=title) +
+  theme_minimal()
+```
+We still recreate the mock community fairly successfully. Noisier due to low sample size. 
+
+
+# Mapping samples to zymogen
+
+We'll look at what the aligners have found in the samples, when mapping to the zymogen database.
+Accepting any and all matches gives:
+```{r}
+tt = subset(df, type=='sample' & bit_flag_guppy < 256) %>% 
+  col_subset('ref_spp') %>% 
+  lapply(function(x) tapply(x, x, length)) %>% 
+  lapply(function(x) x/sum(x))
+tt = names(tt) %>% 
+  lapply(function(x) {
+    out = data.frame(method=x, 
+                     taxa=names(tt[[x]]),
+                     value=tt[[x]])
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+tt$method %<>% 
+  as.character %>% 
+  strsplit('_') %>% 
+  sapply(extract, 3)
+
+add_zymo = data.frame(
+  method='zymo',
+  taxa = zymo$taxa,
+  value = zymo$abundance
+)
+
+pltdf = add_zymo %>% 
+  rbind(tt)
+
+ggplot(pltdf, 
+       aes(x=method,
+           y=value,
+           fill=taxa)) +
+  scale_fill_brewer(palette='Set3') +
+  # facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Barcode',
+       y='Read Proportion') +
+  theme_minimal()
+```
+We do not recreate the zymo community in the samples. Lactobacillus is absent, and Pseudomonas is overrepresented. 
+
+If we put a threshold at 90% identity:
+```{r}
+mappers = c('guppy', 'minimap', 'vsearch')
+
+pct_id = 0.90
+ss = lapply(mappers, function(x) {
+  tt = col_subset(spl, x)
+  passes = col_subset(tt, 'divergence') <= 1-pct_id
+  tt = tt[passes, ] %>% 
+    col_subset('ref_spp')
+  tt = tapply(tt[, 1], tt[, 1], length)
+  tt = tt/sum(tt)
+  
+  tt = data.frame(taxa = names(tt),
+                  value = tt)
+  return(tt)
+}) %>% 
+  set_names(mappers)
+
+ss = lapply(mappers, function(x) {
+  if (nrow(ss[[x]])>0) {
+    data.frame(method = x, 
+               ss[[x]])
+  }
+}) %>% 
+  do.call(rbind, .)
+
+pltdf = rbind(add_zymo,
+              ss)
+title = (100*pct_id) %>% 
+  paste0('% Minimum Identity')
+
+ggplot(pltdf,
+       aes(x=method,
+           y=value,
+           fill=taxa)) +
+  scale_fill_brewer(palette='Set3') +
+  # facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Mapper',
+       y='Read Proportion',
+       title=title) +
+  theme_minimal()
+```
+Well-known soil bacteria dominate. These might be true positives. Minimap seems to do a better job of selecting soil bacteria from the zymogen community, whereas guppy finds a number of mammal-associated bacteria that are likely rare in the soil. Vsearch's exact identity score doesn't find anything meeting the threshold. 
+
+And at 95% identity:
+
+```{r}
+pct_id = 0.95
+ss = lapply(mappers, function(x) {
+  tt = col_subset(spl, x)
+  passes = col_subset(tt, 'divergence') <= 1-pct_id
+  tt = tt[passes, ] %>% 
+    col_subset('ref_spp')
+  tt = tapply(tt[, 1], tt[, 1], length)
+  tt = tt/sum(tt)
+  
+  tt = data.frame(taxa = names(tt),
+                  value = tt)
+  return(tt)
+}) %>% 
+  set_names(mappers)
+
+ss = lapply(mappers, function(x) {
+  if (nrow(ss[[x]])>0) {
+    data.frame(method = x, 
+               ss[[x]])
+  }
+}) %>% 
+  do.call(rbind, .)
+
+pltdf = rbind(add_zymo,
+              ss)
+title = (100*pct_id) %>% 
+  paste0('% Minimum Identity')
+
+ggplot(pltdf,
+       aes(x=method,
+           y=value,
+           fill=taxa)) +
+  scale_fill_brewer(palette='Set3') +
+  # facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Mapper',
+       y='Read Proportion',
+       title=title) +
+  theme_minimal()
+```
+Many taxa return, and it looks like a bunch of junk.
+
+# Conclusions
+
+First, the minion does not have a strong bias against any of the taxa present in the zymogen mock community; instead, any bias we observe is due to mis-assignments against larger reference databases. This means we can minimize the distance between positive controls mapped to a large reference database and the zymogen composition to parameterize the aligners.
+
+Second, strain-level specificity is not available for barcoding 16S with MinION, using the mapping algorithm. Genus-level sensitivity might be available, but we did not directly test this. A clustering and consensus sequence approach might be more sensitive at the strain level.
+
+Third, all aligners produce fairly similar results when mapped to the positive control - all sequences are known, and are known exactly. 
+
+Fourth, minimap might be more discriminatory in settings with less certainty about read identity. This requires verification.
+
+Finally, the reads in the positive controls mapped to the zymogen database can probably be considered correctly assigned, even at 0% minimum identity. The mappers all recreated the community fairly well. 
+
+Next steps:
+
+1. Compare this mapping with mapping against:
+  1. A reduced zymogen database, to test genus-level specificity.
+  2. Silva, to test species-level specificity.
+2. From these results, identify the best-performing aligner and set identity thresholds for mapping.
+
+
+

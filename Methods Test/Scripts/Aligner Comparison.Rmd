@@ -28,11 +28,21 @@ Selecting an aligner for the MinION metabarcoding pipeline. We're comparing mini
 2. Reproducibility
 3. Accuracy
 
+<<<<<<< HEAD
 As we adjust the %identity for kept alignments. 
 
 ## Load
 ```{r}
 libs = c('pROC', 'lattice', 'latticeExtra', 'here', 'magrittr', 'data.table')
+=======
+As we adjust the %identity for kept alignments. This suggests receiver-operator characteristics as one approach.
+
+We can also use power analysis to identify thresholds. The ideal threshold will have the most discriminatory power among groups, in this case, soil sources and samples. We can use permanova to test this. 
+
+## Load
+```{r}
+libs = c('pROC', 'lattice', 'latticeExtra', 'here', 'magrittr', 'ggplot2', 'car')
+>>>>>>> methods_test
 for (i in libs) library(i, character.only=TRUE)
 
 fns = here('Scripts', 'Functions') %>% 
@@ -48,6 +58,10 @@ path = here('Data', 'Pipeline Results', 'Alignments', 'guppy', 'SAM_Files', 'gup
 # in_uncl = "collated_unclassified_alignment_data.tsv"
 in_sam = file.path('Data', 'Pipeline Results', 'Alignments')
 in_guppy = file.path(in_sam, 'guppy', 'SAM_Files')
+<<<<<<< HEAD
+=======
+in_vsearch = file.path(in_sam, 'vsearch', 'UC_Files')
+>>>>>>> methods_test
 in_minimap = file.path(in_sam, 'minimap', 'csv_results')
 in_meta = here('Data', 'MinION CLC Barcodes.csv')
 
@@ -60,15 +74,47 @@ guppy = here(in_path) %>%
       load_sam
     out$aligner = strsplit(x, '_') %>% 
       sapply(extract, 1)
+<<<<<<< HEAD
     out$barcode = strsplit(x, '_barcode') %>% 
       sapply(extract, 2) %>% 
       gsub(ext, '', .) %>% 
       sapply(function(y) ifelse(is.na(y), 'Unknown', y))
+=======
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
     out$filename = x
     return(out)
   }) %>% 
   do.call(rbind, .)
 
+in_path = in_minimap
+ext = '.csv'
+minimap = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_sam
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
+>>>>>>> methods_test
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+<<<<<<< HEAD
 # in_path = in_minimap
 # ext = '.csv'
 # minimap = here(in_path) %>% 
@@ -113,6 +159,291 @@ pos = subset(df, df$TYPE == 'positive')
 ```{r fig.height=4, fig.width=8}
 densityplot(~QtoPr(quality) | barcode, data=pos, group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90, limits=c(-0.1,1.1))), alpha=0.5, pch=20)
 ```
+=======
+in_path = in_vsearch
+ext = '.uc'
+vsearch = here(in_path) %>% 
+  list.files(pattern=ext) %>% 
+  lapply(function(x) {
+    out = here(in_path, x) %>% 
+      load_uc
+    out$aligner = strsplit(x, '_') %>% 
+      sapply(extract, 1)
+    if (grepl('barcode', x)) {
+      out$barcode = strsplit(x, 'barcode') %>% 
+        sapply(extract, 2) %>% 
+        gsub(ext, '', .)
+    } else {
+      out$barcode = 'unclassified'
+    }
+    out$filename = x
+    return(out)
+  }) %>% 
+  do.call(rbind, .)
+
+meta = read.csv(in_meta, stringsAsFactors=FALSE)
+names(meta) %<>% tolower
+meta$barcode %<>% gsub('BC', '', .)
+
+```
+
+Process aligner dataframes
+```{r}
+df_ls = list(guppy=guppy,
+             minimap=minimap,
+             vsearch=vsearch)
+
+# Make spp-level assignments
+df_ls %<>% lapply(function(x) {
+  x$ref_spp = strsplit(x$ref_id, '_') %>% 
+    sapply(function(x) paste(x[1:2], collapse='_'))
+  x$ref_spp = ifelse(is.na(x$ref_id), NA, x$ref_spp)
+  return(x)
+})
+
+# rename most columns
+keep_cols = c('seq_id', 'barcode', 'ref_id', 'ref_spp', 'bit_flag', 'seq_length', 'divergence', 'score', 'chimeric')
+df_ls = lapply(names(df_ls), function(x) {
+  tt = df_ls[[x]]
+  subkeep = keep_cols[keep_cols %in% names(tt)]
+  tt = tt[subkeep]
+  names(tt)[-c(1:2)] %<>% paste(x, sep='_')
+  return(tt)
+})
+
+# merge into a single, wide dataframe
+df = df_ls[[1]]
+for (i in 2:length(df_ls)) {
+  df %<>% merge(df_ls[[i]], by=c('seq_id', 'barcode'), all=TRUE)
+}
+
+# add sample info
+df %<>% merge(meta[, c('barcode', 'type')], by='barcode', all=TRUE)
+```
+
+
+```{r fig.height=8, fig.width=8, warning=FALSE}
+pos = subset(df, type=='positive')
+```
+
+
+```{r fig.height=7, fig.width=7}
+c('seq_length', 'divergence', 'score') %>% 
+  sapply(function(x) grepl(x, names(df))) %>% 
+  apply(1, any) %>% 
+  pos[, .] %>% 
+  pairs(col='#00000022', cex=0.1, main='Positive Controls')
+```
+
+This cross-correlation matrix shows that:
+
+1. scores for minimap and guppy are nearly, but not quite, identical. Could this could be due to some stochasticity in the mapping algorithm?
+2. Divergence is not identical, but is similar. This is due to the different calculation method: Minimap's errors are gap-compressed, whereas guppy_aligner's are approximate (including gaps). Vsearch divergence is definitely correlated, as well, but less so as between minimap and guppy. In particular, vsearch finds a number of matches that are very poor. Ageement across aligners is better for higher-confidence reads. 
+3. Aligned length is not identical, but is close.
+4. The range of diverence values is much larger for vsearch than the other aligners. 
+
+Pairwise disagreements:
+
+**Chimeras**
+```{r}
+find_disagreement = function(data, value) {
+  val = grepl(value, names(data)) %>% 
+    data[.]
+  val_df = apply(val, 1, function(x) any(!is.na(x))) %>% 
+    val[., ]
+
+  # convert names to numeric ensuring correct factor levels
+  lvls = unlist(val_df) %>% unique
+  val = val_df %>% 
+    as.data.frame %>% 
+    lapply(factor, levels=lvls) %>%
+    sapply(as.numeric) %>% 
+    cor(use='complete.obs')  # correlate
+
+  # calculate disagreement
+  val = 1-val
+  return(list(disagreement = val, data = val_df))
+}
+
+# extract chimeras
+find_disagreement(pos, 'chimeric')
+```
+These disagreements are mostly at the strain level. 
+
+**Strain assignment** of primary alignments
+```{r}
+primaries = subset(pos, bit_flag_guppy < 2048)
+find_disagreement(primaries, 'ref_id')$disagreement
+```
+They all produce quite different results at the strain level. 
+
+**Species assignment** of primary alignments
+```{r}
+find_disagreement(primaries, 'ref_spp')$disagreement
+```
+For the most part, agreement is quite high. Minimap and guppy disagree 1% of the time. Vsearch disagrees 8% of the time. 
+
+Where are these disagreements?
+```{r}
+col_subset = function(data, columns) {
+  is_col = sapply(columns, function(x) grepl(x, names(data))) %>% 
+    apply(1, any)
+  return(data[is_col])
+}
+
+subset(primaries, ref_spp_guppy != ref_spp_minimap) %>% 
+  col_subset(c('seq_id', 'ref_spp', 'divergence'))
+```
+Generally, guppy and vsearch agree on these.
+
+```{r}
+subset(primaries, ref_spp_minimap != ref_spp_vsearch) %>% 
+  col_subset(c('seq_id', 'ref_spp', 'divergence'))
+```
+No obvious patterns here. Let's flag disagreements and visualize divergence and sequence length.
+
+Also not that vsearch finds *S. cerevisiae* in this 16S dataset.
+
+```{r}
+disagree = col_subset(primaries, c('ref_spp')) %>% 
+  apply(1, function(x) {
+    sapply(x, function(y) any(y != x)) %>% 
+      any
+  })
+
+c('divergence', 'seq_length') %>% 
+  lapply(function(x) col_subset(primaries, x)) %>% 
+  lapply(pairs, cex=disagree+1, col=adjustcolor(c('blue', 'red'), alpha.f=0.2)[disagree+1])
+```
+No obvious patterns here. They just disagree sometimes (big and red are disagreements).
+
+Finally, let's look at the composition versus expected (which is even):
+
+```{r}
+assigns = col_subset(primaries, c('ref_spp', 'barcode'))
+bc_reads = with(assigns, tapply(barcode, barcode, length))
+
+tax_reads = melt(assigns, id.vars='barcode') %>% 
+  aggregate(.[3], ., length)
+colnames(tax_reads)[4] = 'count'
+
+tax_reads$count %<>% divide_by(bc_reads[tax_reads$barcode])
+
+# add expected
+expected = unique(tax_reads$value) %>% 
+  as.character
+drop_fungi = expected %in% c('Saccharomyces_cerevisiae', 'Cryptococcus_neoformans')
+expected %<>% 
+  .[!drop_fungi] %>% 
+  data.frame(barcode = 0,
+             variable = 'zymo',
+             value = .,
+             count = 1/length(.))
+
+tax_reads %<>% rbind(expected)
+
+ggplot(tax_reads, 
+       aes(x=barcode,
+           y=count,
+           fill=value)) +
+  scale_fill_brewer(palette='Set1') +
+  facet_wrap(~variable, nrow=1) +
+  geom_col() +
+  labs(fill=NULL,
+       x='Barcode',
+       y='Read Proportion') +
+  theme_minimal()
+```
+We see some bias in the MinION data, but this is consistent across mappers and might be consistent across barcodes (sample size is very small). Does it correlate with sequence length? Or is it due to copy number variation?
+
+```{r}
+lengths = aggregate(seq_length_guppy ~ ref_spp_guppy, data=primaries, median)
+bias = subset(assigns, key %in% c('ref_spp_guppy', 'zymo')) %>% 
+  tidyr::pivot_wider(names_from=key, values_from=proportion)
+bias$diff = with(bias, ref_spp_guppy - zymo)
+
+merge(bias, lengths, by.y='ref_spp_guppy', by.x='value')  %>% 
+  ggplot(aes(x=seq_length_guppy,
+             y=diff,
+             color=value)) +
+  scale_color_brewer(palette='Set1') +
+  geom_point(size=2) +
+  geom_smooth(aes(color=NULL),
+              formula=y~x,
+              method='lm') +
+  labs(color=NULL,
+       x='Sequence Length',
+       y='Difference in Proportion vs Zymo') +
+  theme_minimal()
+```
+seems to be no systematic bias...
+
+
+```{r}
+strain_assignments = with(df, ref_id_minimap != ref_id_guppy)
+
+df$sppref_id_guppy = strsplit(df$ref_id_guppy, '_') %>% 
+  sapply(function(x) paste(x[1:2], collapse='_'))
+df$sppref_id_minimap = strsplit(df$ref_id_minimap, '_') %>% 
+  sapply(function(x) paste(x[1:2], collapse='_'))
+spp_assignments = with(df, sppref_id_minimap != sppref_id_guppy) %>% 
+  na.omit
+spp_assignments = sum(spp_assignments)/length(spp_assignments)
+
+pltdf = data.frame(chimeras = chimeras,
+                   bit_flags = bit_flags,
+                   strain_assignments = strain_assignments,
+                   spp_assignments = spp_assignments) %>% 
+  sapply(function(x) sum(na.omit(x))/length(na.omit(x))) %>% 
+  data.frame(key=names(.),
+             value=.)
+
+ggplot(pltdf,
+       aes(x=key,
+           y=value)) +
+  geom_col() +
+  ggtitle('disagreement rate - positive controls, minimap vs guppy_aligner')
+
+```
+These are raw disagreement rates. The probability-corrected disagreements might be much higher. For instance, we expect most sequences are not chimeras, and so the disagreement rate *should* be quite low, so in fact, these two aligners may be calling chimeras completely differently. Likewise with bit_flags, most should be 0.
+
+Assignment disagreement is large at the strain level, but quite tolerable at the species level. 
+
+```{r}
+subset(df, sppref_id_guppy != sppref_id_minimap, select=c('sppref_id_guppy', 'chimeric_guppy', 'sppref_id_minimap', 'chimeric_minimap'))
+```
+These are all chimeras of each other. We're not worried about this. 
+
+So, guppy_aligner and minimap2 100% agree. 
+
+
+```{r}
+chimeras = with(df, is.na(chimeric_minimap) != is.na(chimeric_guppy))
+bit_flags = with(df, bit_flag_minimap != bit_flag_guppy)
+strain_assignments = with(df, ref_id_minimap != ref_id_guppy)
+
+df$sppref_id_guppy = substr(df$ref_id_guppy, 1, nchar(df$ref_id_guppy)-6)
+df$sppref_id_minimap = substr(df$ref_id_minimap, 1, nchar(df$ref_id_minimap)-6)
+spp_assignments = with(df, sppref_id_minimap != sppref_id_guppy) %>% 
+  na.omit
+spp_assignments = sum(spp_assignments)/length(spp_assignments)
+
+pltdf = data.frame(chimeras = chimeras,
+                   bit_flags = bit_flags,
+                   strain_assignments = strain_assignments,
+                   spp_assignments = spp_assignments) %>% 
+  lapply(function(x) sum(na.omit(x))/length(na.omit(x))) %>% 
+  as.data.frame(stringsAsFactors=FALSE) %>% 
+  gather
+
+ggplot(pltdf,
+       aes(x=key,
+           y=value)) +
+  geom_col() +
+  ggtitle('disagreement rate - positive controls')
+```
+
+>>>>>>> methods_test
 
 ```{r fig.height=4, fig.width=8}
 dotplot(divergence~barcode, data=df, group=bit_flag, auto.key=list(columns=3), scales=list(x=list(rot=90)), alpha=0.2, pch=1)
