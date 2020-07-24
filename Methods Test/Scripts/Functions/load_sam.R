@@ -1,3 +1,14 @@
+.strip_tag = function(string) {
+  require(magrittr)
+  
+  string %<>%
+    as.character %>% 
+    strsplit(':') %>% 
+    sapply(extract, 3) %>% 
+    type.convert(as.is=TRUE)
+  return(string)
+}
+
 #' load_sam to load a sam file from minimap2 and extract useful information from it.
 #' currently extracts sequence ID, match, length, 
 #'
@@ -34,7 +45,7 @@ load_sam = function(path, drop_secondary=TRUE) {
     strsplit('\t') 
   
   if (drop_secondary) {
-    is_secondary = sapply(sam, function(x) x[2] == 256)
+    is_secondary = sapply(sam, function(x) x[2] >= 256 & x[2] < 512)
     sam %<>% .[!is_secondary]
   }
   
@@ -47,21 +58,35 @@ load_sam = function(path, drop_secondary=TRUE) {
                 seq_length = NA,
                 quality = 0,
                 divergence = NA,
+                divergence_type = NA,
                 score = NA,
                 chimeric = NA)
       } else {
         is_chimeric = grepl('SA:Z:', x) %>% 
           any
-        divergence_type = grepl('de:f:', x) %>% 
-          any %>% 
-          ifelse('gap-compressed', 'approximate')
+        if (any(grepl('de:f:', x))) {
+          divergence_type = 'gap_compressed'
+        } else if (any(grepl('dv:f:', x))) {
+          divergence_type = 'approximate'
+        } else {
+          divergence_type = 'unknown'
+        }
+        divergence = switch(divergence_type,
+                            'gap_compressed' = x[grepl('de:f:', x)],
+                            'approximate' = x[grepl('dv:f:', x)],
+                            'unknown' = NA)
+          
+        # divergence_type = grepl('de:f:', x) %>% 
+        #   any %>% 
+        #   ifelse('gap-compressed', 'approximate')
         out = c(
           seq_id = x[1],
           ref_id = x[3],
           bit_flag = x[2],
           seq_length = nchar(x[10]),
           quality = x[5],
-          divergence = x[grepl('dv:f:', x)],
+          divergence = divergence,
+          divergence_type = divergence_type,
           score = x[grepl('AS:i:', x)],
           chimeric = ifelse(is_chimeric, x[grepl('SA:Z:', x)], NA)
         )
@@ -71,11 +96,36 @@ load_sam = function(path, drop_secondary=TRUE) {
     do.call(rbind, .) %>% 
     as.data.frame
   
-  sam$divergence %<>% gsub('dv:f:', '', .)
-  sam$score %<>% gsub('AS:i:', '', .)
-  sam$chimeric %<>% gsub('SA:Z:', '', .) %>% 
+  strip_tags = c('divergence', 'score', 'chimeric')
+  sam[, strip_tags] %<>% lapply(.strip_tag)
+  sam[, 'chimeric'] %<>% 
+    as.character %>% 
     strsplit(',') %>% 
     sapply(extract, 1)
+  
   sam %<>% type.convert(as.is=TRUE)
   return(sam)
+}
+
+load_uc = function(path) {
+  uc = read.table(path, sep='\t', na.strings='*', stringsAsFactors=FALSE)
+  
+  colnames(uc) = c('record_type', 'seq_number', 'seq_length', 'similarity', 'orientation', 'X1', 'X2', 'CGIAR', 'seq_id', 'ref_id')
+  
+  uc$divergence = 1-(uc$similarity/100)
+  uc$divergence_type = 'basewise'
+  uc$bit_flag = sapply(uc$record_type,
+                       switch,
+                       'N' = 4,
+                       'H' = 0)
+  
+  keep_cols = c('seq_id',
+                'ref_id',
+                'bit_flag',
+                'seq_length',
+                'divergence',
+                'divergence_type')
+  uc = uc[keep_cols]
+  
+  return(uc)
 }
