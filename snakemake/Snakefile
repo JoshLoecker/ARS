@@ -6,23 +6,24 @@ os.makedirs(config['results_folder'] + "Basecall", exist_ok=True)
 
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5").fast5_files
 
-def get_basecall_files(wildcards):
-    complete_basecalling = checkpoints.basecall.get(**wildcards).output[0]
-
-
 def get_merged_barcodes(wildcards):
-    # complete_basecalling = checkpoints.basecall.get(**wildcards).output[0]
+    # get the output from barcoding
     temp_dir = checkpoints.barcode.get(**wildcards).output[0]
-
+    # create a set; no duplicates can be present
     barcodes = set()
-    for folder in os.listdir(temp_dir):
-        if "barcode" in folder or "unclassified" in folder:
-            barcodes.add(folder)
 
+    # iterate through fast5_folder names
+    for item in os.listdir(temp_dir):
+        # iterate through barcode folders under the fast5_folder names
+        for folder in os.listdir(temp_dir + "/" + item):
+
+            # if `barcode` or `unclassified` in the folder name, add it to our barcode folders
+            if "barcode" in folder or "unclassified" in folder:
+                barcodes.add(folder)
+
+    # return the format `config['results_folder'] + "Barcode/barcode##.merged.fastq` as input for rule all
     merged_files = [config['results_folder'] + "Barcode/" + barcode + ".merged.fastq" for barcode in barcodes]
     return merged_files
-
-
 
 rule all:
     input:
@@ -30,25 +31,9 @@ rule all:
         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
 
         # barcode
-        get_merged_barcodes,
+        lambda wildcards: get_merged_barcodes(FAST5_FILES),
 
-        # merge files
-        expand(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq",
-               barcode_number=glob_wildcards(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq").barcode_number),
-
-        # NanoQC pre-trim
-        expand(config['results_folder'] + "NanoQC/Pre-Trim/{barcode_number}",
-               barcode_number=glob_wildcards(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq").barcode_number),
-
-        # # Trim reads
-        expand(config['results_folder'] + "Trim/{barcode_number}.trimmed.fastq",
-               barcode_number=glob_wildcards(config['results_folder'] + "Barcode/{barcode_number}.merged.fastq").barcode_number),
-
-        # # NanoQC post-trim
-        expand(config['results_folder'] + "NanoQC/Post-Trim/{barcode_number}",
-               barcode_number=glob_wildcards(config['results_folder'] + "Trim/{barcode_number}.trimmed.fastq").barcode_number)
-
-checkpoint basecall:
+rule basecall:
     input:
          config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5"
     output:
@@ -67,36 +52,46 @@ checkpoint basecall:
 
 checkpoint barcode:
     input:
-        config['results_folder'] + "Basecall"
+        #config['results_folder'] + "Basecall/{fast5_files}"
+        #config['results_folder'] + "Basecall"
+        rules.basecall.output
     output:
-        directory(config['results_folder'] + ".barcodeTempOutput")
+        directory(config['results_folder'] + ".barcodeTempOutput/{fast5_file}")
+        #directory(config['results_folder'] + ".barcodeTempOutput")
     shell:
          r"""
-         for item in {input}; do
-                guppy_barcoder \
-                --input_path $item \
-                --save_path {output} \
-                --barcode_kits EXP-PBC096 \
-                --recursive \
-                --worker_threads 12
-         done         
+         guppy_barcoder \
+         --input_path {input} \
+         --save_path {output} \
+         --barcode_kits EXP-PBC096 \
+         --recursive \
+         --worker_threads 12 \
+         --quiet
+         
+         # for item in {input}; do
+         #        guppy_barcoder \
+         #        --input_path $item \
+         #        --save_path {output} \
+         #        --barcode_kits EXP-PBC096 \
+         #        --recursive \
+         #        --worker_threads 12
+         # done
          """
 
 def get_merged_input(wildcards):
-    return glob.glob(f"{config['results_folder']}" + f".barcodeTempOutput/{wildcards.barcode}/*.fastq")
-    # return glob.glob(f"/Users/joshl/PycharmProjects/ARS/Results/.barcodeTempOutput/**/{wildcards.barcode}/*.fastq")
+    return glob.glob(config['results_folder'] + f".barcodeTempOutput/**/{wildcards.barcode}/*.fastq")
 
 rule merge_files:
     input:
         get_merged_input
+        #expand(config['results_folder'] + ".barcodeTempOutput/{fast5_file}", fast5_file=FAST5_FILES)
     output:
         config['results_folder'] + "Barcode/{barcode}.merged.fastq"
+    params:
+        barcode = "{barcode}"
     shell:
         r"""
-        # iterate through each input and append it to the output
-        for item in {input}; do
-            cat $item >> {output}
-        done        
+        echo {input}
         """
 
 rule NanoQCPreTrim:
