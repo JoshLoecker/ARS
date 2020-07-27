@@ -1,114 +1,119 @@
 import glob
 import os
+from pathlib import Path
 
 configfile: "config.yaml"
-os.makedirs(config['results_folder'] + "Basecall", exist_ok=True)
 
-FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_files}.fast5").fast5_files
+def get_barcode_folders(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = set()  # a set is like a list, but only stores unique values
+    for folder in os.listdir(checkpoint_output):
+        full_path = os.path.join(checkpoint_output, folder)
+        if Path(full_path).is_dir():
+            barcodes.add(folder)
 
-def get_merged_barcodes(wildcards):
-    # get the output from barcoding
-    temp_dir = checkpoints.barcode.get(**wildcards).output[0]
-    # create a set; no duplicates can be present
-    barcodes = set()
+    merge_files = [config['results_folder'] + "Barcode/" + barcode + ".merged.fastq" for barcode in barcodes]
+    return merge_files
 
-    # iterate through fast5_folder names
-    for item in os.listdir(temp_dir):
-        # iterate through barcode folders under the fast5_folder names
-        for folder in os.listdir(temp_dir + "/" + item):
 
-            # if `barcode` or `unclassified` in the folder name, add it to our barcode folders
-            if "barcode" in folder or "unclassified" in folder:
-                barcodes.add(folder)
-
-    # return the format `config['results_folder'] + "Barcode/barcode##.merged.fastq` as input for rule all
-    merged_files = [config['results_folder'] + "Barcode/" + barcode + ".merged.fastq" for barcode in barcodes]
-    return merged_files
+FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
 
 rule all:
     input:
-         # basecall
-         expand(config['results_folder'] + "Basecall/{fast5_file}", fast5_file=FAST5_FILES),
-         # DONE ------------------------------------------------------------------------------------
+        # basecall, barcode, and merge files
+        get_barcode_folders,
 
-         # barcode
-         expand(config['results_folder'] + ".barcodeTempOutput/{fast5_file}", fast5_file=FAST5_FILES),
+        # nanoQC pre trim
+        expand(config['results_folder'] + "NanoQC/Pre-Trim/{barcode}",
+               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode)),
 
-         # merge
-         expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq",
-                barcode=glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{fast5_folder}/{barcode}/{fastq_file}.fastq").barcode)
+        # trim reads
+        expand(config['results_folder'] + "Trim/{barcode}.trim.fastq",
+               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode)),
 
-rule basecall:
+        # nanoQC post trim
+        expand(config['results_folder'] + "NanoQC/Post-Trim/{barcode}",
+               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode))
+
+
+
+checkpoint basecall_barcode:
     input:
-         config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5"
+        config['results_folder'] + "DataFiles/fast5/"
     output:
-        directory(config['results_folder'] + "Basecall/{fast5_file}")
+        directory(config['results_folder'] + ".barcodeTempOutput/")
+    conda:
+        "envs/pythonEnv.yaml"
     shell:
-         r"""
-         ls {input} \
-         | \
-         guppy_basecaller \
-         --save_path {output} \
-         --quiet \
-         --config dna_r9.4.1_450bps_fast.cfg \
-         --num_callers 2 \
-         --cpu_threads_per_caller 6
-         """
+        "guppy_basecaller "
+        "--quiet "
+        "--input_path {input} "
+        "--save_path {output} "
+        "--config dna_r9.4.1_450bps_fast.cfg "
+        "--barcode_kits EXP-PBC096 "
+        "--num_callers 2 "
+        "--cpu_threads_per_caller 6 "
+        "--recursive "
 
-rule barcode:
-    input:
-        config['results_folder'] + "Basecall/{fast5_file}"
-    output:
-        directory(config['results_folder'] + ".barcodeTempOutput/{fast5_file}")
-    shell:
-         r"""
-         guppy_barcoder \
-         --input_path {input} \
-         --save_path {output} \
-         --barcode_kits EXP-PBC096 \
-         --recursive \
-         --worker_threads 12 \
-         --quiet
-         """
+        " && "
+        "echo BASECALL: {output}"
 
-def get_merged_input(wildcards):
-    return glob.glob(config['results_folder'] + f".barcodeTempOutput/**/{wildcards.barcode}/*.fastq")
 
+
+def merge_files_input(wildcards):
+    return glob.glob(config['results_folder'] + f".barcodeTempOutput/{wildcards.barcode}/*.fastq")
 rule merge_files:
     input:
-        expand(config['results_folder'] + ".barcodeTempOutput/{fast5_file}", fast5_file=FAST5_FILES)
+        merge_files_input
     output:
         config['results_folder'] + "Barcode/{barcode}.merged.fastq"
     params:
-        barcode = "{barcode}"
+        input_folder = config['results_folder'] + ".barcodeTempOutput",
+        save_folder = config['results_folder'] + "Barcode"
     shell:
         r"""
-        echo {input}
+        for item in {input}; do
+            cat $item >> {output}
+            #rm $item
+        done
+        
+        # move other files out of .barcodeTempOutput and into the save directory
+        # we are only going to move them if they are present
+        if [[ -f {params.input_folder}/*.txt ]]; then
+            mv {params.input_folder}/*.txt {params.save_folder}/
+        fi
+        
+        if [[ -f {params.input_folder}/*.log ]]; then
+            mv {params.input_folder}/*.log {params.save_folder}/
+        fi
+        
+        if [[ -f {params.input_folder}/*.js ]]; then
+            mv {params.input_folder}/*.js {params.save_folder}/
+        fi
         """
+
+
 
 rule NanoQCPreTrim:
     input:
-        config['results_folder'] + "Barcode/{barcode_number}.merged.fastq"
+        rules.merge_files.output[0]
     output:
-        directory(config['results_folder'] + "NanoQC/Pre-Trim/{barcode_number}")
-    params:
-        barcode_number = "{barcode_number}"
+        directory(config['results_folder'] + "NanoQC/Pre-Trim/{barcode}")
     shell:
         r"""
-        NanoQC -o {output} {input}
-        
-        mv {output}/*.html {output}/{params.barcode_number}.nanoqc.pre-trim.html
-        mv {output}/*.log {output}/{params.barcode_number}.nanoqc.pre-trim.log
+        nanoQC -o {output} {input}
         """
 
-rule trim_reads:
+
+
+rule trim:
     input:
-        config['results_folder'] + "Barcode/{barcode_number}.merged.fastq"
+        rules.merge_files.output[0]
     output:
-        config['results_folder'] + "Trim/{barcode_number}.trimmed.fastq"
+        config['results_folder'] + "Trim/{barcode}.trim.fastq"
     params:
-        primer_3_adapter = config['trim_three_prime_adapter'],
-        primer_5_adapter = config['trim_five_prime_adapter'],
+        three_prime_adapter = config['trim_three_prime_adapter'],
+        five_prime_adapter = config['trim_five_prime_adapter'],
         error_rate = config['trim_error_rate']
     shell:
         r"""
@@ -116,25 +121,23 @@ rule trim_reads:
         --revcomp \
         --quiet \
         --cores 0 \
-        --adapter {params.primer_3_adapter} \
-        --front {params.primer_5_adapter} \
+        --adapter {params.three_prime_adapter} \
+        --front {params.five_prime_adapter} \
         --error-rate {params.error_rate} \
         --output {output} \
         {input}
         """
 
+
+
 rule NanoQCPostTrim:
     input:
-        config['results_folder'] + "Trim/{barcode_number}.trimmed.fastq"
+        rules.trim.output[0]
     output:
-        directory(config['results_folder'] + "NanoQC/Post-Trim/{barcode_number}")
-    params:
-        barcode_number = "{barcode_number}"
+        config['results_folder'] + "NanoQC/Post-Trim/{barcode}"
     shell:
         r"""
-        NanoQC -o {output} {input}
-        
-        mv {output}/*.html {output}/{params.barcode_number}.nanoqc.post-trim.html
-        mv {output}/*.log {output}/{params.barcode_number}.nanoqc.post-trim.log
+        nanoQC -o {output} {input}
         """
-# TODO: Move nanoqc files only if they are present
+
+
