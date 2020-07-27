@@ -1,7 +1,7 @@
 [
     {
         "aggregation": "segment",
-        "analysis_id": "ae6014ab-10ae-4c75-9a7e-eaca1e6ed530",
+        "analysis_id": "90c4a152-28d3-4bef-aec4-c96ad4de107e",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 626,
@@ -99,8 +99,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.16030120849609,
-                "sum": 36641.203125
+                "mean": 9.16030979156494,
+                "sum": 36641.23828125
             },
             "read_len_events_sum_temp": 20504341,
             "seq_len_bases_dist_temp": [
@@ -216,8 +216,8 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 79.6603012084961,
-                "sum": 318641.21875
+                "mean": 79.660285949707,
+                "sum": 318641.15625
             },
             "strand_sd_pa": {
                 "count": 4000,
@@ -1805,21 +1805,21 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "670a87b7-8b06-4890-a4b3-60a92fdcab58",
+            "msg_id": "d9a989e5-a5d9-4171-afcf-2b41f6a7a1ed",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-24T16:28:52Z",
+            "time_stamp": "2020-07-27T15:30:33Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }
     },
     {
         "aggregation": "cumulative",
-        "analysis_id": "ae6014ab-10ae-4c75-9a7e-eaca1e6ed530",
+        "analysis_id": "90c4a152-28d3-4bef-aec4-c96ad4de107e",
         "basecall_1d": {
             "exit_status_dist": {
                 "fail:qscore_filter": 626,
@@ -1917,8 +1917,8 @@
             ],
             "qscore_sum_temp": {
                 "count": 4000,
-                "mean": 9.16030120849609,
-                "sum": 36641.203125
+                "mean": 9.16030979156494,
+                "sum": 36641.23828125
             },
             "read_len_events_sum_temp": 20504341,
             "seq_len_bases_dist_temp": [
@@ -2034,8 +2034,8 @@
             ],
             "strand_median_pa": {
                 "count": 4000,
-                "mean": 79.6603012084961,
-                "sum": 318641.21875
+                "mean": 79.660285949707,
+                "sum": 318641.15625
             },
             "strand_sd_pa": {
                 "count": 4000,
@@ -3623,14 +3623,14 @@
             "hostname": "adminion-Precision-3630-Tower",
             "installation_type": "nc",
             "local_firmware_file": "1",
-            "msg_id": "ce8d51d1-ea03-4d32-b2c4-c100091d67ca",
+            "msg_id": "c0749f3b-c33e-4942-8ad8-5e7d05b0fa56",
             "operating_system": "ubuntu 18.04",
             "protocol_group_id": "CLC_2020-02-11",
             "protocol_run_id": "a68409f4-d536-4b68-b733-c3c4b5dd1551",
             "protocols_version": "4.3.12",
             "run_id": "67a0761ea992f55d7000e748e88761780ca1bb60",
             "sample_id": "SBGX_CLC",
-            "time_stamp": "2020-07-24T16:28:52Z",
+            "time_stamp": "2020-07-27T15:30:33Z",
             "usb_config": "MinION_fx3_1.1.1_ONT#MinION_fpga_1.1.0#bulk#Auto",
             "version": "3.6.0"
         }

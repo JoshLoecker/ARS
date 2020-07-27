@@ -14,3 +14,4 @@ trim_five_prime_adapter: TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG
 #   Raising this value gives fewer results that are matched more closely
 #   Lowering this value gives more results that are not as closely matched
 vsearch_match_rate: 0.90
+
