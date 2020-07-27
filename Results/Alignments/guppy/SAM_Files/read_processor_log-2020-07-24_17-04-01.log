@@ -1,0 +1,7 @@
+2020-07-24 17:04:01.940160 [guppy/message] ONT Guppy alignment software version 4.0.14+8d3226e
+input path:         /Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/.temp
+save path:          /Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/SAM_Files
+alignment ref.:     /Users/joshl/PycharmProjects/ARS/Results/DataFiles/silva_alignment_reference.fasta
+
+2020-07-24 17:04:01.940700 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-24 17:04:01.940785 [guppy/error] boost::filesystem::directory_iterator::construct: No such file or directory: "/Users/joshl/PycharmProjects/ARS/Results/Alignments/guppy/.temp". Exiting.

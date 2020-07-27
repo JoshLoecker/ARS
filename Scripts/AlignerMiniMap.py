@@ -1,5 +1,7 @@
 import re
+import subprocess
 from pathlib import Path
+from subprocess import PIPE
 
 from Global import Log, Update, Files
 
@@ -58,16 +60,14 @@ class MiniMap2:
                 input=file,
                 output=file_save_path)
 
-            print(message)
-
             self.__write_logs_to_file(message)
 
             message = message.split(" ")
             # I am collecting all output from the MiniMap2 commands because it is not needed. If it is needed in the future, remove the PIPE commands from here
             # alternatively, print the results with print(command.stdout) and print(command.
-            #self.__update_task()
+            self.__update_task()
             open(file_save_path, 'w').close()
-            # command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+            command = subprocess.run(message, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
 
     def __return_save_path(self, input_file):
@@ -117,8 +117,8 @@ if __name__ == '__main__':
         save_directory = str(snakemake.output.save_directory)
     except NameError:
         input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
-        save_directory = "/Users/joshl/PycharmProjects/ARS/Results/Alignments/minimap/"
-        alignment_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/silva_alignment_reference.fasta"
+        save_directory = "/Users/joshl/Downloads/Databases/zymogen/minimap/"
+        alignment_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_modified_alignment_reference.fasta"
 
     print("Starting MiniMap2 Aligner")
 

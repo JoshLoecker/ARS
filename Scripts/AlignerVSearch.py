@@ -110,7 +110,6 @@ class VSearch:
             input_file=input_file,
             reference_file=self.reference_file,
             uc_file_output=uc_save_path)
-
         message = message.split(" ")
         # we are going to clear out the output file so vsearch does not create duplicate results
         open(uc_save_path, 'w').close()
@@ -194,9 +193,9 @@ if __name__ == '__main__':
         reference_file = str(snakemake.params.alignment_file)
         match_rate = float(snakemake.params.match_rate)
     except NameError:
-        input_directory = "/Volumes/Elements/TempAlignerRun/NanoFilt/"
-        save_directory = "/Volumes/Elements/TempAlignerRun/vsearch/"
-        reference_file = "/Volumes/Elements/TempAlignerRun/silva_alignment_reference.fasta"
+        input_directory = "/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/"
+        save_directory = "/Users/joshl/Downloads/Databases/zymogen/vsearch/"
+        reference_file = "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
         match_rate = 0.90
 
     print("Starting VSearch Aligner")
