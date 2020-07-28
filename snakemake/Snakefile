@@ -4,7 +4,33 @@ from pathlib import Path
 
 configfile: "config.yaml"
 
-def get_barcode_folders(wildcards):
+def barcode_numbers(path: str):
+    """
+    This function will return a list of barcode numbers under the directory passed in
+    First, folders will be checked. If no folders exist, file names will be tested
+    Args:
+        path: The directory that should be searched
+    Returns: A list of strings containing directory names
+    """
+    directories_found = False
+    barcode_numbers = set()
+
+    for root, directories, files in os.walk(path):
+        for directory in directories:
+            if "barcode" in directory or "unclassified" in directory:
+                directories_found = True
+                barcode_numbers.add(directory)
+
+        # only search for files if directories is false
+        if not directories_found:
+            for file in files:
+                if "barcode" in file or "unclassified" in file:
+                    barcode_number = file.split(".")[0]
+    return barcode_numbers
+
+
+
+def basecall_barcode_merge_files(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
     barcodes = set()  # a set is like a list, but only stores unique values
     for folder in os.listdir(checkpoint_output):
@@ -15,25 +41,74 @@ def get_barcode_folders(wildcards):
     merge_files = [config['results_folder'] + "Barcode/" + barcode + ".merged.fastq" for barcode in barcodes]
     return merge_files
 
+def nanoqc_pre_trim(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "NanoQC/Pre-Trim/{barcode}",
+        barcode=barcodes
+    )
+
+def trim_reads(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "Trim/{barcode}.trim.fastq",
+        barcode=barcodes
+    )
+
+def nanoqc_post_trim(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "NanoQC/Post-Trim/{barcode}",
+        barcode=barcodes
+    )
+
+def NanoFilt(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq",
+        barcode=barcodes
+    )
+
+def guppy_aligner(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
+               barcode=barcodes
+    )
+
+def minimap_aligner(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "Alignment/minimap/{barcode}.minimap.sam",
+        barcode=barcodes
+    )
+
+def vsearch_aligner(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    barcodes = barcode_numbers(checkpoint_output)
+    return expand(
+        config['results_folder'] + "Alignment/vsearch/{barcode}.vsearch.uc",
+        barcode=barcodes
+    )
 
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
 
 rule all:
     input:
-        # basecall, barcode, and merge files
-        get_barcode_folders,
-
-        # nanoQC pre trim
-        expand(config['results_folder'] + "NanoQC/Pre-Trim/{barcode}",
-               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode)),
-
-        # trim reads
-        expand(config['results_folder'] + "Trim/{barcode}.trim.fastq",
-               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode)),
-
-        # nanoQC post trim
-        expand(config['results_folder'] + "NanoQC/Post-Trim/{barcode}",
-               barcode=set(glob_wildcards(config['results_folder'] + ".barcodeTempOutput/{barcode}/{fastq_file}.fastq").barcode))
+        basecall_barcode_merge_files,
+        nanoqc_pre_trim,
+        trim_reads,
+        nanoqc_post_trim,
+        NanoFilt,
+        guppy_aligner,
+        minimap_aligner,
+        vsearch_aligner
 
 
 
@@ -42,17 +117,21 @@ checkpoint basecall_barcode:
         config['results_folder'] + "DataFiles/fast5/"
     output:
         directory(config['results_folder'] + ".barcodeTempOutput/")
+    params:
+        configuration = config['basecall_configuration'],
+        barcode_kits = config['barcode_kit'],
+        callers = config['num_callers'],
+        threads_per_caller = config['num_threads_per_caller']
     conda:
         "envs/pythonEnv.yaml"
     shell:
         "guppy_basecaller "
-        "--quiet "
+        "--config {params.configuration} "
         "--input_path {input} "
         "--save_path {output} "
-        "--config dna_r9.4.1_450bps_fast.cfg "
-        "--barcode_kits EXP-PBC096 "
-        "--num_callers 2 "
-        "--cpu_threads_per_caller 6 "
+        "--barcode_kits {params.barcode_kits} "
+        "--num_callers {params.callers} "
+        "--cpu_threads_per_caller {params.threads_per_caller} "
         "--recursive "
 
         " && "
@@ -72,6 +151,7 @@ rule merge_files:
         save_folder = config['results_folder'] + "Barcode"
     shell:
         r"""
+        echo {input}
         for item in {input}; do
             cat $item >> {output}
             #rm $item
@@ -105,7 +185,6 @@ rule NanoQCPreTrim:
         """
 
 
-
 rule trim:
     input:
         rules.merge_files.output[0]
@@ -134,10 +213,121 @@ rule NanoQCPostTrim:
     input:
         rules.trim.output[0]
     output:
-        config['results_folder'] + "NanoQC/Post-Trim/{barcode}"
+        directory(config['results_folder'] + "NanoQC/Post-Trim/{barcode}")
     shell:
         r"""
         nanoQC -o {output} {input}
         """
 
 
+
+rule NanoFilt:
+    input:
+        rules.trim.output[0]
+    output:
+        config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq"
+    shell:
+        r"""
+        touch {output}
+        NanoFilt {input} > {output}
+        """
+
+
+
+rule guppy_aligner:
+    input:
+        rules.NanoFilt.output[0]
+    output:
+        sam_files = config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
+    params:
+        barcode = "{barcode}",
+        alignment_reference = config['alignment_reference_file'],
+        guppy_folder = config['results_folder'] + "Alignment/guppy",
+        temp_input_folder = config['results_folder'] + ".guppyTempInput/{barcode}",
+        log_path = config['results_folder'] + "Alignment/guppy/logs"
+    shell:
+        r"""
+        # guppy_aligner requires a folder as input. We will make that input folder and copy the appropriate file here
+        mkdir -p {params.temp_input_folder}
+        cp {input} {params.temp_input_folder}
+        
+        # perform alignment
+        guppy_aligner \
+        --input_path {params.temp_input_folder} \
+        --save_path {params.guppy_folder} \
+        --align_ref {params.alignment_reference} \
+        --quiet
+        
+        # move our output to the correct location
+        touch {output.sam_files}
+        mv {params.guppy_folder}/{params.barcode}.nanofilt.sam {output.sam_files}
+        
+        
+        # remove the temporary input folder as it is no longer needed
+        rm -r {params.temp_input_folder}
+        
+        # we are going to move log files into one directory
+        # if any logs are present, continue
+        if [[ `ls {params.guppy_folder}/*.log` ]]; then
+            
+            # create our log folder if we need to move items
+            mkdir -p {params.log_path}
+            
+            # set working directory to get file names
+            cd {params.guppy_folder}
+            
+            # move any logs that are present to the logs folder
+            for item in `ls *.log`; do
+                touch {params.log_path}/$item
+                mv {params.guppy_folder}/$item {params.log_path}/$item
+            done
+        fi
+        """
+
+
+
+rule minimap_aligner:
+    input:
+        rules.NanoFilt.output[0]
+    output:
+        config['results_folder'] + "Alignment/minimap/{barcode}.minimap.sam"
+    params:
+        alignment_reference = config['alignment_reference_file']
+    shell:
+        r"""
+        touch {output}
+        
+        minimap2 \
+        -ax map-ont \
+        {params.alignment_reference} \
+        {input} > {output}
+        """
+
+
+
+rule fq2fa:
+    input:
+        rules.NanoFilt.output[0]
+    output:
+        temp(config['results_folder'] + "Alignment/vsearch/.temp_fasta_{barcode}.fasta")
+    shell:
+        r"""
+        seqkit fq2fa {input} > {output}
+        """
+rule vsearch_aligner:
+    input:
+        rules.fq2fa.output[0]
+    output:
+        config['results_folder'] + "Alignment/vsearch/{barcode}.vsearch.uc"
+    params:
+        alignment_reference = config['alignment_reference_file']
+    shell:
+        r"""
+        vsearch \
+        --usearch_global \
+        {input} \
+        --db {params.alignment_reference} \
+        --id 0 \
+        --uc {output} \
+        --quiet
+        """
