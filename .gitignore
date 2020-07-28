@@ -3,3 +3,4 @@
 /Results/DataFiles/silva_alignment_reference.fasta
 /snakemake/.snakemake/
 /Results/.barcodeTempOutput/
+/Results/.guppyTempInput/

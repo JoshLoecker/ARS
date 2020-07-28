@@ -1,0 +1,2 @@
+read_id	alignment_genome	alignment_direction	alignment_genome_start	alignment_genome_end	alignment_strand_start	alignment_strand_end	alignment_num_insertions	alignment_num_deletions	alignment_num_aligned	alignment_num_correct	alignment_identity	alignment_accuracy	alignment_score	alignment_coverage
+b5680b05-7aa4-4320-9ae4-6c75c562e5ae	*	*	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1

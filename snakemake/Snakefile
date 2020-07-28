@@ -28,8 +28,6 @@ def barcode_numbers(path: str):
                     barcode_number = file.split(".")[0]
     return barcode_numbers
 
-
-
 def basecall_barcode_merge_files(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
     barcodes = set()  # a set is like a list, but only stores unique values
@@ -96,6 +94,8 @@ def vsearch_aligner(wildcards):
         config['results_folder'] + "Alignment/vsearch/{barcode}.vsearch.uc",
         barcode=barcodes
     )
+
+
 
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
 
@@ -239,49 +239,33 @@ rule guppy_aligner:
         rules.NanoFilt.output[0]
     output:
         sam_files = config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
+        alignment_summary = config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv",
+        log_file = config['results_folder'] + "Alignment/guppy/logs/{barcode}.guppy.log",
     params:
-        barcode = "{barcode}",
-        alignment_reference = config['alignment_reference_file'],
-        guppy_folder = config['results_folder'] + "Alignment/guppy",
-        temp_input_folder = config['results_folder'] + ".guppyTempInput/{barcode}",
-        log_path = config['results_folder'] + "Alignment/guppy/logs"
+        temp_input = config['results_folder'] + "Alignment/guppy/.{barcode}.temp.input",
+        temp_output = config['results_folder'] + "Alignment/guppy/.{barcode}.temp.output",
+        alignment_reference = config['alignment_reference_file']
     shell:
         r"""
-        # guppy_aligner requires a folder as input. We will make that input folder and copy the appropriate file here
-        mkdir -p {params.temp_input_folder}
-        cp {input} {params.temp_input_folder}
+        # move input files to our temp folder
+        # this is required because guppy_aligner wants folders as input
+        mkdir -p {params.temp_input}
+        cp {input} {params.temp_input}
         
-        # perform alignment
+        # run alignment
         guppy_aligner \
-        --input_path {params.temp_input_folder} \
-        --save_path {params.guppy_folder} \
-        --align_ref {params.alignment_reference} \
-        --quiet
+        --input_path {params.temp_input} \
+        --save_path {params.temp_output} \
+        --align_ref {params.alignment_reference}
         
-        # move our output to the correct location
-        touch {output.sam_files}
-        mv {params.guppy_folder}/{params.barcode}.nanofilt.sam {output.sam_files}
+        # move files from the temp output to the appropriate folders
+        # a temp output allows for better organization
+        mv {params.temp_output}/*.sam {output.sam_files}
+        mv {params.temp_output}/*.txt {output.alignment_summary}
+        mv {params.temp_output}/*.log {output.log_file}
         
-        
-        # remove the temporary input folder as it is no longer needed
-        rm -r {params.temp_input_folder}
-        
-        # we are going to move log files into one directory
-        # if any logs are present, continue
-        if [[ `ls {params.guppy_folder}/*.log` ]]; then
-            
-            # create our log folder if we need to move items
-            mkdir -p {params.log_path}
-            
-            # set working directory to get file names
-            cd {params.guppy_folder}
-            
-            # move any logs that are present to the logs folder
-            for item in `ls *.log`; do
-                touch {params.log_path}/$item
-                mv {params.guppy_folder}/$item {params.log_path}/$item
-            done
-        fi
+        # remove our temporary input and output files
+        rm -rf {params.temp_input} {params.temp_output}
         """
 
 
@@ -309,7 +293,7 @@ rule fq2fa:
     input:
         rules.NanoFilt.output[0]
     output:
-        temp(config['results_folder'] + "Alignment/vsearch/.temp_fasta_{barcode}.fasta")
+        temp(config['results_folder'] + "Alignment/vsearch/.{barcode}.temp.fasta")
     shell:
         r"""
         seqkit fq2fa {input} > {output}
