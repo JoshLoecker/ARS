@@ -1,0 +1,9 @@
+2020-07-28 15:15:21.779014 [guppy/message] ONT Guppy alignment software version 4.0.14+8d3226e
+input path:         /Users/joshl/PycharmProjects/ARS/Results/.guppyTempInput/barcode45
+save path:          /Users/joshl/PycharmProjects/ARS/Results/Alignment/guppy
+alignment ref.:     /Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta
+
+2020-07-28 15:15:21.780257 [guppy/info] crashpad_handler not supported on this platform.
+2020-07-28 15:15:21.780460 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/.guppyTempInput/barcode45/barcode45.nanofilt.fastq
+2020-07-28 15:15:22.158938 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/.guppyTempInput/barcode45/barcode45.nanofilt.fastq (184 reads)
+2020-07-28 15:15:22.159009 [guppy/message] Done in 389 ms.
