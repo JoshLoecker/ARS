@@ -1,0 +1,108 @@
+2020-07-29 09:46:20,175 NanoPlot 1.31.0 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['/Users/joshl/PycharmProjects/ARS/Results/NanoFilt/barcode39.nanofilt.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='/Users/joshl/PycharmProjects/ARS/Results/Visuals/NanoPlot/barcode39/', path='/Users/joshl/PycharmProjects/ARS/Results/Visuals/NanoPlot/barcode39/', percentqual=False, pickle=None, plots=['kde', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=4, title=None, ubam=None, verbose=False)
+2020-07-29 09:46:20,175 Python version is: 3.7.6 | packaged by conda-forge | (default, Jun  1 2020, 18:33:30)  [Clang 9.0.1 ]
+2020-07-29 09:46:20,177 NanoPlot:  valid output format png
+2020-07-29 09:46:20,195 Nanoget: Starting to collect statistics from plain fastq file.
+2020-07-29 09:46:20,311 Reduced DataFrame memory usage from 0.0061798095703125Mb to 0.003604888916015625Mb
+2020-07-29 09:46:20,325 Nanoget: Gathered all metrics of 270 reads
+2020-07-29 09:46:20,344 Calculated statistics
+2020-07-29 09:46:20,345 Using sequenced read lengths for plotting.
+2020-07-29 09:46:20,349 NanoPlot:  Valid color #4CB391.
+2020-07-29 09:46:20,350 NanoPlot:  Valid colormap Greens.
+2020-07-29 09:46:20,351 NanoPlot:  Creating length plots for Read length.
+2020-07-29 09:46:20,352 NanoPlot:  Using 270 reads maximum of 3115bp.
+2020-07-29 09:46:22,329 Nanoplotter: orca not found, not creating static image of html. See https://github.com/plotly/orca
+2020-07-29 09:46:22,329 
+The orca executable is required to export figures as static images,
+but it could not be found on the system path.
+
+Searched for executable 'orca' on the following path:
+    /Users/joshl/opt/miniconda3/envs/snakemake/bin
+    /Users/joshl/opt/miniconda3/condabin
+    /usr/local/bin
+    /Library/Frameworks/Python.framework/Versions/3.7/bin
+    /usr/local/bin
+    /usr/bin
+    /bin
+    /usr/sbin
+    /sbin
+
+If you haven't installed orca yet, you can do so using conda as follows:
+
+    $ conda install -c plotly plotly-orca
+
+Alternatively, see other installation methods in the orca project README at
+https://github.com/plotly/orca
+
+After installation is complete, no further configuration should be needed.
+
+If you have installed orca, then for some reason plotly.py was unable to
+locate it. In this case, set the `plotly.io.orca.config.executable`
+property to the full path of your orca executable. For example:
+
+    >>> plotly.io.orca.config.executable = '/path/to/orca'
+
+After updating this executable property, try the export operation again.
+If it is successful then you may want to save this configuration so that it
+will be applied automatically in future sessions. You can do this as follows:
+
+    >>> plotly.io.orca.config.save()
+
+If you're still having trouble, feel free to ask for help on the forums at
+https://community.plot.ly/c/api/python
+Traceback (most recent call last):
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/nanoplotter/plot.py", line 60, in save_static
+    pio.write_image(self.fig, self.path.replace('html', 'png'))
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/plotly/io/_kaleido.py", line 251, in write_image
+    engine=engine,
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/plotly/io/_kaleido.py", line 108, in to_image
+    validate=validate,
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/plotly/io/_orca.py", line 1535, in to_image
+    ensure_server()
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/plotly/io/_orca.py", line 1390, in ensure_server
+    validate_executable()
+  File "/Users/joshl/opt/miniconda3/envs/snakemake/lib/python3.7/site-packages/plotly/io/_orca.py", line 1087, in validate_executable
+    instructions=install_location_instructions,
+ValueError: 
+The orca executable is required to export figures as static images,
+but it could not be found on the system path.
+
+Searched for executable 'orca' on the following path:
+    /Users/joshl/opt/miniconda3/envs/snakemake/bin
+    /Users/joshl/opt/miniconda3/condabin
+    /usr/local/bin
+    /Library/Frameworks/Python.framework/Versions/3.7/bin
+    /usr/local/bin
+    /usr/bin
+    /bin
+    /usr/sbin
+    /sbin
+
+If you haven't installed orca yet, you can do so using conda as follows:
+
+    $ conda install -c plotly plotly-orca
+
+Alternatively, see other installation methods in the orca project README at
+https://github.com/plotly/orca
+
+After installation is complete, no further configuration should be needed.
+
+If you have installed orca, then for some reason plotly.py was unable to
+locate it. In this case, set the `plotly.io.orca.config.executable`
+property to the full path of your orca executable. For example:
+
+    >>> plotly.io.orca.config.executable = '/path/to/orca'
+
+After updating this executable property, try the export operation again.
+If it is successful then you may want to save this configuration so that it
+will be applied automatically in future sessions. You can do this as follows:
+
+    >>> plotly.io.orca.config.save()
+
+If you're still having trouble, feel free to ask for help on the forums at
+https://community.plot.ly/c/api/python
+
+2020-07-29 09:46:22,664 Created length plots
+2020-07-29 09:46:22,666 NanoPlot:  Creating Read lengths vs Average read quality plots using statistics from 270 reads.
+2020-07-29 09:46:25,754 Created LengthvsQual plot
+2020-07-29 09:46:25,754 Writing html report.
+2020-07-29 09:46:29,307 Finished!

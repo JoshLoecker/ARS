@@ -1,31 +1,20 @@
-import glob
 import os
-from pathlib import Path
-
 configfile: "config.yaml"
 
-def barcode_numbers(path: str):
+def return_barcode_numbers(path: str):
     """
     This function will return a list of barcode numbers under the directory passed in
-    First, folders will be checked. If no folders exist, file names will be tested
     Args:
         path: The directory that should be searched
     Returns: A list of strings containing directory names
     """
-    directories_found = False
     barcode_numbers = set()
-
-    for root, directories, files in os.walk(path):
-        for directory in directories:
-            if "barcode" in directory or "unclassified" in directory:
-                directories_found = True
-                barcode_numbers.add(directory)
-
-        # only search for files if directories is false
-        if not directories_found:
-            for file in files:
-                if "barcode" in file or "unclassified" in file:
-                    barcode_number = file.split(".")[0]
+    for item in os.scandir(path):
+        item = item.name
+        if "barcode" in item:
+            barcode_numbers.add(item)
+        elif "unclassified" in item:
+            barcode_numbers.add(item)
     return barcode_numbers
 
 def basecall_barcode_merge_files(wildcards):
@@ -41,74 +30,84 @@ def basecall_barcode_merge_files(wildcards):
 
 def nanoqc_pre_trim(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "NanoQC/Pre-Trim/{barcode}",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def trim_reads(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "Trim/{barcode}.trim.fastq",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def nanoqc_post_trim(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "NanoQC/Post-Trim/{barcode}",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def NanoFilt(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def guppy_aligner(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
-               barcode=barcodes
+               barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def minimap_aligner(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "Alignment/minimap/{barcode}.minimap.sam",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def vsearch_aligner(wildcards):
     checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    barcodes = barcode_numbers(checkpoint_output)
     return expand(
         config['results_folder'] + "Alignment/vsearch/{barcode}.vsearch.uc",
-        barcode=barcodes
+        barcode=return_barcode_numbers(checkpoint_output)
+    )
+
+def nanoplot(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    return expand(
+        config['results_folder'] + "Visuals/NanoPlot/{barcode}/",
+        barcode=return_barcode_numbers(checkpoint_output)
+    )
+
+def plotly_multi_color(wildcards):
+    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    return expand(
+        config['results_folder'] + "Visuals/Plotly/{barcode}/multi.color.histogram.html",
+        barcode=return_barcode_numbers(checkpoint_output)
     )
 
 
 
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
-
 rule all:
     input:
         basecall_barcode_merge_files,
+        config['results_folder'] + "CountReads/count.reads.post.merge.csv",
         nanoqc_pre_trim,
         trim_reads,
         nanoqc_post_trim,
         NanoFilt,
         guppy_aligner,
         minimap_aligner,
-        vsearch_aligner
+        vsearch_aligner,
+        nanoplot,
+        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html",
+        # plotly_multi_color
 
 
 
@@ -140,6 +139,7 @@ checkpoint basecall_barcode:
 
 
 def merge_files_input(wildcards):
+    import glob
     return glob.glob(config['results_folder'] + f".barcodeTempOutput/{wildcards.barcode}/*.fastq")
 rule merge_files:
     input:
@@ -171,6 +171,55 @@ rule merge_files:
             mv {params.input_folder}/*.js {params.save_folder}/
         fi
         """
+
+
+
+rule count_post_merge_reads:
+    input:
+        expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq",
+               barcode=return_barcode_numbers(config['results_folder'] + ".barcodeTempOutput/"))
+    output:
+        config['results_folder'] + "CountReads/count.reads.post.merge.csv"
+    run:
+        # import libraries
+        import csv
+        from collections import OrderedDict
+
+        # iterate through and open each file in the input stream
+        total_reads_dict = {}
+        for file_path in input:
+
+            # get the total number of lines in the file
+            total_lines = len(open(file_path, 'r').readlines())
+
+            # we know that fastq files have four lines per read, and fasta files have two lines per read. We will divide the file by the appropriate number
+            if ".fastq" in file_path:
+                number_of_reads = int(total_lines / 4)
+            else:
+                number_of_reads = int(total_lines / 2)
+
+            # collect the barcode number from the file path
+            file_name = os.path.basename(file_path)  # get the file name
+            barcode_number = file_name.split(".")[0]  # get the barcode number
+
+            # now add the barcode number with the total number of reads to our dictionary
+            total_reads_dict[barcode_number] = number_of_reads
+
+        # sort the reads so it is easy to find them in the resulting file
+        # https://docs.python.org/2/library/collections.html#collections.OrderedDict
+        total_reads_dict = OrderedDict( sorted(total_reads_dict.items(), key=lambda x: x[0]) )
+
+        # now write the reads to our csv file
+        with open(output[0], 'w') as output_stream:
+            csv_writer = csv.writer(output_stream, delimiter="\t")
+
+            # write a simple header row
+            csv_writer.writerow(["barcode", "reads"])
+
+            # write our barcode number and reads in barcode in the format of: barcode## READS
+            for barcode in total_reads_dict.keys():
+                row = [barcode, total_reads_dict[barcode]]
+                csv_writer.writerow(row)
 
 
 
@@ -315,3 +364,34 @@ rule vsearch_aligner:
         --uc {output} \
         --quiet
         """
+
+
+
+rule nanoplot:
+    input:
+        rules.NanoFilt.output[0]
+    output:
+        directory(config['results_folder'] + "Visuals/NanoPlot/{barcode}/")
+    params:
+        barcode = "{barcode}"
+    shell:
+        r"""
+        NanoPlot --fastq {input} --outdir {output}
+        """
+
+
+
+rule plotly_single_color:
+    input:
+        rules.count_post_merge_reads.output[0]
+    output:
+        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html"
+    script:
+        "scripts/PlotlySingleColorHistogram.py"
+rule plotly_multi_color:
+    input:
+         rules.NanoFilt.output[0]
+    output:
+        config['results_folder'] + "Visuals/Plotly/{barcode}/multi.color.histogram.html"
+    script:
+        "scripts/PlotlyMultiColorHistogram.py"
