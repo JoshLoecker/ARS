@@ -17,8 +17,8 @@ def return_barcode_numbers(path: str):
             barcode_numbers.add(item)
     return barcode_numbers
 
-def basecall_barcode_merge_files(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+def barcode_merge_files(wildcards):
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     barcodes = set()  # a set is like a list, but only stores unique values
     for folder in os.listdir(checkpoint_output):
         full_path = os.path.join(checkpoint_output, folder)
@@ -29,65 +29,58 @@ def basecall_barcode_merge_files(wildcards):
     return merge_files
 
 def nanoqc_pre_trim(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "NanoQC/Pre-Trim/{barcode}",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def trim_reads(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "Trim/{barcode}.trim.fastq",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def nanoqc_post_trim(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "NanoQC/Post-Trim/{barcode}",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def NanoFilt(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def guppy_aligner(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
                barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def minimap_aligner(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "Alignment/minimap/{barcode}.minimap.sam",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def vsearch_aligner(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "Alignment/vsearch/{barcode}.vsearch.uc",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
 def nanoplot(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
         config['results_folder'] + "Visuals/NanoPlot/{barcode}/",
-        barcode=return_barcode_numbers(checkpoint_output)
-    )
-
-def plotly_multi_color(wildcards):
-    checkpoint_output = checkpoints.basecall_barcode.get(**wildcards).output[0]
-    return expand(
-        config['results_folder'] + "Visuals/Plotly/{barcode}/multi.color.histogram.html",
         barcode=return_barcode_numbers(checkpoint_output)
     )
 
@@ -96,45 +89,63 @@ def plotly_multi_color(wildcards):
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
 rule all:
     input:
-        basecall_barcode_merge_files,
-        config['results_folder'] + "CountReads/count.reads.post.merge.csv",
-        nanoqc_pre_trim,
-        trim_reads,
-        nanoqc_post_trim,
-        NanoFilt,
-        guppy_aligner,
-        minimap_aligner,
-        vsearch_aligner,
-        nanoplot,
-        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html",
-        # plotly_multi_color
+        config['results_folder'] + "Basecall/",  #.................................... Basecaller
+        barcode_merge_files,  # ...................................................... Barcoder/Merge Files
+        nanoqc_pre_trim,  # .......................................................... NanoQC Pre-Trim
+        trim_reads,  # ............................................................... Trim (Cutadapt)
+        nanoqc_post_trim,  # ......................................................... NanoQC Post-Trim
+        NanoFilt,  # ................................................................. NanoFilt
+        guppy_aligner,  # ............................................................ Guppy Aligner
+        minimap_aligner,  # .......................................................... MiniMap Aligner
+        vsearch_aligner,  # .......................................................... VSearch Aligner
+        config['results_folder'] + "CountReads/count.reads.basecall.csv",  # ......... Count reads after basecall
+        config['results_folder'] + "CountReads/count.reads.barcode.csv",  # .......... Count reads after barcode (and merge files)
+        config['results_folder'] + "CountReads/count.reads.trim.csv",  # ............. Count reads after trimming
+        config['results_folder'] + "CountReads/count.reads.nanofilt.csv",  # ......... Count reads after NanoFilt
+        config['results_folder'] + "CountReads/count.reads.guppy.csv",  # ............ Count reads after guppy aligner
+        config['results_folder'] + "Visuals/NanoPlot/",  # ........................... NanoPlot
+        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html",  #... Plotly histogram
+        config['results_folder'] + "Visuals/Plotly/box.whisker.plot.html"  #.......... Plotly box and whisker plot
 
 
 
-checkpoint basecall_barcode:
+rule basecall:
     input:
         config['results_folder'] + "DataFiles/fast5/"
     output:
-        directory(config['results_folder'] + ".barcodeTempOutput/")
+        directory(config['results_folder'] + "Basecall/")
     params:
-        configuration = config['basecall_configuration'],
-        barcode_kits = config['barcode_kit'],
+        configuration = config["basecall_configuration"],
         callers = config['num_callers'],
         threads_per_caller = config['num_threads_per_caller']
-    conda:
-        "envs/pythonEnv.yaml"
     shell:
-        "guppy_basecaller "
-        "--config {params.configuration} "
-        "--input_path {input} "
-        "--save_path {output} "
-        "--barcode_kits {params.barcode_kits} "
-        "--num_callers {params.callers} "
-        "--cpu_threads_per_caller {params.threads_per_caller} "
-        "--recursive "
+        r"""
+        guppy_basecaller \
+        --config {params.configuration} \
+        --input_path {input} \
+        --save_path {output} \
+        --num_callers {params.callers} \
+        --cpu_threads_per_caller {params.threads_per_caller} \
+        --recursive
+        """
 
-        " && "
-        "echo BASECALL: {output}"
+
+
+checkpoint barcode:
+    input:
+        rules.basecall.output[0]
+    output:
+        directory(config['results_folder'] + ".barcodeTempOutput/")
+    params:
+        barcode_kit = config['barcode_kit']
+    shell:
+        r"""
+        guppy_barcoder \
+        -i {input} \
+        -s {output} \
+        --recursive \
+        --barcode_kits {params.barcode_kit}
+        """
 
 
 
@@ -159,67 +170,16 @@ rule merge_files:
         
         # move other files out of .barcodeTempOutput and into the save directory
         # we are only going to move them if they are present
-        if [[ -f {params.input_folder}/*.txt ]]; then
-            mv {params.input_folder}/*.txt {params.save_folder}/
+        if [[ -f {params.input_folder}/barcoding_summary.txt ]]; then
+            mv {params.input_folder}/barcoding_summary.txt {params.save_folder}/barcoding_summary.txt
         fi
         
-        if [[ -f {params.input_folder}/*.log ]]; then
-            mv {params.input_folder}/*.log {params.save_folder}/
-        fi
-        
-        if [[ -f {params.input_folder}/*.js ]]; then
-            mv {params.input_folder}/*.js {params.save_folder}/
+        # this does not appear to work right now, not sure why
+        if [[ -f `ls {params.input_folder}/*.log` ]]; then
+            echo FILE FOUND
+            mv {params.input_folder}/*.log {params.input_folder}/*.log 2>/dev/null
         fi
         """
-
-
-
-rule count_post_merge_reads:
-    input:
-        expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq",
-               barcode=return_barcode_numbers(config['results_folder'] + ".barcodeTempOutput/"))
-    output:
-        config['results_folder'] + "CountReads/count.reads.post.merge.csv"
-    run:
-        # import libraries
-        import csv
-        from collections import OrderedDict
-
-        # iterate through and open each file in the input stream
-        total_reads_dict = {}
-        for file_path in input:
-
-            # get the total number of lines in the file
-            total_lines = len(open(file_path, 'r').readlines())
-
-            # we know that fastq files have four lines per read, and fasta files have two lines per read. We will divide the file by the appropriate number
-            if ".fastq" in file_path:
-                number_of_reads = int(total_lines / 4)
-            else:
-                number_of_reads = int(total_lines / 2)
-
-            # collect the barcode number from the file path
-            file_name = os.path.basename(file_path)  # get the file name
-            barcode_number = file_name.split(".")[0]  # get the barcode number
-
-            # now add the barcode number with the total number of reads to our dictionary
-            total_reads_dict[barcode_number] = number_of_reads
-
-        # sort the reads so it is easy to find them in the resulting file
-        # https://docs.python.org/2/library/collections.html#collections.OrderedDict
-        total_reads_dict = OrderedDict( sorted(total_reads_dict.items(), key=lambda x: x[0]) )
-
-        # now write the reads to our csv file
-        with open(output[0], 'w') as output_stream:
-            csv_writer = csv.writer(output_stream, delimiter="\t")
-
-            # write a simple header row
-            csv_writer.writerow(["barcode", "reads"])
-
-            # write our barcode number and reads in barcode in the format of: barcode## READS
-            for barcode in total_reads_dict.keys():
-                row = [barcode, total_reads_dict[barcode]]
-                csv_writer.writerow(row)
 
 
 
@@ -232,6 +192,7 @@ rule NanoQCPreTrim:
         r"""
         nanoQC -o {output} {input}
         """
+
 
 
 rule trim:
@@ -367,31 +328,105 @@ rule vsearch_aligner:
 
 
 
+rule count_reads_basecall:
+    input:
+        expand(config['results_folder'] + "Basecall/{fastq_file}.fastq",
+               fastq_file=glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq").fastq_file)
+    output:
+        config['results_folder'] + "CountReads/count.reads.basecall.csv"
+    script:
+        "scripts/CountReads.py"
+rule count_reads_barcode:
+    input:
+        expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq",
+               barcode=glob_wildcards(config['results_folder'] + "Barcode/{barcode}.merged.fastq").barcode)
+    output:
+        config['results_folder'] + "CountReads/count.reads.barcode.csv"
+    script:
+        "scripts/CountReads.py"
+rule count_reads_trim:
+    input:
+        expand(config['results_folder'] + "Trim/{barcode}.trim.fastq",
+               barcode=glob_wildcards(config['results_folder'] + "Trim/{barcode}.trim.fastq").barcode)
+    output:
+        config['results_folder'] + "CountReads/count.reads.trim.csv"
+    script:
+        "scripts/CountReads.py"
+rule count_reads_nanofilt:
+    input:
+        expand(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq",
+               barcode=glob_wildcards(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq").barcode)
+    output:
+        config['results_folder'] + "CountReads/count.reads.nanofilt.csv"
+    script:
+        "scripts/CountReads.py"
+rule count_reads_guppy:
+    input:
+        expand(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv",
+               barcode=glob_wildcards(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv").barcode)
+    output:
+        config['results_folder'] + "CountReads/count.reads.guppy.csv"
+    script:
+        "scripts/CountReads.py"
+
+
+
+
 rule nanoplot:
     input:
-        rules.NanoFilt.output[0]
+        rules.basecall.output[0] + "sequencing_summary.txt"
     output:
-        directory(config['results_folder'] + "Visuals/NanoPlot/{barcode}/")
-    params:
-        barcode = "{barcode}"
+        directory(config['results_folder'] + "Visuals/NanoPlot/")
     shell:
         r"""
-        NanoPlot --fastq {input} --outdir {output}
+        NanoPlot --summary {input} --outdir {output}
         """
 
 
 
-rule plotly_single_color:
+rule plotly_histogram:
     input:
-        rules.count_post_merge_reads.output[0]
+        rules.count_reads_barcode.output[0]
     output:
         config['results_folder'] + "Visuals/Plotly/single.color.histogram.html"
     script:
-        "scripts/PlotlySingleColorHistogram.py"
-rule plotly_multi_color:
+        "scripts/PlotlyHistogram.py"
+
+rule plotly_box_whisker_collect_basecall_input:
     input:
-         rules.NanoFilt.output[0]
+        expand(config['results_folder'] + "Basecall/{fastq_file}.fastq", fastq_file=glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq").fastq_file),
+rule plotly_box_whisker_collect_barcode_input:
+    input:
+        expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq", barcode=glob_wildcards(config['results_folder'] + "Barcode/{barcode}.merged.fastq").barcode)
+rule plotly_box_whisker_collect_trim_input:
+    input:
+        expand(config['results_folder'] + "Trim/{barcode}.trim.fastq", barcode=glob_wildcards(config['results_folder'] + "Trim/{barcode}.trim.fastq").barcode)
+rule plotly_box_whisker_collect_nanofilt_input:
+    input:
+        expand(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq", barcode=glob_wildcards(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq").barcode)
+rule plotly_box_whisker_collect_guppy_input:
+    input:
+        expand(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv", barcode=glob_wildcards(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv").barcode)
+rule plotly_box_whisker_generation:
+    input:
+        # output of rule basecall
+        basecall_input = rules.plotly_box_whisker_collect_basecall_input.input[0],
+
+        # output of rule barcode, after merging
+        barcode_input = rules.plotly_box_whisker_collect_barcode_input.input[0],
+
+        # output of rule trim
+        trim_input = rules.plotly_box_whisker_collect_trim_input.input[0],
+
+        # output from NanoFilt
+        nanofilt_input = rules.plotly_box_whisker_collect_nanofilt_input.input[0],
+
+        # output from guppy_aligner
+        guppy_input = rules.plotly_box_whisker_collect_guppy_input.input[0]
     output:
-        config['results_folder'] + "Visuals/Plotly/{barcode}/multi.color.histogram.html"
-    script:
-        "scripts/PlotlyMultiColorHistogram.py"
+        config['results_folder'] + "Visuals/Plotly/box.whisker.plot.html"
+    shell:
+         r"""
+         echo hello world
+         touch {output}
+         """

@@ -1,6 +1,6 @@
-2020-07-29 09:42:26,406 NanoQC started.
-2020-07-29 09:42:26,841 Extracting nucleotides and quality scores.
-2020-07-29 09:42:27,864 Using 271 reads with a minimum length of 200bp for plotting
-2020-07-29 09:42:27,864 Creating plots...
-2020-07-29 09:42:28,247 Per base sequence content and quality completed.
-2020-07-29 09:42:28,806 Finished!
+2020-07-29 15:05:50,967 NanoQC started.
+2020-07-29 15:05:51,091 Extracting nucleotides and quality scores.
+2020-07-29 15:05:51,662 Using 271 reads with a minimum length of 200bp for plotting
+2020-07-29 15:05:51,662 Creating plots...
+2020-07-29 15:05:51,903 Per base sequence content and quality completed.
+2020-07-29 15:05:52,445 Finished!
