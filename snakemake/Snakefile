@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 configfile: "config.yaml"
 
 def return_barcode_numbers(path: str):
@@ -89,24 +90,27 @@ def nanoplot(wildcards):
 FAST5_FILES = glob_wildcards(config['results_folder'] + "DataFiles/fast5/{fast5_file}.fast5").fast5_file
 rule all:
     input:
-        config['results_folder'] + "Basecall/",  #.................................... Basecaller
-        barcode_merge_files,  # ...................................................... Barcoder/Merge Files
-        nanoqc_pre_trim,  # .......................................................... NanoQC Pre-Trim
-        trim_reads,  # ............................................................... Trim (Cutadapt)
-        nanoqc_post_trim,  # ......................................................... NanoQC Post-Trim
-        NanoFilt,  # ................................................................. NanoFilt
-        guppy_aligner,  # ............................................................ Guppy Aligner
-        minimap_aligner,  # .......................................................... MiniMap Aligner
-        vsearch_aligner,  # .......................................................... VSearch Aligner
-        config['results_folder'] + "CountReads/count.reads.basecall.csv",  # ......... Count reads after basecall
-        config['results_folder'] + "CountReads/count.reads.barcode.csv",  # .......... Count reads after barcode (and merge files)
-        config['results_folder'] + "CountReads/count.reads.trim.csv",  # ............. Count reads after trimming
-        config['results_folder'] + "CountReads/count.reads.nanofilt.csv",  # ......... Count reads after NanoFilt
-        config['results_folder'] + "CountReads/count.reads.guppy.csv",  # ............ Count reads after guppy aligner
-        config['results_folder'] + "CountReads/master.data.set.csv",  # .............. Count reads create master sheet
-        config['results_folder'] + "Visuals/NanoPlot/",  # ........................... NanoPlot
-        config['results_folder'] + "Visuals/Plotly/plotly.histogram.html",  #......... Plotly histogram
-        config['results_folder'] + "Visuals/Plotly/plotly.box.whisker.html"  #........ Plotly box and whisker plot
+        config['results_folder'] + "Basecall/",  #................................................ Basecaller
+        barcode_merge_files,  # .................................................................. Barcoder/Merge Files
+        nanoqc_pre_trim,  # ...................................................................... NanoQC Pre-Trim
+        trim_reads,  # ........................................................................... Trim (Cutadapt)
+        nanoqc_post_trim,  # ..................................................................... NanoQC Post-Trim
+        NanoFilt,  # ............................................................................. NanoFilt
+        guppy_aligner,  # ........................................................................ Guppy Aligner
+        minimap_aligner,  # ...................................................................... MiniMap Aligner
+        vsearch_aligner,  # ...................................................................... VSearch Aligner
+        config['results_folder'] + "CountReads/count.reads.basecall.csv",  # ..................... Count reads after basecall
+        config['results_folder'] + "CountReads/count.reads.barcode.csv",  # ...................... Count reads after barcode (and merge files)
+        config['results_folder'] + "CountReads/count.reads.trim.csv",  # ......................... Count reads after trimming
+        config['results_folder'] + "CountReads/count.reads.nanofilt.csv",  # ..................... Count reads after NanoFilt
+        config['results_folder'] + "CountReads/count.reads.guppy.csv",  # ........................ Count reads after guppy aligner
+        config['results_folder'] + "CountReads/master.data.set.csv",  # .......................... Count reads create master sheet
+        config['results_folder'] + "Visuals/NanoPlot/",  # ....................................... NanoPlot
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.barcode.histogram.html",    # Plotly barcode histogram
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.cutadapt.histogram.html",   # Plotly cutadapt histogram
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.filtering.histogram.html",  # Plotly filtering histogram
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.mapping.histogram.html",    # Plotly mapping histogram
+        config['results_folder'] + "Visuals/Plotly/plotly.box.whisker.html"  #.................... Plotly box and whisker plot
 
 
 
@@ -196,7 +200,7 @@ rule NanoQCPreTrim:
 
 
 
-rule trim:
+rule cutadapt:
     input:
         rules.merge_files.output[0]
     output:
@@ -222,7 +226,7 @@ rule trim:
 
 rule NanoQCPostTrim:
     input:
-        rules.trim.output[0]
+        rules.cutadapt.output[0]
     output:
         directory(config['results_folder'] + "NanoQC/Post-Trim/{barcode}")
     shell:
@@ -232,9 +236,9 @@ rule NanoQCPostTrim:
 
 
 
-rule NanoFilt:
+rule filtering:
     input:
-        rules.trim.output[0]
+        rules.cutadapt.output[0]
     output:
         config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq"
     shell:
@@ -247,7 +251,7 @@ rule NanoFilt:
 
 rule guppy_aligner:
     input:
-        rules.NanoFilt.output[0]
+        rules.filtering.output[0]
     output:
         sam_files = config['results_folder'] + "Alignment/guppy/sam_files/{barcode}.guppy.sam",
         alignment_summary = config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv",
@@ -283,7 +287,7 @@ rule guppy_aligner:
 
 rule minimap_aligner:
     input:
-        rules.NanoFilt.output[0]
+        rules.filtering.output[0]
     output:
         config['results_folder'] + "Alignment/minimap/{barcode}.minimap.sam"
     params:
@@ -302,7 +306,7 @@ rule minimap_aligner:
 
 rule fq2fa:
     input:
-        rules.NanoFilt.output[0]
+        rules.filtering.output[0]
     output:
         temp(config['results_folder'] + "Alignment/vsearch/.{barcode}.temp.fasta")
     shell:
@@ -349,7 +353,7 @@ rule count_reads_barcode:
         process = "barcode"
     script:
         "scripts/CountReads.py"
-rule count_reads_trim:
+rule count_reads_cutadapt:
     input:
         expand(config['results_folder'] + "Trim/{barcode}.trim.fastq",
                barcode=glob_wildcards(config['results_folder'] + "Trim/{barcode}.trim.fastq").barcode)
@@ -359,7 +363,7 @@ rule count_reads_trim:
         process = "cutadapt"
     script:
         "scripts/CountReads.py"
-rule count_reads_nanofilt:
+rule count_reads_filtering:
     input:
         expand(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq",
                barcode=glob_wildcards(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq").barcode)
@@ -382,8 +386,8 @@ rule count_reads_guppy:
 rule count_reads_master_sheet:
     input:
         rules.count_reads_barcode.output[0],
-        rules.count_reads_trim.output[0],
-        rules.count_reads_nanofilt.output[0],
+        rules.count_reads_cutadapt.output[0],
+        rules.count_reads_filtering.output[0],
         rules.count_reads_guppy.output[0]
     output:
         master_csv = config['results_folder'] + "CountReads/master.data.set.csv"
@@ -413,21 +417,49 @@ rule nanoplot:
 
 
 
-rule plotly_histogram:
+rule plotly_barcode_histogram:
     input:
         rules.count_reads_barcode.output[0]
     output:
-        config['results_folder'] + "Visuals/Plotly/plotly.histogram.html"
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.barcode.histogram.html"
+    params:
+        sub_title = "Performed after Merging Files"
     script:
         "scripts/PlotlyHistogram.py"
+rule plotly_cutadapt_histogram:
+    input:
+        rules.count_reads_cutadapt.output[0]
+    output:
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.cutadapt.histogram.html"
+    params:
+        sub_title = "Performed after Cutadapt"
+    script:
+        "scripts/PlotlyHistogram.py"
+rule plotly_filtering_histogram:
+    input:
+        rules.count_reads_filtering.output[0]
+    output:
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.filtering.histogram.html"
+    params:
+        sub_title = "Performed after Filtering"
+    script:
+        "scripts/PlotlyHistogram.py"
+rule plotly_mapping_histogram:
+    input:
+        rules.count_reads_guppy.output[0]
+    output:
+        config['results_folder'] + "Visuals/Plotly/Histograms/plotly.mapping.histogram.html"
+    params:
+        sub_title = "Performed after Mapping"
+    script:
+        "scripts/PlotlyHistogram.py"
+
 rule plotly_box_whisker_generation:
     input:
         rules.count_reads_barcode.output[0],
-        rules.count_reads_trim.output[0],
-        rules.count_reads_nanofilt.output[0],
+        rules.count_reads_cutadapt.output[0],
+        rules.count_reads_filtering.output[0],
         rules.count_reads_guppy.output[0]
-
-
     output:
         config['results_folder'] + "Visuals/Plotly/plotly.box.whisker.html"
     script:

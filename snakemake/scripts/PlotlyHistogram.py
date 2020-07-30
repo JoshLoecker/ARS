@@ -60,7 +60,7 @@ annotation_data = [
          x=0.5,
          y=1.031,
          showarrow=False,
-         text="Performed after Merging Files",
+         text=str(snakemake.params.sub_title),
          font=dict(size=18)),
 
     # show the number of unclassified reads
