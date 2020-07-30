@@ -1,83 +1,83 @@
-barcode	reads
-barcode01	313
-barcode02	290
-barcode03	279
-barcode04	301
-barcode05	317
-barcode06	303
-barcode07	325
-barcode08	397
-barcode09	277
-barcode10	311
-barcode11	339
-barcode12	197
-barcode13	339
-barcode14	317
-barcode15	272
-barcode16	288
-barcode17	272
-barcode18	252
-barcode20	446
-barcode21	278
-barcode22	238
-barcode23	270
-barcode24	216
-barcode25	320
-barcode26	291
-barcode27	311
-barcode28	291
-barcode29	224
-barcode31	207
-barcode32	326
-barcode33	220
-barcode35	282
-barcode36	253
-barcode37	311
-barcode38	293
-barcode39	270
-barcode40	290
-barcode41	182
-barcode42	233
-barcode45	184
-barcode46	143
-barcode47	270
-barcode49	272
-barcode50	343
-barcode51	263
-barcode52	350
-barcode53	215
-barcode54	201
-barcode55	247
-barcode56	411
-barcode57	209
-barcode58	150
-barcode59	222
-barcode60	368
-barcode61	255
-barcode62	264
-barcode63	351
-barcode64	334
-barcode65	203
-barcode66	197
-barcode67	251
-barcode69	217
-barcode70	155
-barcode72	1
-barcode74	1
-barcode75	1
-barcode76	370
-barcode77	244
-barcode78	120
-barcode79	326
-barcode80	1
-barcode81	115
-barcode82	116
-barcode83	149
-barcode84	2
-barcode85	1
-barcode89	222
-barcode90	281
-barcode91	266
-barcode93	172
-barcode95	258
-unclassified	4135
+barcode	reads	process
+barcode01	313	filtering
+barcode02	290	filtering
+barcode03	279	filtering
+barcode04	301	filtering
+barcode05	317	filtering
+barcode06	303	filtering
+barcode07	325	filtering
+barcode08	397	filtering
+barcode09	277	filtering
+barcode10	311	filtering
+barcode11	339	filtering
+barcode12	197	filtering
+barcode13	339	filtering
+barcode14	317	filtering
+barcode15	272	filtering
+barcode16	288	filtering
+barcode17	272	filtering
+barcode18	252	filtering
+barcode20	446	filtering
+barcode21	278	filtering
+barcode22	238	filtering
+barcode23	270	filtering
+barcode24	216	filtering
+barcode25	320	filtering
+barcode26	291	filtering
+barcode27	311	filtering
+barcode28	291	filtering
+barcode29	224	filtering
+barcode31	207	filtering
+barcode32	326	filtering
+barcode33	220	filtering
+barcode35	282	filtering
+barcode36	253	filtering
+barcode37	311	filtering
+barcode38	293	filtering
+barcode39	270	filtering
+barcode40	290	filtering
+barcode41	182	filtering
+barcode42	233	filtering
+barcode45	184	filtering
+barcode46	143	filtering
+barcode47	270	filtering
+barcode49	272	filtering
+barcode50	343	filtering
+barcode51	263	filtering
+barcode52	350	filtering
+barcode53	215	filtering
+barcode54	201	filtering
+barcode55	247	filtering
+barcode56	411	filtering
+barcode57	209	filtering
+barcode58	150	filtering
+barcode59	222	filtering
+barcode60	368	filtering
+barcode61	255	filtering
+barcode62	264	filtering
+barcode63	351	filtering
+barcode64	334	filtering
+barcode65	203	filtering
+barcode66	197	filtering
+barcode67	251	filtering
+barcode69	217	filtering
+barcode70	155	filtering
+barcode72	1	filtering
+barcode74	1	filtering
+barcode75	1	filtering
+barcode76	370	filtering
+barcode77	244	filtering
+barcode78	120	filtering
+barcode79	326	filtering
+barcode80	1	filtering
+barcode81	115	filtering
+barcode82	116	filtering
+barcode83	149	filtering
+barcode84	2	filtering
+barcode85	1	filtering
+barcode89	222	filtering
+barcode90	281	filtering
+barcode91	266	filtering
+barcode93	172	filtering
+barcode95	258	filtering
+unclassified	4135	filtering

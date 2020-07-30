@@ -103,9 +103,10 @@ rule all:
         config['results_folder'] + "CountReads/count.reads.trim.csv",  # ............. Count reads after trimming
         config['results_folder'] + "CountReads/count.reads.nanofilt.csv",  # ......... Count reads after NanoFilt
         config['results_folder'] + "CountReads/count.reads.guppy.csv",  # ............ Count reads after guppy aligner
+        config['results_folder'] + "CountReads/master.data.set.csv",  # .............. Count reads create master sheet
         config['results_folder'] + "Visuals/NanoPlot/",  # ........................... NanoPlot
-        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html",  #... Plotly histogram
-        config['results_folder'] + "Visuals/Plotly/box.whisker.plot.html"  #.......... Plotly box and whisker plot
+        config['results_folder'] + "Visuals/Plotly/plotly.histogram.html",  #......... Plotly histogram
+        config['results_folder'] + "Visuals/Plotly/plotly.box.whisker.html"  #........ Plotly box and whisker plot
 
 
 
@@ -334,6 +335,8 @@ rule count_reads_basecall:
                fastq_file=glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq").fastq_file)
     output:
         config['results_folder'] + "CountReads/count.reads.basecall.csv"
+    params:
+        process = "basecall"
     script:
         "scripts/CountReads.py"
 rule count_reads_barcode:
@@ -342,6 +345,8 @@ rule count_reads_barcode:
                barcode=glob_wildcards(config['results_folder'] + "Barcode/{barcode}.merged.fastq").barcode)
     output:
         config['results_folder'] + "CountReads/count.reads.barcode.csv"
+    params:
+        process = "barcode"
     script:
         "scripts/CountReads.py"
 rule count_reads_trim:
@@ -350,6 +355,8 @@ rule count_reads_trim:
                barcode=glob_wildcards(config['results_folder'] + "Trim/{barcode}.trim.fastq").barcode)
     output:
         config['results_folder'] + "CountReads/count.reads.trim.csv"
+    params:
+        process = "cutadapt"
     script:
         "scripts/CountReads.py"
 rule count_reads_nanofilt:
@@ -358,6 +365,8 @@ rule count_reads_nanofilt:
                barcode=glob_wildcards(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq").barcode)
     output:
         config['results_folder'] + "CountReads/count.reads.nanofilt.csv"
+    params:
+        process = "filtering"
     script:
         "scripts/CountReads.py"
 rule count_reads_guppy:
@@ -366,10 +375,31 @@ rule count_reads_guppy:
                barcode=glob_wildcards(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv").barcode)
     output:
         config['results_folder'] + "CountReads/count.reads.guppy.csv"
+    params:
+        process = "mapping"
     script:
         "scripts/CountReads.py"
-
-
+rule count_reads_master_sheet:
+    input:
+        rules.count_reads_basecall.output[0],
+        rules.count_reads_barcode.output[0],
+        rules.count_reads_trim.output[0],
+        rules.count_reads_nanofilt.output[0],
+        rules.count_reads_guppy.output[0]
+    output:
+        master_csv = config['results_folder'] + "CountReads/master.data.set.csv"
+    shell:
+        r"""
+        # write a header line to the output file
+        echo -e "barcode\treads\tprocess" > {output}
+        
+        # for each input, do the following
+        for item in {input}; do
+        
+            # do not get the first line in the file (i.e. skip header line) and concatenate it to the end of the output file
+            tail -n +2 "$item" >> {output}
+        done
+        """
 
 
 rule nanoplot:
@@ -388,45 +418,14 @@ rule plotly_histogram:
     input:
         rules.count_reads_barcode.output[0]
     output:
-        config['results_folder'] + "Visuals/Plotly/single.color.histogram.html"
+        config['results_folder'] + "Visuals/Plotly/plotly.histogram.html"
     script:
         "scripts/PlotlyHistogram.py"
-
-rule plotly_box_whisker_collect_basecall_input:
-    input:
-        expand(config['results_folder'] + "Basecall/{fastq_file}.fastq", fastq_file=glob_wildcards(config['results_folder'] + "Basecall/{fastq_file}.fastq").fastq_file),
-rule plotly_box_whisker_collect_barcode_input:
-    input:
-        expand(config['results_folder'] + "Barcode/{barcode}.merged.fastq", barcode=glob_wildcards(config['results_folder'] + "Barcode/{barcode}.merged.fastq").barcode)
-rule plotly_box_whisker_collect_trim_input:
-    input:
-        expand(config['results_folder'] + "Trim/{barcode}.trim.fastq", barcode=glob_wildcards(config['results_folder'] + "Trim/{barcode}.trim.fastq").barcode)
-rule plotly_box_whisker_collect_nanofilt_input:
-    input:
-        expand(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq", barcode=glob_wildcards(config['results_folder'] + "NanoFilt/{barcode}.nanofilt.fastq").barcode)
-rule plotly_box_whisker_collect_guppy_input:
-    input:
-        expand(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv", barcode=glob_wildcards(config['results_folder'] + "Alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv").barcode)
 rule plotly_box_whisker_generation:
     input:
-        # output of rule basecall
-        basecall_input = rules.plotly_box_whisker_collect_basecall_input.input[0],
-
-        # output of rule barcode, after merging
-        barcode_input = rules.plotly_box_whisker_collect_barcode_input.input[0],
-
-        # output of rule trim
-        trim_input = rules.plotly_box_whisker_collect_trim_input.input[0],
-
-        # output from NanoFilt
-        nanofilt_input = rules.plotly_box_whisker_collect_nanofilt_input.input[0],
-
-        # output from guppy_aligner
-        guppy_input = rules.plotly_box_whisker_collect_guppy_input.input[0]
+        # get the master csv file after counting reads
+        rules.count_reads_master_sheet.output[0]
     output:
-        config['results_folder'] + "Visuals/Plotly/box.whisker.plot.html"
-    shell:
-         r"""
-         echo hello world
-         touch {output}
-         """
+        config['results_folder'] + "Visuals/Plotly/plotly.box.whisker.html"
+    script:
+        "scripts/PlotlyBoxWhisker.py"

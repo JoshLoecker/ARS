@@ -3,8 +3,8 @@ This file was created because we are counting reads at multiple spots in the pip
 As a result, it is easier to make one function more robust than to copy and paste the same code multiple times
 """
 
-import csv
 # import libraries
+import csv
 import os
 from collections import OrderedDict
 
@@ -38,8 +38,8 @@ with open(snakemake.output[0], 'w') as output_stream:
     csv_writer = csv.writer(output_stream, delimiter="\t")
 
     # write a simple header row
-    csv_writer.writerow(["barcode", "reads"])
+    csv_writer.writerow(["barcode", "reads", "process"])
 
     # write our barcode number and reads in barcode in the format of: barcode## READS
     for barcode in total_reads_dict.keys():
-        csv_writer.writerow([barcode, total_reads_dict[barcode]])
+        csv_writer.writerow([barcode, total_reads_dict[barcode], snakemake.params.process])
