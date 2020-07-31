@@ -29,7 +29,8 @@ For each data frame [frame], we are going to locate [.loc] every instance where 
 unclassified_reads_value = []
 for frame in data_frames:
     unclassified_reads_value.append(
-        frame.loc[(frame["barcode"] == "unclassified", "reads")].tolist()[0])
+        frame.loc[(frame["barcode"] == "unclassified", "reads")].tolist()[0]
+    )
 
 # We want to remove the `unclassified` rows from the data frames as they do not let us see the results clearly. Simply remove the last row
 for frame in data_frames:
@@ -82,7 +83,7 @@ for index, name in enumerate(plot_names):
             name=name,  #................................................ Set x-axis name
             y=data_frames[index]["reads"],  #............................ Set data for y-axis
             jitter=1.0,  #............................................... This will prevent data points from overlapping (set between 0, 1)
-            boxpoints="suspectedoutliers",  #.......................................... Show all data points
+            boxpoints="all",  #.......................................... Show all data points
             marker=dict(  # .............................................. Modify outliers
                 color=color_list[index],
                 outliercolor="rgb(153, 153, 153)",
@@ -163,7 +164,7 @@ box_plot.update_layout(
     title=title_data,
     annotations=annotation_data,
     xaxis_title="Process in Pipeline",
-    yaxis_title="Counts per Barcode After Process",
+    yaxis_title="Reads per Barcode",
     font=dict(size=16)
 )
 
