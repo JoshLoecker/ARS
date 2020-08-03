@@ -1,10 +1,9 @@
-2020-07-30 16:46:59.427876 [guppy/message] ONT Guppy alignment software version 4.0.14+8d3226e
-input path:         /Users/joshl/PycharmProjects/ARS/Results/Alignment/guppy/.barcode82.temp.input
-save path:          /Users/joshl/PycharmProjects/ARS/Results/Alignment/guppy/.barcode82.temp.output
+2020-08-03 09:34:21.513911 [guppy/message] ONT Guppy alignment software version 4.0.14+8d3226e
+input path:         /Users/joshl/PycharmProjects/ARS/Results/.temp/guppy/input/barcode82
+save path:          /Users/joshl/PycharmProjects/ARS/Results/.temp/guppy/output/barcode82
 alignment ref.:     /Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta
 
-2020-07-30 16:46:59.428722 [guppy/info] crashpad_handler not supported on this platform.
-2020-07-30 16:46:59.428904 [guppy/message] Found 1 fastq files.
-2020-07-30 16:46:59.428959 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/Alignment/guppy/.barcode82.temp.input/barcode82.nanofilt.fastq
-2020-07-30 16:46:59.678091 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/Alignment/guppy/.barcode82.temp.input/barcode82.nanofilt.fastq (116 reads)
-2020-07-30 16:46:59.678207 [guppy/message] Done in 261 ms.
+2020-08-03 09:34:21.515504 [guppy/info] crashpad_handler not supported on this platform.
+2020-08-03 09:34:21.515664 [guppy/info] Starting input file /Users/joshl/PycharmProjects/ARS/Results/.temp/guppy/input/barcode82/barcode82.nanofilt.fastq
+2020-08-03 09:34:21.720686 [guppy/info] Successfully finished input file /Users/joshl/PycharmProjects/ARS/Results/.temp/guppy/input/barcode82/barcode82.nanofilt.fastq (116 reads)
+2020-08-03 09:34:21.720743 [guppy/message] Done in 217 ms.

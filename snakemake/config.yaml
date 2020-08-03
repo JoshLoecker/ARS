@@ -1,28 +1,27 @@
-# set the results_folder to the place that you would like results to be saved
-results_folder: "/Users/joshl/PycharmProjects/ARS/Results/"
+# set the location of the input fast5 files
+fast5_location: ../Results/DataFiles/fast5/
+
+# set the location where you would like all results to be saved
+results_folder: /Users/joshl/Documents/snakemake_output/
 
 # Set this to the location of your alignment reference file for the aligner tool you are using (guppy/minimap/vsearch)
-alignment_reference_file: "/Users/joshl/PycharmProjects/ARS/Results/DataFiles/zymogen_alignment_reference.fasta"
+alignment_reference_file: ../Results/DataFiles/zymogen_alignment_reference.fasta
 
-# BASECALLING
 # set this variable to the configuration name you would like to use with basecalling
 basecall_configuration: dna_r9.4.1_450bps_fast.cfg
 
-# BARCODING
-# set this variable to the name of the barcoding kit you will be using
+# set the barcode_kit variable to the name of the barcoding kit you will be using
+# additionally, set the number of callers and threads per caller to use
 barcode_kit: EXP-PBC096
 num_callers: 2
 num_threads_per_caller: 6
 
 
-# ORIENT/TRIMMING CONFIG (cutadapt)
+# set the error rate, 3' adapter, and 5' adapter to use with cutadapt (trimming reads)
 trim_error_rate: 0.15
 trim_three_prime_adapter: ACTTGCCTGTCGCTCTATCTTCTACCTTGTTACGACTT
 trim_five_prime_adapter: TTTCTGTTGGTGCTGATATTGCAGRGTTYGATYMTGGCTCAG
 
-# VSEARCH ALIGNER
-# The match rate is a percentage of each read that must be matched before it is classified
-#   Raising this value gives fewer results that are matched more closely
-#   Lowering this value gives more results that are not as closely matched
+# set the match rate for vsearch
 vsearch_match_rate: 0.90
 
