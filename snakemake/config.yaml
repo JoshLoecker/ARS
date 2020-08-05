@@ -1,11 +1,14 @@
 # set the location of the input fast5 files
-fast5_location: ../Results/DataFiles/fast5/
+# place a forward slash (/) at the end of your file path
+fast5_location: ../data_files/fast5/
 
 # set the location where you would like all results to be saved
+# place a forward slash (/) at the end of your file path
 results_folder: /Users/joshl/Documents/snakemake_output/
 
 # Set this to the location of your alignment reference file for the aligner tool you are using (guppy/minimap/vsearch)
-alignment_reference_file: ../Results/DataFiles/zymogen_alignment_reference.fasta
+# place a forward slash (/) at the end of your file path
+alignment_reference_file: ../data_files/zymogen_alignment_reference.fasta
 
 # set this variable to the configuration name you would like to use with basecalling
 basecall_configuration: dna_r9.4.1_450bps_fast.cfg

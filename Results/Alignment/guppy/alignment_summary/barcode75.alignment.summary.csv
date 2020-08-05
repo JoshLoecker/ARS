@@ -1,2 +1,0 @@
-read_id	alignment_genome	alignment_direction	alignment_genome_start	alignment_genome_end	alignment_strand_start	alignment_strand_end	alignment_num_insertions	alignment_num_deletions	alignment_num_aligned	alignment_num_correct	alignment_identity	alignment_accuracy	alignment_score	alignment_coverage
-3a8d4941-4d15-4d3d-b0e6-55d4c99083b0	Pseudomonas_aeruginosa_16S_4	+	306	1435	270	1348	42	93	1036	881	0.850386	0.752348	556	0.691127
