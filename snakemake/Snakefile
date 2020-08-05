@@ -77,7 +77,7 @@ def count_reads_basecall(wildcards):
 def count_reads_barcode(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return config['results_folder'] + "count_reads/count.reads.barcode.csv"
-def count_reads_trim(wildcards):
+def count_reads_cutadapt(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return config['results_folder'] + "count_reads/count.reads.cutadapt.csv"
 def count_reads_filter(wildcards):
@@ -108,27 +108,27 @@ FAST5_FILES = glob_wildcards(config['fast5_location'] + "{fast5_file}.fast5").fa
 rule all:
     input:
         barcode_merge_files,  #......................................... Basecall, barcode, and merge files in a checkpoint
-        nanoqc_basecall_data,  #....................................... NanoQC after basecall
-        nanoqc_barcode_classified,  #.................................. NanoQC classified barcodes
-        nanoqc_barcode_unclassified,  #................................ NanoQC unclassified barcodes
-        cutadapt,  #................................................... Trim (Cutadapt)
-        filtering,  #................................................... NanoFilt
-        guppy_aligner,  #.............................................. Guppy Aligner
-        minimap_aligner,  #............................................ MiniMap Aligner
-        vsearch_aligner,  #............................................ VSearch Aligner
-        count_reads_basecall,  #....................................... Count reads after basecall
-        count_reads_barcode,  #........................................ Count reads after barcode (and merge files)
-        count_reads_trim,  #........................................... Count reads after trimming
-        count_reads_filter,  #....................................... Count reads after NanoFilt
-        count_reads_mapping,  #.......................................... Count reads after guppy aligner
-        nanoplot_basecall,  #................................................... NanoPlot
-        nanoplot_barcode_classified,
-        nanoplot_barcode_unclassified,
-        plotly_histogram_barcode,  #................................... Plotly barcode histogram
-        plotly_histogram_cutadapt,  #.................................. Plotly cutadapt histogram
-        plotly_histogram_filtering,  #................................. Plotly filtering histogram
-        plotly_histogram_mapping,  #................................... Plotly mapping histogram
-        plotly_box_whisker  #.......................................... Plotly box and whisker plot
+         nanoqc_basecall_data,  #....................................... NanoQC after basecall
+         nanoqc_barcode_classified,  #.................................. NanoQC classified barcodes
+         nanoqc_barcode_unclassified,  #................................ NanoQC unclassified barcodes
+         cutadapt,  #................................................... Trim (Cutadapt)
+         filtering,  #................................................... NanoFilt
+         guppy_aligner,  #.............................................. Guppy Aligner
+         minimap_aligner,  #............................................ MiniMap Aligner
+         vsearch_aligner,  #............................................ VSearch Aligner
+         count_reads_basecall,  #....................................... Count reads after basecall
+         count_reads_barcode,  #........................................ Count reads after barcode (and merge files)
+         count_reads_cutadapt,  #........................................... Count reads after trimming
+         count_reads_filter,  #....................................... Count reads after NanoFilt
+         count_reads_mapping,  #.......................................... Count reads after guppy aligner
+         nanoplot_basecall,  #................................................... NanoPlot
+         nanoplot_barcode_classified,
+         nanoplot_barcode_unclassified,
+         plotly_histogram_barcode,  #................................... Plotly barcode histogram
+         plotly_histogram_cutadapt,  #.................................. Plotly cutadapt histogram
+         plotly_histogram_filtering,  #................................. Plotly filtering histogram
+         plotly_histogram_mapping,  #................................... Plotly mapping histogram
+         plotly_box_whisker  #.......................................... Plotly box and whisker plot
 
 
 
@@ -179,7 +179,7 @@ checkpoint barcode:
 def merge_files_input(wildcards):
     import glob
     return glob.glob(config['results_folder'] + f".temp/barcodeTempOutput/{wildcards.barcode}/*.fastq")
-checkpoint merge_files:
+rule merge_files:
     input:
         merge_files_input
     output:
@@ -407,7 +407,7 @@ rule count_reads_basecall:
         "scripts/CountReads.py"
 rule count_reads_barcode:
     input:
-        expand(config['results_folder'] + "barcode/{barcode}.merged.fastq",
+        expand(rules.merge_files.output[0],
                barcode=glob_wildcards(config['results_folder'] + "barcode/{barcode}.merged.fastq").barcode)
     output:
         config['results_folder'] + "count_reads/count.reads.barcode.csv"
@@ -417,7 +417,7 @@ rule count_reads_barcode:
         "scripts/CountReads.py"
 rule count_reads_cutadapt:
     input:
-        expand(config['results_folder'] + "cutadapt/{barcode}.cutadapt.fastq",
+        expand(rules.cutadapt.output[0],
                barcode=glob_wildcards(config['results_folder'] + "cutadapt/{barcode}.cutadapt.fastq").barcode)
     output:
         config['results_folder'] + "count_reads/count.reads.cutadapt.csv"
@@ -427,7 +427,7 @@ rule count_reads_cutadapt:
         "scripts/CountReads.py"
 rule count_reads_filtering:
     input:
-        expand(config['results_folder'] + "filter/{barcode}.filter.fastq",
+        expand(rules.filtering.output[0],
                barcode=glob_wildcards(config['results_folder'] + "filter/{barcode}.filter.fastq").barcode)
     output:
         config['results_folder'] + "count_reads/count.reads.filter.csv"
@@ -437,7 +437,7 @@ rule count_reads_filtering:
         "scripts/CountReads.py"
 rule count_reads_mapping:
     input:
-        expand(config['results_folder'] + "alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv",
+        expand(rules.guppy_aligner.output.alignment_summary,
                barcode=glob_wildcards(config['results_folder'] + "alignment/guppy/alignment_summary/{barcode}.alignment.summary.csv").barcode)
     output:
         config['results_folder'] + "count_reads/count.reads.mapping.csv"

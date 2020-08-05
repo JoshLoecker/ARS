@@ -4,7 +4,7 @@ fast5_location: ../data_files/fast5/
 
 # set the location where you would like all results to be saved
 # place a forward slash (/) at the end of your file path
-results_folder: /Users/joshl/Documents/snakemake_output/
+results_folder: /Volumes/Elements/snakemake_test_run/
 
 # Set this to the location of your alignment reference file for the aligner tool you are using (guppy/minimap/vsearch)
 # place a forward slash (/) at the end of your file path
