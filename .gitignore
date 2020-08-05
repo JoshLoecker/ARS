@@ -1,6 +1,5 @@
 /venv/
-/Results/DataFiles/fast5/
-/Results/DataFiles/silva_alignment_reference.fasta
 /snakemake/.snakemake/
-/Results/.barcodeTempOutput/
-/Results/.guppyTempInput/
+/results/data_files/fast5
+/results/data_files/silva_alignment_reference.fasta
+/results/.temp
