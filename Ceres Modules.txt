@@ -1,0 +1,12 @@
+The following modules are available in Ceres:
+    - guppy-gpu/guppy-cpu
+    - vsearch
+    - minimap
+    - cutadapt
+
+The following modules are available through conda
+    - Snakemake
+    - nanoQC
+    - NanoFilt
+    - NanoPlot
+    - Plotly

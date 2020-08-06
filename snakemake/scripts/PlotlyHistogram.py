@@ -13,15 +13,22 @@ data_frame = pd.read_csv(
 )
 
 # we want to collect the number of unclassified reads to create an annotation on the graph
-unclassified_reads = data_frame.loc[ data_frame.barcode == "unclassified",'reads' ].tolist()[0]
+try:
+    unclassified_reads = data_frame.loc[ data_frame.barcode == "unclassified",'reads' ].tolist()[0]
+except IndexError:
+    unclassified_reads = "ERROR: No data in .csv file"
 
 # remove the unclassified row from the frame. It is much larger than anything else and does not allow us to see data properly
 data_frame_remove_unclassified = data_frame
 data_frame_remove_unclassified.drop( data_frame_remove_unclassified.tail(1).index, inplace=True )
 
 # get the average reads with and without the unclassified reads
-average_reads_with_unclassified = int(np.average(data_frame['reads']))
-average_reads_without_unclassified = int(np.average(data_frame_remove_unclassified['reads']))
+try:
+    average_reads_with_unclassified = int(np.average(data_frame['reads']))
+    average_reads_without_unclassified = int(np.average(data_frame_remove_unclassified['reads']))
+except ZeroDivisionError:
+    average_reads_with_unclassified = "ERROR: No data in .csv file"
+    average_reads_without_unclassified = "ERROR: No data in .csv file"
 
 
 # create the histogram

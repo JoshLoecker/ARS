@@ -28,9 +28,10 @@ For each data frame [frame], we are going to locate [.loc] every instance where 
 """
 unclassified_reads_value = []
 for frame in data_frames:
-    unclassified_reads_value.append(
-        frame.loc[(frame["barcode"] == "unclassified", "reads")].tolist()[0]
-    )
+    try:
+        unclassified_reads_value.append(frame.loc[(frame["barcode"] == "unclassified", "reads")].tolist()[0])
+    except IndexError:
+        unclassified_reads_value.append("ERROR: No data in .csv file")
 
 # We want to remove the `unclassified` rows from the data frames as they do not let us see the results clearly. Simply remove the last row
 for frame in data_frames:

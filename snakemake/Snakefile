@@ -71,21 +71,6 @@ def nanoplot_barcode_classified(wildcards):
 def nanoplot_barcode_unclassified(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return config['results_folder'] + "visuals/nanoplot/barcode/unclassified"
-def count_reads_basecall(wildcards):
-    checkpoint_output = checkpoints.basecall.get(**wildcards).output[0]
-    return config['results_folder'] + "count_reads/count.reads.basecall.csv"
-def count_reads_barcode(wildcards):
-    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
-    return config['results_folder'] + "count_reads/count.reads.barcode.csv"
-def count_reads_cutadapt(wildcards):
-    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
-    return config['results_folder'] + "count_reads/count.reads.cutadapt.csv"
-def count_reads_filter(wildcards):
-    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
-    return config['results_folder'] + "count_reads/count.reads.filter.csv"
-def count_reads_mapping(wildcards):
-    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
-    return config['results_folder'] + "count_reads/count.reads.mapping.csv"
 def plotly_histogram_barcode(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return config['results_folder'] + "visuals/plotly/histograms/plotly.barcode.histogram.html"
@@ -108,27 +93,22 @@ FAST5_FILES = glob_wildcards(config['fast5_location'] + "{fast5_file}.fast5").fa
 rule all:
     input:
         barcode_merge_files,  #......................................... Basecall, barcode, and merge files in a checkpoint
-         nanoqc_basecall_data,  #....................................... NanoQC after basecall
-         nanoqc_barcode_classified,  #.................................. NanoQC classified barcodes
-         nanoqc_barcode_unclassified,  #................................ NanoQC unclassified barcodes
-         cutadapt,  #................................................... Trim (Cutadapt)
-         filtering,  #................................................... NanoFilt
-         guppy_aligner,  #.............................................. Guppy Aligner
-         minimap_aligner,  #............................................ MiniMap Aligner
-         vsearch_aligner,  #............................................ VSearch Aligner
-         count_reads_basecall,  #....................................... Count reads after basecall
-         count_reads_barcode,  #........................................ Count reads after barcode (and merge files)
-         count_reads_cutadapt,  #........................................... Count reads after trimming
-         count_reads_filter,  #....................................... Count reads after NanoFilt
-         count_reads_mapping,  #.......................................... Count reads after guppy aligner
-         nanoplot_basecall,  #................................................... NanoPlot
-         nanoplot_barcode_classified,
-         nanoplot_barcode_unclassified,
-         plotly_histogram_barcode,  #................................... Plotly barcode histogram
-         plotly_histogram_cutadapt,  #.................................. Plotly cutadapt histogram
-         plotly_histogram_filtering,  #................................. Plotly filtering histogram
-         plotly_histogram_mapping,  #................................... Plotly mapping histogram
-         plotly_box_whisker  #.......................................... Plotly box and whisker plot
+        nanoqc_basecall_data,  #....................................... NanoQC after basecall
+        nanoqc_barcode_classified,  #.................................. NanoQC classified barcodes
+        nanoqc_barcode_unclassified,  #................................ NanoQC unclassified barcodes
+        cutadapt,  #................................................... Trim (Cutadapt)
+        filtering,  #................................................... NanoFilt
+        guppy_aligner,  #.............................................. Guppy Aligner
+        minimap_aligner,  #............................................ MiniMap Aligner
+        vsearch_aligner,  #............................................ VSearch Aligner
+        nanoplot_basecall,  #................................................... NanoPlot
+        nanoplot_barcode_classified,
+        nanoplot_barcode_unclassified,
+        plotly_histogram_barcode,  #................................... Plotly barcode histogram
+        plotly_histogram_cutadapt,  #.................................. Plotly cutadapt histogram
+        plotly_histogram_filtering,  #................................. Plotly filtering histogram
+        plotly_histogram_mapping,  #................................... Plotly mapping histogram
+        plotly_box_whisker  #.......................................... Plotly box and whisker plot
 
 
 
@@ -171,7 +151,7 @@ checkpoint barcode:
         -s {output} \
         --barcode_kits {params.barcode_kit} \
         --recursive \
-        --quiet        
+        --quiet       
         """
 
 
@@ -195,7 +175,7 @@ rule merge_files:
         """
 
 
-rule merge_files_basecall:
+rule collate_basecall_fastq_files:
     input:
         rules.basecall.output[0]
     output:
@@ -206,28 +186,32 @@ rule merge_files_basecall:
         input_files=`ls {input}*.fastq`
         cat """"$input_files"""" >> {output}
         """
-rule merge_files_barcode:
+rule create_classified_unclassified_file:
     input:
-        expand(config['results_folder'] + "barcode/{barcode}.merged.fastq",
+        expand(rules.merge_files.output[0],
                barcode=glob_wildcards(config['results_folder'] + "barcode/{barcode}.merged.fastq").barcode)
     output:
         classified = config['results_folder'] + ".temp/barcode.classified.merged.temp.fastq",
         unclassified = config['results_folder'] + ".temp/barcode.unclassified.merged.temp.fastq"
     shell:
-        r"""        
-        # iterate through our input and place each file path into the appropriate array
-        for file_path in {input}; do
-            if [[ "$file_path" == *"unclassified.merged.fastq"* ]]; then
-                cat "$file_path" >> {output.unclassified}
-            else
-                cat "$file_path" >> {output.classified}
+        r"""
+        # iterate through each file in the input
+        for file in {input}; do
+        
+            # if we are able to find a match of "barcode##.merged.fastq", add this file to the end of the classified output file 
+            if [[ $file == *barcode??.merged.fastq ]]; then
+                cat "$file" >> {output.classified}
+                
+            # if we are able to find "unclassified.merged.fastq" in the file name, add this file to the end of the unclassified output file
+            elif [[ $file == *unclassified.merged.fastq ]]; then
+                cat "$file" >> {output.unclassified}
             fi
-        done 
+        done
         """
 
 rule NanoQCBasecall:
     input:
-        rules.merge_files_basecall.output[0]
+        rules.collate_basecall_fastq_files.output[0]
     output:
         directory(config['results_folder'] + "visuals/nanoqc/basecall/")
     shell:
@@ -236,8 +220,8 @@ rule NanoQCBasecall:
         """
 rule NanoQCBarcode:
     input:
-        classified = rules.merge_files_barcode.output.classified,
-        unclassified = rules.merge_files_barcode.output.unclassified
+        classified = rules.create_classified_unclassified_file.output.classified,
+        unclassified = rules.create_classified_unclassified_file.output.unclassified
     output:
         classified = directory(config['results_folder'] + "visuals/nanoqc/barcode/classified"),
         unclassified = directory(config['results_folder'] + "visuals/nanoqc/barcode/unclassified")
@@ -251,7 +235,7 @@ rule NanoQCBarcode:
 
 rule NanoPlotBasecall:
     input:
-        rules.merge_files_basecall.output[0]
+        rules.collate_basecall_fastq_files.output[0]
     output:
         directory(config['results_folder'] + "visuals/nanoplot/basecall/")
     shell:
@@ -260,8 +244,8 @@ rule NanoPlotBasecall:
         """
 rule NanoPlotBarcode:
     input:
-        classified = rules.merge_files_barcode.output.classified,
-        unclassified = rules.merge_files_barcode.output.unclassified
+        classified = rules.create_classified_unclassified_file.output.classified,
+        unclassified = rules.create_classified_unclassified_file.output.unclassified
 
     output:
         classified = directory(config['results_folder'] + "visuals/nanoplot/barcode/classified"),
@@ -395,16 +379,7 @@ rule vsearch_aligner:
 
 
 
-rule count_reads_basecall:
-    input:
-        expand(config['results_folder'] + "basecall/{fastq_file}.fastq",
-               fastq_file=glob_wildcards(config['results_folder'] + "basecall/{fastq_file}.fastq").fastq_file)
-    output:
-        config['results_folder'] + "count_reads/count.reads.basecall.csv"
-    params:
-        process = "basecall"
-    script:
-        "scripts/CountReads.py"
+
 rule count_reads_barcode:
     input:
         expand(rules.merge_files.output[0],
@@ -463,7 +438,7 @@ rule plotly_cutadapt_histogram:
     output:
         config['results_folder'] + "visuals/plotly/histograms/plotly.cutadapt.histogram.html"
     params:
-        sub_title = "Performed after Cutadapt"
+        sub_title = "Performed after Cutadapt",
     script:
         "scripts/PlotlyHistogram.py"
 rule plotly_filtering_histogram:
@@ -472,7 +447,7 @@ rule plotly_filtering_histogram:
     output:
         config['results_folder'] + "visuals/plotly/histograms/plotly.filtering.histogram.html"
     params:
-        sub_title = "Performed after Filtering"
+        sub_title = "Performed after Filtering",
     script:
         "scripts/PlotlyHistogram.py"
 rule plotly_mapping_histogram:
@@ -494,4 +469,3 @@ rule plotly_box_whisker_generation:
         config['results_folder'] + "visuals/plotly/plotly.box.whisker.html"
     script:
         "scripts/PlotlyBoxWhisker.py"
-# this is a test
