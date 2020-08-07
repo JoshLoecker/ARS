@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 csv_file = snakemake.input[0]
+
 save_file = snakemake.output[0]
 
 # load our csv file
@@ -33,15 +34,13 @@ except ZeroDivisionError:
 
 # create the histogram
 histogram = px.histogram(data_frame=data_frame_remove_unclassified,
-                         x=data_frame_remove_unclassified['barcode'],
-                         y=data_frame_remove_unclassified['reads'],
+                         x="barcode",
+                         y="reads",
                          marginal="box",
                          hover_name=data_frame_remove_unclassified['barcode'])
 
 # modify the label when hovering over a bar
 histogram.update_traces(hovertemplate="%{x}<br>%{y} reads")
-
-
 
 # modify data on hovering over chart
 hover_label = dict(

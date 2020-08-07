@@ -3,4 +3,3 @@
 /results/.temp
 /data_files/fast5/
 /data_files/silva_alignment_reference.fasta
-/snakemake/pushSnakemake.sh

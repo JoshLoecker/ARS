@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import glob
 configfile: "config.yaml"
 
 def return_barcode_numbers(path: str):
@@ -124,14 +125,14 @@ checkpoint basecall:
     shell:
         r"""
         echo Basecalling
+        
         guppy_basecaller \
         --config {params.configuration} \
         --input_path {input} \
         --save_path {output} \
         --num_callers {params.callers} \
         --cpu_threads_per_caller {params.threads_per_caller} \
-        --recursive \
-        --quiet
+        --recursive
         """
 
 
@@ -146,6 +147,7 @@ checkpoint barcode:
     shell:
         r"""
         echo Barcoding
+        
         guppy_barcoder \
         -i {input} \
         -s {output} \
@@ -175,35 +177,36 @@ rule merge_files:
         """
 
 
+
+def create_classified_unclassified_input(wildcards):
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
+    return glob.glob(config['results_folder'] + ".temp/barcodeTempOutput/**/*.fastq")
 rule collate_basecall_fastq_files:
     input:
-        rules.basecall.output[0]
+        config['results_folder'] + "basecall"
     output:
         config['results_folder'] + ".temp/basecall.temp.merged.files.fastq"
     shell:
-        r"""
-        # get our input files
-        input_files=`ls {input}*.fastq`
-        cat """"$input_files"""" >> {output}
+        r"""        
+        # concatenate each file in the params directory to the output file
+        for file in "{input[0]}"/*.fastq; do
+            cat "$file" >> {output}
+        done
         """
 rule create_classified_unclassified_file:
     input:
-        expand(rules.merge_files.output[0],
-               barcode=glob_wildcards(config['results_folder'] + "barcode/{barcode}.merged.fastq").barcode)
+        create_classified_unclassified_input
     output:
         classified = config['results_folder'] + ".temp/barcode.classified.merged.temp.fastq",
         unclassified = config['results_folder'] + ".temp/barcode.unclassified.merged.temp.fastq"
     shell:
         r"""
-        # iterate through each file in the input
+        touch {output.classified}
+        touch {output.unclassified}
         for file in {input}; do
-        
-            # if we are able to find a match of "barcode##.merged.fastq", add this file to the end of the classified output file 
-            if [[ $file == *barcode??.merged.fastq ]]; then
+            if [[ $file == */barcode??/* ]]; then
                 cat "$file" >> {output.classified}
-                
-            # if we are able to find "unclassified.merged.fastq" in the file name, add this file to the end of the unclassified output file
-            elif [[ $file == *unclassified.merged.fastq ]]; then
+            elif [[ $file == */unclassified/* ]]; then
                 cat "$file" >> {output.unclassified}
             fi
         done
@@ -469,3 +472,4 @@ rule plotly_box_whisker_generation:
         config['results_folder'] + "visuals/plotly/plotly.box.whisker.html"
     script:
         "scripts/PlotlyBoxWhisker.py"
+

@@ -10,3 +10,4 @@ The following modules are available through conda
     - NanoFilt
     - NanoPlot
     - Plotly
+    - SeqKit

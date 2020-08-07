@@ -19,8 +19,10 @@ for file_path in snakemake.input:
     # we will divide the file by the appropriate number
     if ".fastq" in file_path:
         number_of_reads = int(total_lines / 4)
+    elif "alignment.summary.csv" in file_path:
+        number_of_reads = total_lines
     else:
-        number_of_reads = int(total_lines / 2)
+        number_of_reads = 0
 
     # collect the barcode number from the file path
     file_name = os.path.basename(file_path)  # get the file name
