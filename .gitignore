@@ -1,5 +1,0 @@
-/venv/
-/snakemake/.snakemake/
-/results/.temp
-/data_files/fast5/
-/data_files/silva_alignment_reference.fasta
