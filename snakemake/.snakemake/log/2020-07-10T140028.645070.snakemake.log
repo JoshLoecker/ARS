@@ -1,3 +1,0 @@
-KeyError in line 50 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
-'fastq_files'
-  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 50, in <module>

@@ -1,3 +1,0 @@
-WildcardError in line 18 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
-No values given for wildcard 'fastq_files'.
-  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 18, in <module>

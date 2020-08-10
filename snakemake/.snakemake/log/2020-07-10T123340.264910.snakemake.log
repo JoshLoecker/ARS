@@ -1,3 +1,0 @@
-KeyError in line 45 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
-'results'
-  File "/Users/joshl/PycharmProjects/ARS/snakemake/Snakefile", line 45, in <module>

@@ -1,4 +1,0 @@
-Building DAG of jobs...
-MissingInputException in line 21 of /Users/joshl/PycharmProjects/ARS/snakemake/Snakefile:
-Missing input files for rule all:
-/Users/joshl/PycharmProjects/ARS/Results/.tempMergeFolder/

@@ -1,0 +1,1 @@
+snakemake --dag -F results/visuals/plotly/plotly.box.whisker.html | dot -Tsvg > PipelineVisual.svg
