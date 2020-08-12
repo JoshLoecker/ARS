@@ -1,0 +1,4 @@
+Building DAG of jobs...
+MissingInputException in line 116 of /Users/joshl/PycharmProjects/ARS/Snakefile:
+Missing input files for rule basecall:
+data_files/fast5/

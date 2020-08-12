@@ -1,0 +1,493 @@
+Building DAG of jobs...
+Updating job 2 (barcode).
+Updating job 0 (all).
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	barcode
+	2
+
+[Wed Aug 12 16:15:55 2020]
+checkpoint barcode:
+    input: results/basecall/
+    output: results/.temp/barcodeTempOutput/
+    jobid: 2
+Downstream jobs will be updated after completion.
+
+Updating job 3 (all).
+[Wed Aug 12 16:16:21 2020]
+Finished job 2.
+1 of 671 steps (0.15%) done
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode56/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode56.merged.fastq
+    jobid: 25
+    wildcards: barcode=barcode56
+
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode08/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode08.merged.fastq
+    jobid: 44
+    wildcards: barcode=barcode08
+
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode20/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode20.merged.fastq
+    jobid: 34
+    wildcards: barcode=barcode20
+
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode32/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode32.merged.fastq
+    jobid: 12
+    wildcards: barcode=barcode32
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 25.
+
+2 of 671 steps (0.30%) done
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode60/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode60.merged.fastq
+    jobid: 9
+    wildcards: barcode=barcode60
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 44.
+3 of 671 steps (0.45%) done
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_1.fastq
+    output: results/barcode/unclassified.merged.fastq
+    jobid: 7
+    wildcards: barcode=unclassified
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 34.
+
+4 of 671 steps (0.60%) done
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode79/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode79.merged.fastq
+    jobid: 17
+    wildcards: barcode=barcode79
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 12.
+5 of 671 steps (0.75%) done
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode07/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode07.merged.fastq
+    jobid: 71
+    wildcards: barcode=barcode07
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 9.
+6 of 671 steps (0.89%) done
+
+[Wed Aug 12 16:16:21 2020]
+rule NanoQCBasecall:
+    input: results/.temp/basecall.temp.merged.files.fastq
+    output: results/visuals/nanoqc/basecall/
+    jobid: 89
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 17.
+7 of 671 steps (1%) done
+
+[Wed Aug 12 16:16:21 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode76/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode76.merged.fastq
+    jobid: 51
+    wildcards: barcode=barcode76
+
+[Wed Aug 12 16:16:21 2020]
+Finished job 71.
+8 of 671 steps (1%) done
+[Wed Aug 12 16:16:21 2020]
+Finished job 51.
+9 of 671 steps (1%) done
+[Wed Aug 12 16:16:22 2020]
+Finished job 7.
+10 of 671 steps (1%) done
+
+[Wed Aug 12 16:16:22 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode11.merged.fastq
+    jobid: 66
+    wildcards: barcode=barcode11
+
+
+[Wed Aug 12 16:16:22 2020]
+rule create_classified_unclassified_file:
+    input: results/.temp/barcodeTempOutput/barcode75/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode81/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode72/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode28/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode17/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode10/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode26/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode21/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode42/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode89/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode45/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode80/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode74/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode20/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode18/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode27/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode11/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode29/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode16/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode33/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/unclassified/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_1.fastq, results/.temp/barcodeTempOutput/barcode05/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode02/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode69/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode56/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode51/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode58/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode67/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode93/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode60/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode03/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode04/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode32/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode35/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode61/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode95/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode59/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode66/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode50/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode57/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode13/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode14/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode22/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode25/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode85/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode76/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode82/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode49/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode40/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode47/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode78/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode24/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode23/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode15/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode12/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode46/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode79/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode41/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode83/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode77/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode70/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode84/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode52/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode55/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode63/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode64/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode90/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode37/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode08/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode01/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode06/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode39/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode91/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode65/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode62/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode54/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode53/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode07/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode38/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode36/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode09/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq, results/.temp/barcodeTempOutput/barcode31/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/.temp/barcode.classified.merged.temp.fastq, results/.temp/barcode.unclassified.merged.temp.fastq
+    jobid: 589
+
+[Wed Aug 12 16:16:22 2020]
+Finished job 66.
+11 of 671 steps (2%) done
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode08.merged.fastq
+    output: results/cutadapt/barcode08.cutadapt.fastq
+    jobid: 128
+    wildcards: barcode=barcode08
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode20.merged.fastq
+    output: results/cutadapt/barcode20.cutadapt.fastq
+    jobid: 118
+    wildcards: barcode=barcode20
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode56.merged.fastq
+    output: results/cutadapt/barcode56.cutadapt.fastq
+    jobid: 109
+    wildcards: barcode=barcode56
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode79.merged.fastq
+    output: results/cutadapt/barcode79.cutadapt.fastq
+    jobid: 101
+    wildcards: barcode=barcode79
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode32.merged.fastq
+    output: results/cutadapt/barcode32.cutadapt.fastq
+    jobid: 96
+    wildcards: barcode=barcode32
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode60.merged.fastq
+    output: results/cutadapt/barcode60.cutadapt.fastq
+    jobid: 93
+    wildcards: barcode=barcode60
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/unclassified.merged.fastq
+    output: results/cutadapt/unclassified.cutadapt.fastq
+    jobid: 91
+    wildcards: barcode=unclassified
+
+
+[Wed Aug 12 16:16:22 2020]
+rule cutadapt:
+    input: results/barcode/barcode07.merged.fastq
+    output: results/cutadapt/barcode07.cutadapt.fastq
+    jobid: 155
+    wildcards: barcode=barcode07
+
+[Wed Aug 12 16:16:23 2020]
+Finished job 155.
+12 of 671 steps (2%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 96.
+13 of 671 steps (2%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 101.
+14 of 671 steps (2%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 93.
+15 of 671 steps (2%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 128.
+16 of 671 steps (2%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 109.
+17 of 671 steps (3%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 589.
+18 of 671 steps (3%) done
+[Wed Aug 12 16:16:23 2020]
+Finished job 118.
+19 of 671 steps (3%) done
+
+[Wed Aug 12 16:16:23 2020]
+rule cutadapt:
+    input: results/barcode/barcode76.merged.fastq
+    output: results/cutadapt/barcode76.cutadapt.fastq
+    jobid: 135
+    wildcards: barcode=barcode76
+
+
+[Wed Aug 12 16:16:23 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode63/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode63.merged.fastq
+    jobid: 22
+    wildcards: barcode=barcode63
+
+
+[Wed Aug 12 16:16:23 2020]
+rule filtering:
+    input: results/cutadapt/barcode20.cutadapt.fastq
+    output: results/filter/barcode20.filter.fastq
+    jobid: 200
+    wildcards: barcode=barcode20
+
+
+[Wed Aug 12 16:16:23 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode52/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode52.merged.fastq
+    jobid: 72
+    wildcards: barcode=barcode52
+
+[Wed Aug 12 16:16:23 2020]
+Finished job 22.
+20 of 671 steps (3%) done
+
+[Wed Aug 12 16:16:23 2020]
+rule NanoQCBarcode:
+    input: results/.temp/barcode.classified.merged.temp.fastq, results/.temp/barcode.unclassified.merged.temp.fastq
+    output: results/visuals/nanoqc/barcode/classified, results/visuals/nanoqc/barcode/unclassified
+    jobid: 90
+
+[Wed Aug 12 16:16:23 2020]
+Finished job 72.
+21 of 671 steps (3%) done
+
+[Wed Aug 12 16:16:23 2020]
+rule filtering:
+    input: results/cutadapt/barcode08.cutadapt.fastq
+    output: results/filter/barcode08.filter.fastq
+    jobid: 210
+    wildcards: barcode=barcode08
+
+
+[Wed Aug 12 16:16:23 2020]
+rule filtering:
+    input: results/cutadapt/barcode56.cutadapt.fastq
+    output: results/filter/barcode56.filter.fastq
+    jobid: 191
+    wildcards: barcode=barcode56
+
+
+[Wed Aug 12 16:16:23 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode13/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode13.merged.fastq
+    jobid: 88
+    wildcards: barcode=barcode13
+
+
+[Wed Aug 12 16:16:23 2020]
+rule cutadapt:
+    input: results/barcode/barcode11.merged.fastq
+    output: results/cutadapt/barcode11.cutadapt.fastq
+    jobid: 150
+    wildcards: barcode=barcode11
+
+
+[Wed Aug 12 16:16:23 2020]
+[Wed Aug 12 16:16:23 2020]
+Finished job 88.
+rule NanoPlotBarcode:
+    input: results/.temp/barcode.classified.merged.temp.fastq, results/.temp/barcode.unclassified.merged.temp.fastq
+    output: results/visuals/nanoplot/barcode/classified, results/visuals/nanoplot/barcode/unclassified
+    jobid: 583
+22 of 671 steps (3%) done
+
+[Wed Aug 12 16:16:24 2020]
+Finished job 135.
+23 of 671 steps (3%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 150.
+24 of 671 steps (4%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 91.
+25 of 671 steps (4%) done
+
+[Wed Aug 12 16:16:24 2020]
+rule cutadapt:
+    input: results/barcode/barcode63.merged.fastq
+    output: results/cutadapt/barcode63.cutadapt.fastq
+    jobid: 106
+    wildcards: barcode=barcode63
+
+
+[Wed Aug 12 16:16:24 2020]
+rule cutadapt:
+    input: results/barcode/barcode13.merged.fastq
+    output: results/cutadapt/barcode13.cutadapt.fastq
+    jobid: 172
+    wildcards: barcode=barcode13
+
+
+[Wed Aug 12 16:16:24 2020]
+rule cutadapt:
+    input: results/barcode/barcode52.merged.fastq
+    output: results/cutadapt/barcode52.cutadapt.fastq
+    jobid: 156
+    wildcards: barcode=barcode52
+
+
+[Wed Aug 12 16:16:24 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode50/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode50.merged.fastq
+    jobid: 69
+    wildcards: barcode=barcode50
+
+
+[Wed Aug 12 16:16:24 2020]
+rule merge_files:
+    input: results/.temp/barcodeTempOutput/barcode25/fastq_runid_67a0761ea992f55d7000e748e88761780ca1bb60_0.fastq
+    output: results/barcode/barcode25.merged.fastq
+    jobid: 83
+    wildcards: barcode=barcode25
+
+
+[Wed Aug 12 16:16:24 2020]
+rule filtering:
+    input: results/cutadapt/unclassified.cutadapt.fastq
+    output: results/filter/unclassified.filter.fastq
+    jobid: 173
+    wildcards: barcode=unclassified
+
+[Wed Aug 12 16:16:24 2020]
+Finished job 83.
+26 of 671 steps (4%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 69.
+27 of 671 steps (4%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 200.
+28 of 671 steps (4%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 210.
+29 of 671 steps (4%) done
+[Wed Aug 12 16:16:24 2020]
+Finished job 191.
+30 of 671 steps (4%) done
+
+[Wed Aug 12 16:16:24 2020]
+rule minimap_aligner:
+    input: results/filter/barcode08.filter.fastq
+    output: results/alignment/minimap/barcode08.minimap.sam
+    jobid: 456
+    wildcards: barcode=barcode08
+
+
+[Wed Aug 12 16:16:25 2020]
+rule minimap_aligner:
+    input: results/filter/barcode20.filter.fastq
+    output: results/alignment/minimap/barcode20.minimap.sam
+    jobid: 446
+    wildcards: barcode=barcode20
+
+
+[Wed Aug 12 16:16:25 2020]
+rule isOnClust:
+    input: results/filter/barcode08.filter.fastq
+    output: results/isONclust/fastq_files/barcode08.isONclust.fastq
+    jobid: 292
+    wildcards: barcode=barcode08
+
+
+[Wed Aug 12 16:16:25 2020]
+rule guppy_aligner:
+    input: results/filter/barcode20.filter.fastq
+    output: results/alignment/guppy/sam_files/barcode20.guppy.sam, results/alignment/guppy/alignment_summary/barcode20.alignment.summary.csv, results/alignment/guppy/logs/barcode20.guppy.log
+    jobid: 364
+    wildcards: barcode=barcode20
+
+[Wed Aug 12 16:16:25 2020]
+Finished job 106.
+31 of 671 steps (5%) done
+[Wed Aug 12 16:16:25 2020]
+Finished job 156.
+32 of 671 steps (5%) done
+[Wed Aug 12 16:16:25 2020]
+Finished job 172.
+33 of 671 steps (5%) done
+[Wed Aug 12 16:16:25 2020]
+Error in rule isOnClust:
+    jobid: 292
+    output: results/isONclust/fastq_files/barcode08.isONclust.fastq
+    shell:
+        
+        # create a .tsv file
+        isONclust pipeline -ont -fastq results/filter/barcode08.filter.fastq --outfolder results/isONclust/fastq_files/barcode08.isONclust.fastq
+        
+        isONclust write_fastq --clusters [results/isONclust/final.clusters.tsv] --fastq results/isONclust/fastq_files/barcode08.isONclust.fastq --outfolder results/isONclust/ --N 1
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+
+[Wed Aug 12 16:16:25 2020]
+rule isOnClust:
+    input: results/filter/barcode20.filter.fastq
+    output: results/isONclust/fastq_files/barcode20.isONclust.fastq
+    jobid: 282
+    wildcards: barcode=barcode20
+
+[Wed Aug 12 16:16:26 2020]
+Finished job 364.
+34 of 671 steps (5%) done
+[Wed Aug 12 16:16:26 2020]
+Error in rule isOnClust:
+    jobid: 282
+    output: results/isONclust/fastq_files/barcode20.isONclust.fastq
+    shell:
+        
+        # create a .tsv file
+        isONclust pipeline -ont -fastq results/filter/barcode20.filter.fastq --outfolder results/isONclust/fastq_files/barcode20.isONclust.fastq
+        
+        isONclust write_fastq --clusters [results/isONclust/final.clusters.tsv] --fastq results/isONclust/fastq_files/barcode20.isONclust.fastq --outfolder results/isONclust/ --N 1
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+[Wed Aug 12 16:16:26 2020]
+Finished job 456.
+35 of 671 steps (5%) done
+[Wed Aug 12 16:16:26 2020]
+Finished job 446.
+36 of 671 steps (5%) done
+[Wed Aug 12 16:16:27 2020]
+Finished job 173.
+37 of 671 steps (6%) done
+[Wed Aug 12 16:16:40 2020]
+Finished job 89.
+38 of 671 steps (6%) done
+[Wed Aug 12 16:16:42 2020]
+Finished job 90.
+39 of 671 steps (6%) done
+[Wed Aug 12 16:16:42 2020]
+Finished job 583.
+40 of 671 steps (6%) done
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/joshl/PycharmProjects/ARS/.snakemake/log/2020-08-12T161555.068636.snakemake.log

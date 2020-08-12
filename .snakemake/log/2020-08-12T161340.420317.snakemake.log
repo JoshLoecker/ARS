@@ -1,0 +1,3 @@
+AttributeError in line 383 of /Users/joshl/PycharmProjects/ARS/Snakefile:
+'Params' object has no attribute 'fastq_files'
+  File "/Users/joshl/PycharmProjects/ARS/Snakefile", line 383, in <module>

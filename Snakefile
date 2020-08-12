@@ -45,9 +45,12 @@ def cutadapt(wildcards):
         barcode=return_barcode_numbers(checkpoint_output))
 def filtering(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
-    return expand(
-        config['results_folder'] + "filter/{barcode}.filter.fastq",
-        barcode=return_barcode_numbers(checkpoint_output))
+    return expand(config['results_folder'] + "filter/{barcode}.filter.fastq",
+                  barcode=return_barcode_numbers(checkpoint_output))
+def isONclust(wildcards):
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
+    return expand(config['results_folder'] + "isONclust/fastq_files/{barcode}.isONclust.fastq",
+                  barcode=return_barcode_numbers(checkpoint_output))
 def guppy_aligner(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
@@ -99,6 +102,7 @@ rule all:
         nanoqc_barcode_unclassified,  #................................ NanoQC unclassified barcodes
         cutadapt,  #................................................... Trim (Cutadapt)
         filtering,  #................................................... NanoFilt
+        isONclust,  # ................................................. Clustering reads
         guppy_aligner,  #.............................................. Guppy Aligner
         minimap_aligner,  #............................................ MiniMap Aligner
         vsearch_aligner,  #............................................ VSearch Aligner
@@ -295,6 +299,27 @@ rule filtering:
         NanoFilt {input} > {output}
         """
 
+"""
+Rule vsearch: 
+    # convert isonclust_output.fastq to .fasta as before, then use this as the input to the call in the main pipeline.
+Rule id_reads: 
+    # some sort of way of matching reads $RESULTS/nanofilt/barcode##.fastq with the .uc file. See notes below.  
+"""
+rule isOnClust:
+    input:
+        rules.filtering.output[0]
+    output:
+        fastq_files = config['results_folder'] + "isONclust/fastq_files/{barcode}.isONclust.fastq"
+    params:
+        clustered_fastq = config['results_folder'] + "isONclust/final.clusters.tsv",
+        isONclust_output_dir = config['results_folder'] + "isONclust/"
+    shell:
+        r"""
+        # create a .tsv file
+        isONclust pipeline -ont -fastq {input} --outfolder {output.fastq_files}
+        
+        isONclust write_fastq --clusters [{params.clustered_fastq}] --fastq {output.fastq_files} --outfolder {params.isONclust_output_dir} --N 1
+        """
 
 
 rule guppy_aligner:
@@ -355,9 +380,9 @@ rule minimap_aligner:
         """
 rule fq2fa:
     input:
-        rules.filtering.output[0]
+        rules.isOnClust.output.fastq_files
     output:
-        temp(config['results_folder'] + "alignment/vsearch/.{barcode}.temp.fasta")
+        temp(config['results_folder'] + ".temp/vsearch/{barcode}.temp.fasta")
     shell:
         r"""
         seqkit fq2fa {input} > {output}

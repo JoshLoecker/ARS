@@ -1,0 +1,28 @@
+Building DAG of jobs...
+Updating job 2 (barcode).
+Updating job 0 (all).
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	barcode
+	2
+
+[Wed Aug 12 16:13:56 2020]
+checkpoint barcode:
+    input: results/basecall/
+    output: results/.temp/barcodeTempOutput/
+    jobid: 2
+Downstream jobs will be updated after completion.
+
+Updating job 3 (all).
+MissingInputException in line 97 of /Users/joshl/PycharmProjects/ARS/Snakefile:
+Missing input files for rule all:
+results/isONclust/final.clusters.tsv
+Removing output files of failed job barcode since they might be corrupted:
+results/.temp/barcodeTempOutput/
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: /Users/joshl/PycharmProjects/ARS/.snakemake/log/2020-08-12T161356.797859.snakemake.log

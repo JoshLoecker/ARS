@@ -1,0 +1,40 @@
+Building DAG of jobs...
+Updating job 2 (barcode).
+Updating job 0 (all).
+Using shell: /bin/bash
+Provided cores: 12
+Rules claiming more threads will be scaled down.
+Job counts:
+	count	jobs
+	1	all
+	1	barcode
+	2
+
+[Wed Aug 12 16:15:27 2020]
+checkpoint barcode:
+    input: results/basecall/
+    output: results/.temp/barcodeTempOutput/
+    jobid: 2
+Downstream jobs will be updated after completion.
+
+Terminating processes on user request, this might take some time.
+[Wed Aug 12 16:15:27 2020]
+Error in rule barcode:
+    jobid: 2
+    output: results/.temp/barcodeTempOutput/
+    shell:
+        
+        echo Barcoding
+        
+        guppy_barcoder \
+        -i results/basecall/ \
+        -s results/.temp/barcodeTempOutput/ \
+        --barcode_kits EXP-PBC096 \
+        --recursive \
+        --quiet       
+        
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+
+Removing output files of failed job barcode since they might be corrupted:
+results/.temp/barcodeTempOutput/
+Complete log: /Users/joshl/PycharmProjects/ARS/.snakemake/log/2020-08-12T161526.946286.snakemake.log
