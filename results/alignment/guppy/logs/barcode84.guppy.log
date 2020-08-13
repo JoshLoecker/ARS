@@ -1,0 +1,9 @@
+2020-08-13 10:31:59.918749 [guppy/message] ONT Guppy alignment software version 4.0.14+8d3226e
+input path:         results/.temp/guppy/input/barcode84
+save path:          results/.temp/guppy/output/barcode84
+alignment ref.:     data_files/zymogen_alignment_reference.fasta
+
+2020-08-13 10:31:59.919356 [guppy/info] crashpad_handler not supported on this platform.
+2020-08-13 10:31:59.919484 [guppy/info] Starting input file results/.temp/guppy/input/barcode84/barcode84.filter.fastq
+2020-08-13 10:31:59.935503 [guppy/info] Successfully finished input file results/.temp/guppy/input/barcode84/barcode84.filter.fastq (2 reads)
+2020-08-13 10:31:59.935548 [guppy/message] Done in 25 ms.
