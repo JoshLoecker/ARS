@@ -336,7 +336,7 @@ checkpoint isONclustClusterFastq:
         directory(config['results_folder'] + "isONclust/cluster_fastq/")
     shell:
         r"""
-        isONclust write_fastq --clusters {input.pipeline_output}final_clusters.tsv --fastq {input.merge_filter_reads} --outfolder {output} --N 1
+        isONclust write_fastq --clusters {input.pipeline_output}/final_clusters.tsv --fastq {input.merge_filter_reads} --outfolder {output} --N 1
         """
 
 rule guppy_aligner:

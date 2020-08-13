@@ -1,17 +1,17 @@
-2020-08-13 10:28:17,202 NanoPlot 1.31.0 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['results/.temp/barcode.classified.merged.temp.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='results/visuals/nanoplot/barcode/classified', path='results/visuals/nanoplot/barcode/classified/', percentqual=False, pickle=None, plots=['kde', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=4, title=None, ubam=None, verbose=False)
-2020-08-13 10:28:17,203 Python version is: 3.7.8 | packaged by conda-forge | (default, Jul 31 2020, 02:37:09)  [Clang 10.0.1 ]
-2020-08-13 10:28:17,203 NanoPlot:  valid output format png
-2020-08-13 10:28:17,210 Nanoget: Starting to collect statistics from plain fastq file.
-2020-08-13 10:28:23,803 Reduced DataFrame memory usage from 0.45465087890625Mb to 0.2652130126953125Mb
-2020-08-13 10:28:23,817 Nanoget: Gathered all metrics of 19864 reads
-2020-08-13 10:28:23,840 Calculated statistics
-2020-08-13 10:28:23,841 Using sequenced read lengths for plotting.
-2020-08-13 10:28:23,844 NanoPlot:  Valid color #4CB391.
-2020-08-13 10:28:23,845 NanoPlot:  Valid colormap Greens.
-2020-08-13 10:28:23,847 NanoPlot:  Creating length plots for Read length.
-2020-08-13 10:28:23,848 NanoPlot:  Using 19864 reads maximum of 5217bp.
-2020-08-13 10:28:27,147 Nanoplotter: orca not found, not creating static image of html. See https://github.com/plotly/orca
-2020-08-13 10:28:27,147 
+2020-08-13 15:05:05,331 NanoPlot 1.31.0 started with arguments Namespace(N50=False, alength=False, bam=None, barcoded=False, color='#4CB391', colormap='Greens', cram=None, downsample=None, dpi=100, drop_outliers=False, fasta=None, fastq=['results/.temp/barcode.classified.merged.temp.fastq'], fastq_minimal=None, fastq_rich=None, feather=None, font_scale=1, format='png', hide_stats=False, huge=False, listcolormaps=False, listcolors=False, loglength=False, maxlength=None, minlength=None, minqual=None, no_N50=False, no_supplementary=False, outdir='results/visuals/nanoplot/barcode/classified', path='results/visuals/nanoplot/barcode/classified/', percentqual=False, pickle=None, plots=['kde', 'dot'], prefix='', raw=False, readtype='1D', runtime_until=None, store=False, summary=None, threads=4, title=None, ubam=None, verbose=False)
+2020-08-13 15:05:05,332 Python version is: 3.7.8 | packaged by conda-forge | (default, Jul 31 2020, 02:37:09)  [Clang 10.0.1 ]
+2020-08-13 15:05:05,332 NanoPlot:  valid output format png
+2020-08-13 15:05:05,339 Nanoget: Starting to collect statistics from plain fastq file.
+2020-08-13 15:05:12,081 Reduced DataFrame memory usage from 0.45465087890625Mb to 0.2652130126953125Mb
+2020-08-13 15:05:12,090 Nanoget: Gathered all metrics of 19864 reads
+2020-08-13 15:05:12,105 Calculated statistics
+2020-08-13 15:05:12,106 Using sequenced read lengths for plotting.
+2020-08-13 15:05:12,108 NanoPlot:  Valid color #4CB391.
+2020-08-13 15:05:12,109 NanoPlot:  Valid colormap Greens.
+2020-08-13 15:05:12,110 NanoPlot:  Creating length plots for Read length.
+2020-08-13 15:05:12,110 NanoPlot:  Using 19864 reads maximum of 5217bp.
+2020-08-13 15:05:13,626 Nanoplotter: orca not found, not creating static image of html. See https://github.com/plotly/orca
+2020-08-13 15:05:13,626 
 The orca executable is required to export figures as static images,
 but it could not be found on the system path.
 
@@ -107,8 +107,8 @@ will be applied automatically in future sessions. You can do this as follows:
 If you're still having trouble, feel free to ask for help on the forums at
 https://community.plot.ly/c/api/python
 
-2020-08-13 10:28:27,691 Created length plots
-2020-08-13 10:28:27,698 NanoPlot:  Creating Read lengths vs Average read quality plots using statistics from 19864 reads.
-2020-08-13 10:28:37,694 Created LengthvsQual plot
-2020-08-13 10:28:37,694 Writing html report.
-2020-08-13 10:28:45,664 Finished!
+2020-08-13 15:05:13,776 Created length plots
+2020-08-13 15:05:13,778 NanoPlot:  Creating Read lengths vs Average read quality plots using statistics from 19864 reads.
+2020-08-13 15:05:15,701 Created LengthvsQual plot
+2020-08-13 15:05:15,701 Writing html report.
+2020-08-13 15:05:17,231 Finished!

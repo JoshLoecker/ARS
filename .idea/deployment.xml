@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Ceres" overwriteAll="false" createEmptyFolders="true" traceLevel="BRIEF" autoUploadExternalChanges="true" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
-    <serverData>
-      <paths name="Ceres">
-        <serverdata>
-          <mappings>
-            <mapping deploy="snakemake/" local="$PROJECT_DIR$/snakemake" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-      <paths name="Elements">
-        <serverdata>
-          <mappings>
-            <mapping deploy="ARS" local="$PROJECT_DIR$" web="/" />
-          </mappings>
-        </serverdata>
-      </paths>
-    </serverData>
-  </component>
+  <component name="PublishConfigData" overwriteAll="false" createEmptyFolders="true" traceLevel="BRIEF" autoUploadExternalChanges="true" showNewOnSourceInSync="false" showNewOnTargetInSync="false" />
 </project>
