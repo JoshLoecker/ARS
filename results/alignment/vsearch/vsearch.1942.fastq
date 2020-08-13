@@ -1,1 +1,0 @@
-H	33	88	61.2	+	0	0	16I11MD32M10I44M1413I	b29bcaff-6525-40f0-80c7-dca73ef37450_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=36581_ch=19_start_time=2020-02-12T22:53:38Z_barcode=barcode01	Pseudomonas_aeruginosa_16S_1

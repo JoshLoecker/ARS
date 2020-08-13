@@ -1,1 +1,0 @@
-H	37	135	56.7	+	0	0	24I4M2D13M2D15M13I7M2I31M2D14M4D41M1370I	b9f90ce4-41b3-4bac-aeb3-8547cb24cea1_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=69795_ch=8_start_time=2020-02-13T08:22:47Z_barcode=unclassified	Salmonella_enterica_16S_1

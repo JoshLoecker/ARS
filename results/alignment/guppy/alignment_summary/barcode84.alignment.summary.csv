@@ -1,3 +1,0 @@
-read_id	alignment_genome	alignment_direction	alignment_genome_start	alignment_genome_end	alignment_strand_start	alignment_strand_end	alignment_num_insertions	alignment_num_deletions	alignment_num_aligned	alignment_num_correct	alignment_identity	alignment_accuracy	alignment_score	alignment_coverage
-471b46b1-eb0a-4cec-b4d0-75d0503c0f19	*	*	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1	-1
-d9e800b8-5639-4019-8f1e-85d740c925b9	Salmonella_enterica_16S_3	-	744	1405	792	1434	36	55	606	489	0.806931	0.701578	92	0.395046

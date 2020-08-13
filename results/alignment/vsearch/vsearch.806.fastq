@@ -1,1 +1,0 @@
-H	14	329	44.3	+	0	0	578I12M2I84MD39M9D62MD31M4D30M3I56M665I	d2dd5ef7-287d-4e67-bdbc-bf9bf369e9b1_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=5652_ch=478_start_time=2020-02-12T12:23:08Z_barcode=barcode10	Enterococcus_faecalis_16S_1

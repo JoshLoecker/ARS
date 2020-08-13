@@ -1,1 +1,0 @@
-H	25	296	75.7	+	0	0	155D8MI68M2I33M2D30M1410I	e9dde6b4-8d59-4edb-bd1a-ff4a6f5dacfc_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=375_ch=310_start_time=2020-02-12T10:13:46Z_barcode=barcode09	Listeria_monocytogenes_16S_1
