@@ -1,9 +1,37 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="PyCallingNonCallableInspection" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="PyMethodMayBeStaticInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="4">
+            <item index="0" class="java.lang.String" itemvalue="pandas" />
+            <item index="1" class="java.lang.String" itemvalue="cutadapt" />
+            <item index="2" class="java.lang.String" itemvalue="plotly" />
+            <item index="3" class="java.lang.String" itemvalue="numpy" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
     <inspection_tool class="PyPep8Inspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="input" />
+        </list>
+      </option>
+    </inspection_tool>
     <inspection_tool class="PyShadowingNamesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
-    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="ignoredIdentifiers">
         <list>
           <option value="TrimReads.snakemake" />
@@ -32,8 +60,27 @@
           <option value="snakemake.Snakefile.expand" />
           <option value="snakemake.Scripts.testReturns.snakemake" />
           <option value="snakemake.Scripts.test.snakemake" />
+          <option value="Scripts.AlignerVSearch.snakemake" />
+          <option value="Scripts.Global.snakemake" />
+          <option value="snakemake.scripts.MergeFiles.snakemake" />
+          <option value="snakemake.Snakefile.glob_wildcards" />
+          <option value="snakemake.Snakefile.touch" />
+          <option value="snakemake.Snakefile.checkpoints" />
+          <option value="snakemake.Snakefile.wildcards" />
+          <option value="testing.Snakefile.config" />
+          <option value="testing.Snakefile.expand" />
+          <option value="snakemake.scripts.PlotlySingleColorHistogram.snakemake" />
+          <option value="snakemake.scripts.CountReads.snakemake" />
+          <option value="snakemake.Snakefile.snakemake" />
+          <option value="snakemake.Snakefile.input" />
+          <option value="snakemake.scripts.PlotlyBoxWhisker.snakemake" />
+          <option value="snakemake.scripts.PlotlyHistogram.snakemake" />
         </list>
       </option>
     </inspection_tool>
+    <inspection_tool class="ShellCheck" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <shellcheck_settings value="SC2128" />
+    </inspection_tool>
+    <inspection_tool class="SmkRuleOrCheckpointNameYetUndefinedInspection" enabled="false" level="ERROR" enabled_by_default="false" />
   </profile>
 </component>
