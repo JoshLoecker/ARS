@@ -62,8 +62,11 @@ def minimap_aligner(wildcards):
         barcode=return_barcode_numbers(checkpoint_output))
 def vsearch_aligner(wildcards):
     checkpoint_output = checkpoints.isONclustClusterFastq.get(**wildcards).output[0]
-    return expand(config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.fastq",
+    return expand(config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.uc",
                   file_number=glob_wildcards(config['results_folder'] + "isONclust/cluster_fastq/{file_number}.fastq").file_number)
+def id_reads(wildcards):
+    checkpoint_output = checkpoints.isONclustClusterFastq.get(**wildcards).output[0]
+    return config['results_folder'] + "id_reads.tsv"
 def nanoplot_basecall(wildcards):
     checkpoint_output = checkpoints.basecall.get(**wildcards).output[0]
     return config['results_folder'] + "visuals/nanoplot/basecall/"
@@ -104,6 +107,7 @@ rule all:
         guppy_aligner,  #.............................................. Guppy Aligner
         minimap_aligner,  #............................................ MiniMap Aligner
         vsearch_aligner,  #............................................ VSearch Aligner
+        id_reads,
         nanoplot_basecall,  #................................................... NanoPlot
         nanoplot_barcode_classified,
         nanoplot_barcode_unclassified,
@@ -413,7 +417,7 @@ rule vsearch_aligner:
     input:
         rules.fq2fa.output
     output:
-        config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.fastq"
+        config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.uc"
     params:
         alignment_reference = config['alignment_reference_file']
     shell:
@@ -427,6 +431,20 @@ rule vsearch_aligner:
         --quiet
         """
 
+
+rule id_reads:
+    input:
+        filtering = expand(rules.filtering.output[0],
+                           barcode=glob_wildcards(config['results_folder'] + "filter/{barcode}.filter.fastq").barcode),
+        clustering = rules.isOnClustPipeline.output[0],
+        vsearch = expand(rules.vsearch_aligner.output[0],
+                         file_number=glob_wildcards(config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.uc").file_number)
+    output:
+        config['results_folder'] + "id_reads.tsv"
+    params:
+        results_folder = config['results_folder']
+    script:
+        "scripts/id_reads.py"
 
 
 
