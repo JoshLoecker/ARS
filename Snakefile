@@ -50,6 +50,9 @@ def filtering(wildcards):
 def isONclust(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return config['results_folder'] + "isONclust/"
+def IsoCon(wildcards):
+    checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
+    return config['results_folder'] + "IsoCon/"
 def guppy_aligner(wildcards):
     checkpoint_output = checkpoints.barcode.get(**wildcards).output[0]
     return expand(
@@ -108,6 +111,7 @@ rule all:
         minimap_aligner,  #............................................ MiniMap Aligner
         vsearch_aligner,  #............................................ VSearch Aligner
         id_reads,
+        IsoCon,
         nanoplot_basecall,  #................................................... NanoPlot
         nanoplot_barcode_classified,
         nanoplot_barcode_unclassified,
@@ -445,6 +449,18 @@ rule id_reads:
         results_folder = config['results_folder']
     script:
         "scripts/id_reads.py"
+
+
+
+rule IsoCon:
+    input:
+        rules.merge_filtering_reads.output[0]
+    output:
+        directory(config['results_folder'] + "IsoCon/")
+    shell:
+        r"""
+        IsoCon pipeline --fl_reads {input} --outfolder {output}
+        """
 
 
 
