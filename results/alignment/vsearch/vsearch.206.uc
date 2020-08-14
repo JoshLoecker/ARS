@@ -1,10 +1,10 @@
-N	*	*	*	.	*	*	*	28cd6740-b166-4aa9-a8b8-104a60221798_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=7507_ch=58_start_time=2020-02-12T12:22:25Z_barcode=barcode64	*
-N	*	*	*	.	*	*	*	e2deb13d-4871-452a-9434-af98a743fa9f_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=25089_ch=416_start_time=2020-02-12T18:15:01Z_barcode=barcode64	*
+N	*	*	*	.	*	*	*	8f39af8c-d3a6-448e-a569-9c70d31cb433_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=135691_ch=299_start_time=2020-02-12T22:53:32Z_barcode=barcode64	*
 N	*	*	*	.	*	*	*	fed8e8f6-8cc4-4bef-9924-12d9b3659928_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=6243_ch=85_start_time=2020-02-12T12:22:51Z_barcode=barcode64	*
 N	*	*	*	.	*	*	*	a564ad05-364a-4335-b6a4-7bf2b9b0c857_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=9403_ch=305_start_time=2020-02-12T12:22:35Z_barcode=barcode64	*
-N	*	*	*	.	*	*	*	8f39af8c-d3a6-448e-a569-9c70d31cb433_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=135691_ch=299_start_time=2020-02-12T22:53:32Z_barcode=barcode64	*
+N	*	*	*	.	*	*	*	28cd6740-b166-4aa9-a8b8-104a60221798_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=7507_ch=58_start_time=2020-02-12T12:22:25Z_barcode=barcode64	*
+N	*	*	*	.	*	*	*	e2deb13d-4871-452a-9434-af98a743fa9f_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=25089_ch=416_start_time=2020-02-12T18:15:01Z_barcode=barcode64	*
 N	*	*	*	.	*	*	*	20d0aa9c-c773-4ef9-8634-c1b72e11e743_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=302_ch=17_start_time=2020-02-12T10:14:03Z_barcode=unclassified	*
-N	*	*	*	.	*	*	*	498ce0fb-21f3-4a70-8e35-ae6339fb3fbb_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=27319_ch=256_start_time=2020-02-12T18:14:30Z_barcode=barcode64	*
+N	*	*	*	.	*	*	*	4949ce7c-25ee-4f4b-83dc-8a4311973c69_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=135167_ch=202_start_time=2020-02-13T03:39:55Z_barcode=barcode64	*
 N	*	*	*	.	*	*	*	c5390cd1-6579-42d0-b705-83811542384c_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=87413_ch=43_start_time=2020-02-13T08:22:05Z_barcode=barcode64	*
 N	*	*	*	.	*	*	*	9675421d-42ae-486b-9ccc-cb7c028665d9_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=417_ch=101_start_time=2020-02-12T10:14:12Z_barcode=barcode64	*
-N	*	*	*	.	*	*	*	4949ce7c-25ee-4f4b-83dc-8a4311973c69_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=135167_ch=202_start_time=2020-02-13T03:39:55Z_barcode=barcode64	*
+N	*	*	*	.	*	*	*	498ce0fb-21f3-4a70-8e35-ae6339fb3fbb_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=27319_ch=256_start_time=2020-02-12T18:14:30Z_barcode=barcode64	*

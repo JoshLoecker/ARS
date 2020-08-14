@@ -1,8 +1,5 @@
-The following modules are available in Ceres:
+The following modules are available in Ceres, but need to be added in docker:
     - guppy-gpu/guppy-cpu
-    - vsearch
-    - minimap
-    - cutadapt
 
 The following modules are available through conda
     - Snakemake
@@ -11,3 +8,8 @@ The following modules are available through conda
     - NanoPlot
     - Plotly
     - SeqKit
+    - vsearch
+    - minimap
+    - cutadapt
+    - isONclust
+    - IsoCon

@@ -459,7 +459,7 @@ rule IsoCon:
         directory(config['results_folder'] + "IsoCon/")
     shell:
         r"""
-        IsoCon pipeline --fl_reads {input} --outfolder {output}
+        IsoCon pipeline -fl_reads {input} -outfolder {output}
         """
 
 
