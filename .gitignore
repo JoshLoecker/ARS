@@ -1,7 +1,6 @@
 venv/
 .snakemake/
-results/.temp
+results/
 data_files/
 .idea/
-PipelineVisual.svg
-makeSVG
+.idea/ARS.iml
