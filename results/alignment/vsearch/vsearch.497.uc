@@ -1,2 +1,0 @@
-N	*	*	*	.	*	*	*	17ba6467-7bee-41e8-9990-077d16d83731_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=437_ch=351_start_time=2020-02-12T10:14:09Z_barcode=barcode70	*
-H	44	243	57.7	+	0	0	81D44MD25M6I46M5I5M2I41M1382I	cc3cc9f0-9ade-4401-ac20-f479d47fff0d_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=85140_ch=175_start_time=2020-02-13T08:22:42Z_barcode=barcode70	Staphylococcus_aureus_16S_1

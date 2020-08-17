@@ -1,2 +1,0 @@
-N	*	*	*	.	*	*	*	11e4762a-722f-4815-bcf3-109c31e9d36e_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=84239_ch=256_start_time=2020-02-13T08:22:34Z_barcode=barcode21	*
-N	*	*	*	.	*	*	*	1cc73f52-bfa1-4996-a5ff-a7200e56f51e_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=56411_ch=108_start_time=2020-02-12T22:53:59Z_barcode=barcode13	*

@@ -1,1 +1,0 @@
-H	10	172	62.3	+	0	0	1385I34M2I21MI27M2D43M45D	635433ef-bbfe-4ee8-b18d-1179f561b941_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=51373_ch=20_start_time=2020-02-13T03:39:21Z_barcode=barcode09	Cryptococcus_neoformans_18S_170924

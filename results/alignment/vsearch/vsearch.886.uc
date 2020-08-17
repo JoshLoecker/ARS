@@ -1,1 +1,0 @@
-H	18	174	53.8	+	0	0	27I44M5I55M2I23M5I52M1329I	d4bbb353-8459-4e47-a994-c23e55eaea09_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=6725_ch=512_start_time=2020-02-12T12:22:36Z_barcode=barcode05	Escherichia_coli_16S_1

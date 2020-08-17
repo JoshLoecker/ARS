@@ -1,1 +1,0 @@
-H	44	149	53.9	+	0	0	28I41MI11M2I48M2D47M1378I	18fc4d03-8284-42cc-9495-5c342752fba9_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=6309_ch=423_start_time=2020-02-12T12:22:45Z_barcode=barcode25	Staphylococcus_aureus_16S_1

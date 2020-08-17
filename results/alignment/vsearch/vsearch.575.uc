@@ -1,2 +1,0 @@
-N	*	*	*	.	*	*	*	fdfcbd83-b001-419c-8791-41bce61a4327_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=387_ch=441_start_time=2020-02-12T10:13:45Z_barcode=unclassified	*
-N	*	*	*	.	*	*	*	4de13313-e07d-4cb7-8c02-610c93eed50c_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=68390_ch=478_start_time=2020-02-13T08:22:51Z_barcode=barcode69	*

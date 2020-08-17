@@ -1,1 +1,0 @@
-N	*	*	*	.	*	*	*	d47e7f93-033d-4fdb-8e86-3eae13e3ab42_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=406_ch=200_start_time=2020-02-12T10:14:12Z_barcode=barcode05	*

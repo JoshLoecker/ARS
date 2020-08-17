@@ -1,1 +1,0 @@
-H	0	83	74.4	+	0	0	26I12M3I10M2D59M1448I	94fca616-dd91-4a15-9571-2ec8c54963a3_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=48150_ch=63_start_time=2020-02-12T22:54:05Z_barcode=barcode76	Bacillus_subtilis_16S_1

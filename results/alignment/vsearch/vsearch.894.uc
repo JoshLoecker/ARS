@@ -1,1 +1,0 @@
-H	10	181	55.7	+	0	0	1391I75MI46M60D	96f5a32b-0866-45b2-97ac-1446acc80dc0_runid=67a0761ea992f55d7000e748e88761780ca1bb60_sampleid=SBGX_CLC_read=423_ch=32_start_time=2020-02-12T10:13:43Z_barcode=unclassified_rc	Cryptococcus_neoformans_18S_170924

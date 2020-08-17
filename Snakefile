@@ -65,7 +65,7 @@ def minimap_aligner(wildcards):
         barcode=return_barcode_numbers(checkpoint_output))
 def vsearch_aligner(wildcards):
     checkpoint_output = checkpoints.isONclustClusterFastq.get(**wildcards).output[0]
-    return expand(config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.uc",
+    return expand(config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.tsv",
                   file_number=glob_wildcards(config['results_folder'] + "isONclust/cluster_fastq/{file_number}.fastq").file_number)
 def id_reads(wildcards):
     checkpoint_output = checkpoints.isONclustClusterFastq.get(**wildcards).output[0]
@@ -421,17 +421,15 @@ rule vsearch_aligner:
     input:
         rules.fq2fa.output
     output:
-        config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.uc"
+        config['results_folder'] + "alignment/vsearch/vsearch.{file_number}.tsv"
     params:
         alignment_reference = config['alignment_reference_file']
     shell:
         r"""
         vsearch \
-        --usearch_global \
-        {input} \
+        --sintax {input} \
+        --tabbedout {output} \
         --db {params.alignment_reference} \
-        --id 0 \
-        --uc {output} \
         --quiet
         """
 
