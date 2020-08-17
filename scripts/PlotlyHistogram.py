@@ -10,8 +10,7 @@ save_file = snakemake.output[0]
 data_frame = pd.read_csv(
     filepath_or_buffer=csv_file,
     delimiter="\t",
-    header=0
-)
+    header=0)
 
 # we want to collect the number of unclassified reads to create an annotation on the graph
 try:
@@ -26,7 +25,7 @@ data_frame_remove_unclassified.drop( data_frame_remove_unclassified.tail(1).inde
 # get the average reads with and without the unclassified reads
 try:
     average_reads_with_unclassified = int(np.average(data_frame['reads']))
-    average_reads_wunclassified = int(np.average(data_frame_remove_unclassified['reads']))
+    average_reads_without_classified = int(np.average(data_frame_remove_unclassified['reads']))
 except (ZeroDivisionError, ValueError):
     average_reads_with_unclassified = "ERROR: No data in .csv file"
     average_reads_without_unclassified = "ERROR: No data in .csv file"
