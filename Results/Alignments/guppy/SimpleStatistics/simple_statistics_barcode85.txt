@@ -1,5 +1,0 @@
-Total reads: 1
-Classified reads: 1
-Unclassified reads: 0
-Percent classified: 100.000%
-Percent unclassified: 0.000%
